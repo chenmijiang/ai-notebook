@@ -81,7 +81,7 @@ npm 生命周期脚本可以分为以下几大类：
 
 | 脚本名称 | 执行时机 | 说明 |
 |---------|---------|------|
-| `prepare` | 多种场景 | 安装后、发布前、`git push` 时执行 |
+| `prepare` | 多种场景 | 本地 `npm install` 后、`npm pack`/`npm publish` 前、git 依赖安装时执行 |
 
 ### 5. 版本相关（Version）
 
@@ -133,7 +133,7 @@ npm install lodash
 2. 解析并下载依赖
 3. **install** - 安装过程中执行（主要用于原生模块编译）
 4. **postinstall** - 安装完成后执行
-5. **prepublish**（已废弃）- 仅在本地 `npm install` 时执行
+5. **prepublish**（行为已变更）- npm v7+ 中仅在 `npm publish` 前执行，推荐使用 `prepare` 和 `prepublishOnly` 替代
 6. **preprepare** - prepare 之前
 7. **prepare** - 安装后执行，常用于构建步骤
 8. **postprepare** - prepare 之后
@@ -209,9 +209,9 @@ npm publish
 
 执行顺序：
 
-1. **prepublishOnly** - 仅在 publish 命令时执行
-2. **prepack** - 创建 tarball 之前
-3. **prepare** - 准备阶段
+1. **prepare** - 准备阶段（如果包是从本地发布）
+2. **prepublishOnly** - 仅在 publish 命令时执行
+3. **prepack** - 创建 tarball 之前
 4. **postpack** - 创建 tarball 之后
 5. **publish** - 发布过程中
 6. **postpublish** - 发布完成后
@@ -224,6 +224,8 @@ npm publish
 |------|---------------|---------------|------------|
 | `prepublishOnly` | ✅ | ❌ | ❌ |
 | `prepare` | ✅ | ✅ | ✅ |
+| `prepack` | ✅ | ❌ | ✅ |
+| `postpack` | ✅ | ❌ | ✅ |
 
 **最佳实践**：
 
@@ -330,9 +332,9 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[npm publish] --> B[prepublishOnly]
-    B --> C[prepack]
-    C --> D[prepare]
+    A[npm publish] --> B[prepare]
+    B --> C[prepublishOnly]
+    C --> D[prepack]
     D --> E[创建 tarball]
     E --> F[postpack]
     F --> G[上传到 registry]
@@ -386,7 +388,7 @@ flowchart LR
     end
 
     subgraph Publish["发布阶段"]
-        PB1[prepublishOnly] --> PB2[prepack] --> PB3[postpack] --> PB4[publish] --> PB5[postpublish]
+        PB0[prepare] --> PB1[prepublishOnly] --> PB2[prepack] --> PB3[postpack] --> PB4[publish] --> PB5[postpublish]
     end
 
     subgraph Version["版本阶段"]
@@ -478,20 +480,35 @@ console.log('All build dependencies are satisfied.');
 
 ### 示例 3：Git Hooks 集成（Husky）
 
+现代 Husky (v9+) 使用 `.husky/` 目录配置 Git hooks：
+
 ```json
 {
   "name": "my-project",
   "version": "1.0.0",
   "scripts": {
-    "prepare": "husky install",
-    "pre-commit": "lint-staged",
-    "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{js,ts}": ["eslint --fix", "prettier --write"]
   }
 }
 ```
+
+然后创建 hook 文件：
+
+```bash
+# 初始化 husky
+npx husky init
+
+# .husky/pre-commit 文件内容
+npx lint-staged
+
+# .husky/commit-msg 文件内容
+npx --no -- commitlint --edit $1
+```
+
+> **注意**：`pre-commit` 和 `commit-msg` 是 Git hooks，不是 npm 生命周期脚本。它们需要通过 Husky 配置在 `.husky/` 目录下，而不是放在 `package.json` 的 `scripts` 中。
 
 ### 示例 4：数据库迁移
 
@@ -527,13 +544,26 @@ console.log('All build dependencies are satisfied.');
 `scripts/check-node-version.js`:
 
 ```javascript
-const semver = require('semver');
+// 注意：preinstall 阶段依赖尚未安装，必须使用原生 Node.js 方法
 const { engines } = require('../package.json');
 
 const currentVersion = process.version;
 const requiredVersion = engines.node;
 
-if (!semver.satisfies(currentVersion, requiredVersion)) {
+// 简单的版本检查（不使用 semver 库）
+function satisfiesVersion(current, required) {
+  // 移除 'v' 前缀和 '>=' 等符号
+  const currentParts = current.replace('v', '').split('.').map(Number);
+  const requiredParts = required.replace(/[>=^~v]/g, '').split('.').map(Number);
+
+  for (let i = 0; i < requiredParts.length; i++) {
+    if (currentParts[i] > requiredParts[i]) return true;
+    if (currentParts[i] < requiredParts[i]) return false;
+  }
+  return true;
+}
+
+if (!satisfiesVersion(currentVersion, requiredVersion)) {
   console.error(
     `Required Node.js version ${requiredVersion}, but current version is ${currentVersion}`
   );
@@ -564,7 +594,8 @@ if (!fs.existsSync(envFile) && fs.existsSync(envExample)) {
 
 ### 1. 脚本命名规范
 
-```json
+```jsonc
+// 注意：标准 JSON 不支持注释，此处使用 JSONC 格式用于说明
 {
   "scripts": {
     // 使用 pre/post 前缀来自动化流程
@@ -695,11 +726,14 @@ if (process.env.CI) {
 ### 1. 查看脚本执行顺序
 
 ```bash
-# 使用 --dry-run 查看会执行哪些脚本
-npm install --dry-run
+# 使用 --foreground-scripts 显示脚本输出
+npm install --foreground-scripts
 
 # 使用 --verbose 查看详细输出
 npm install --verbose
+
+# 使用 --dry-run 预览将要安装的包（不显示脚本详情）
+npm install --dry-run
 ```
 
 ### 2. 跳过生命周期脚本
@@ -707,10 +741,9 @@ npm install --verbose
 ```bash
 # 跳过所有脚本
 npm install --ignore-scripts
-
-# 只跳过特定脚本（npm v7+）
-npm install --ignore-scripts=postinstall
 ```
+
+> **注意**：npm 不支持跳过单个特定脚本，`--ignore-scripts` 会跳过所有生命周期脚本。
 
 ### 3. 调试脚本
 
@@ -776,8 +809,8 @@ npm package lifecycle 是一个强大的自动化机制，合理使用可以显�
 
 ### 核心要点回顾
 
-1. **安装流程**：`preinstall` → `install` → `postinstall` → `prepare`
-2. **发布流程**：`prepublishOnly` → `prepack` → `prepare` → `postpack` → `publish` → `postpublish`
+1. **安装流程**：`preinstall` → `install` → `postinstall` → `preprepare` → `prepare` → `postprepare`
+2. **发布流程**：`prepare` → `prepublishOnly` → `prepack` → `postpack` → `publish` → `postpublish`
 3. **版本流程**：`preversion` → `version` → `postversion`
 4. **卸载流程**：`preuninstall` → `uninstall` → `postuninstall`
 
@@ -815,5 +848,5 @@ npm package lifecycle 是一个强大的自动化机制，合理使用可以显�
 ## 参考资料
 
 - [npm 官方文档 - scripts](https://docs.npmjs.com/cli/v10/using-npm/scripts)
-- [npm 官方文档 - lifecycle scripts](https://docs.npmjs.com/cli/v10/commands/npm-pkg)
+- [npm 官方文档 - lifecycle scripts](https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-scripts)
 - [Node.js 最佳实践](https://github.com/goldbergyoni/nodebestpractices)
