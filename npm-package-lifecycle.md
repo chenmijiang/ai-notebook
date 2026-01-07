@@ -8,7 +8,6 @@
 - [卸载流程详解](#卸载流程详解)
 - [发布流程详解](#发布流程详解)
 - [版本管理生命周期](#版本管理生命周期)
-- [生命周期流程图](#生命周期流程图)
 - [实际应用示例](#实际应用示例)
 - [最佳实践](#最佳实践)
 - [常见问题与调试](#常见问题与调试)
@@ -53,64 +52,65 @@ npm 生命周期脚本可以分为以下几大类：
 
 ### 1. 安装相关（Install）
 
-| 脚本名称 | 执行时机 | 说明 |
-|---------|---------|------|
-| `preinstall` | 包安装之前 | 在任何依赖安装前执行 |
-| `install` | 包安装时 | 常用于编译原生模块 |
+| 脚本名称      | 执行时机   | 说明                 |
+| ------------- | ---------- | -------------------- |
+| `preinstall`  | 包安装之前 | 在任何依赖安装前执行 |
+| `install`     | 包安装时   | 常用于编译原生模块   |
 | `postinstall` | 包安装之后 | 安装完成后的收尾工作 |
 
 ### 2. 卸载相关（Uninstall）
 
-| 脚本名称 | 执行时机 | 说明 |
-|---------|---------|------|
-| `preuninstall` | 卸载之前 | 卸载前的清理准备 |
-| `uninstall` | 卸载时 | 卸载过程中执行 |
+| 脚本名称        | 执行时机 | 说明             |
+| --------------- | -------- | ---------------- |
+| `preuninstall`  | 卸载之前 | 卸载前的清理准备 |
+| `uninstall`     | 卸载时   | 卸载过程中执行   |
 | `postuninstall` | 卸载之后 | 卸载完成后的收尾 |
 
 ### 3. 发布相关（Publish）
 
-| 脚本名称 | 执行时机 | 说明 |
-|---------|---------|------|
-| `prepublishOnly` | 仅在 `npm publish` 前 | 发布前的构建和测试 |
-| `prepack` | 打包 tarball 之前 | 在 `npm pack` 和 `npm publish` 前执行 |
-| `postpack` | 打包 tarball 之后 | tarball 创建后执行 |
-| `publish` | 发布时 | 发布过程中执行 |
-| `postpublish` | 发布之后 | 发布完成后执行 |
+| 脚本名称         | 执行时机              | 说明                                  |
+| ---------------- | --------------------- | ------------------------------------- |
+| `prepublishOnly` | 仅在 `npm publish` 前 | 发布前的构建和测试                    |
+| `prepack`        | 打包 tarball 之前     | 在 `npm pack` 和 `npm publish` 前执行 |
+| `postpack`       | 打包 tarball 之后     | tarball 创建后执行                    |
+| `publish`        | 发布时                | 发布过程中执行                        |
+| `postpublish`    | 发布之后              | 发布完成后执行                        |
 
 ### 4. 准备相关（Prepare）
 
-| 脚本名称 | 执行时机 | 说明 |
-|---------|---------|------|
-| `prepare` | 多种场景 | 本地 `npm install` 后、`npm pack`/`npm publish` 前、git 依赖安装时执行 |
+| 脚本名称     | 执行时机 | 说明                                                                                          |
+| ------------ | -------- | --------------------------------------------------------------------------------------------- |
+| `prepublish` | 已弃用   | 不会在 `npm publish` 时运行，但会在 `npm ci` 和 `npm install` 时运行。推荐使用 `prepare` 替代 |
+| `prepare`    | 多种场景 | 本地 `npm install` 后、`npm pack`/`npm publish` 前、git 依赖安装时执行                        |
 
 ### 5. 版本相关（Version）
 
-| 脚本名称 | 执行时机 | 说明 |
-|---------|---------|------|
-| `preversion` | 版本变更之前 | 检查代码状态 |
-| `version` | 版本变更时 | 更新版本相关文件 |
-| `postversion` | 版本变更之后 | 推送标签或通知 |
+| 脚本名称      | 执行时机     | 说明             |
+| ------------- | ------------ | ---------------- |
+| `preversion`  | 版本变更之前 | 检查代码状态     |
+| `version`     | 版本变更时   | 更新版本相关文件 |
+| `postversion` | 版本变更之后 | 推送标签或通知   |
 
 ### 6. 运行相关（Run）
 
-| 脚本名称 | 执行时机 | 说明 |
-|---------|---------|------|
-| `prestart` | `npm start` 之前 | 启动前准备 |
-| `start` | `npm start` 时 | 主启动脚本 |
-| `poststart` | `npm start` 之后 | 启动后操作 |
-| `prestop` | `npm stop` 之前 | 停止前准备 |
-| `stop` | `npm stop` 时 | 停止脚本 |
-| `poststop` | `npm stop` 之后 | 停止后清理 |
-| `prerestart` | `npm restart` 之前 | 重启前准备 |
-| `restart` | `npm restart` 时 | 重启脚本 |
+| 脚本名称      | 执行时机           | 说明       |
+| ------------- | ------------------ | ---------- |
+| `prestart`    | `npm start` 之前   | 启动前准备 |
+| `start`       | `npm start` 时     | 主启动脚本 |
+| `poststart`   | `npm start` 之后   | 启动后操作 |
+| `prestop`     | `npm stop` 之前    | 停止前准备 |
+| `stop`        | `npm stop` 时      | 停止脚本   |
+| `poststop`    | `npm stop` 之后    | 停止后清理 |
+| `prerestart`  | `npm restart` 之前 | 重启前准备 |
+| `restart`     | `npm restart` 时   | 重启脚本   |
 | `postrestart` | `npm restart` 之后 | 重启后操作 |
 
 ### 7. 测试相关（Test）
 
-| 脚本名称 | 执行时机 | 说明 |
-|---------|---------|------|
-| `pretest` | `npm test` 之前 | 测试前准备 |
-| `test` | `npm test` 时 | 执行测试 |
+| 脚本名称   | 执行时机        | 说明       |
+| ---------- | --------------- | ---------- |
+| `pretest`  | `npm test` 之前 | 测试前准备 |
+| `test`     | `npm test` 时   | 执行测试   |
 | `posttest` | `npm test` 之后 | 测试后清理 |
 
 ---
@@ -133,7 +133,7 @@ npm install lodash
 2. 解析并下载依赖
 3. **install** - 安装过程中执行（主要用于原生模块编译）
 4. **postinstall** - 安装完成后执行
-5. **prepublish**（行为已变更）- npm v7+ 中仅在 `npm publish` 前执行，推荐使用 `prepare` 和 `prepublishOnly` 替代
+5. **prepublish**（已弃用）- 不会在 `npm publish` 时运行，但会在 `npm ci` 和 `npm install` 时运行。推荐使用 `prepare` 和 `prepublishOnly` 替代
 6. **preprepare** - prepare 之前
 7. **prepare** - 安装后执行，常用于构建步骤
 8. **postprepare** - prepare 之后
@@ -220,12 +220,12 @@ npm publish
 
 这是两个容易混淆的脚本：
 
-| 脚本 | `npm publish` | `npm install` | `npm pack` |
-|------|---------------|---------------|------------|
-| `prepublishOnly` | ✅ | ❌ | ❌ |
-| `prepare` | ✅ | ✅ | ✅ |
-| `prepack` | ✅ | ❌ | ✅ |
-| `postpack` | ✅ | ❌ | ✅ |
+| 脚本             | `npm publish` | `npm install` | `npm pack` |
+| ---------------- | ------------- | ------------- | ---------- |
+| `prepublishOnly` | ✅            | ❌            | ❌         |
+| `prepare`        | ✅            | ✅            | ✅         |
+| `prepack`        | ✅            | ❌            | ✅         |
+| `postpack`       | ✅            | ❌            | ✅         |
 
 **最佳实践**：
 
@@ -276,132 +276,10 @@ npm version major  # 1.0.0 -> 2.0.0
 ```
 
 这个配置实现了：
+
 1. 版本更新前运行测试
 2. 版本更新时构建并提交 dist 目录
 3. 版本更新后推送代码、标签并发布到 npm
-
----
-
-## 生命周期流程图
-
-### 安装流程图
-
-```mermaid
-flowchart TD
-    A[npm install] --> B[preinstall]
-    B --> C[解析依赖树]
-    C --> D[下载依赖包]
-    D --> E{依赖包有<br/>install 脚本?}
-    E -->|是| F[执行依赖包的<br/>install 脚本]
-    E -->|否| G[install]
-    F --> G
-    G --> H[postinstall]
-    H --> I[preprepare]
-    I --> J[prepare]
-    J --> K[postprepare]
-    K --> L[安装完成]
-
-    style A fill:#e1f5fe
-    style L fill:#c8e6c9
-    style B fill:#fff3e0
-    style G fill:#fff3e0
-    style H fill:#fff3e0
-    style J fill:#fff3e0
-```
-
-### 卸载流程图
-
-```mermaid
-flowchart TD
-    A[npm uninstall package-name] --> B[preuninstall]
-    B --> C[uninstall]
-    C --> D[移除包文件]
-    D --> E[更新 package.json]
-    E --> F[更新 package-lock.json]
-    F --> G[postuninstall]
-    G --> H[卸载完成]
-
-    style A fill:#e1f5fe
-    style H fill:#c8e6c9
-    style B fill:#fff3e0
-    style C fill:#fff3e0
-    style G fill:#fff3e0
-```
-
-### 发布流程图
-
-```mermaid
-flowchart TD
-    A[npm publish] --> B[prepare]
-    B --> C[prepublishOnly]
-    C --> D[prepack]
-    D --> E[创建 tarball]
-    E --> F[postpack]
-    F --> G[上传到 registry]
-    G --> H[publish]
-    H --> I[postpublish]
-    I --> J[发布完成]
-
-    style A fill:#e1f5fe
-    style J fill:#c8e6c9
-    style B fill:#fff3e0
-    style C fill:#fff3e0
-    style D fill:#fff3e0
-    style F fill:#fff3e0
-    style H fill:#fff3e0
-    style I fill:#fff3e0
-```
-
-### 版本更新流程图
-
-```mermaid
-flowchart TD
-    A[npm version patch/minor/major] --> B[preversion]
-    B --> C{测试通过?}
-    C -->|否| D[终止流程]
-    C -->|是| E[更新 package.json 版本]
-    E --> F[version]
-    F --> G[git add package.json]
-    G --> H[git commit]
-    H --> I[git tag]
-    I --> J[postversion]
-    J --> K[版本更新完成]
-
-    style A fill:#e1f5fe
-    style K fill:#c8e6c9
-    style D fill:#ffcdd2
-    style B fill:#fff3e0
-    style F fill:#fff3e0
-    style J fill:#fff3e0
-```
-
-### 完整生命周期概览
-
-```mermaid
-flowchart LR
-    subgraph Install["安装阶段"]
-        I1[preinstall] --> I2[install] --> I3[postinstall]
-    end
-
-    subgraph Prepare["准备阶段"]
-        P1[preprepare] --> P2[prepare] --> P3[postprepare]
-    end
-
-    subgraph Publish["发布阶段"]
-        PB0[prepare] --> PB1[prepublishOnly] --> PB2[prepack] --> PB3[postpack] --> PB4[publish] --> PB5[postpublish]
-    end
-
-    subgraph Version["版本阶段"]
-        V1[preversion] --> V2[version] --> V3[postversion]
-    end
-
-    subgraph Uninstall["卸载阶段"]
-        U1[preuninstall] --> U2[uninstall] --> U3[postuninstall]
-    end
-
-    Install --> Prepare
-    Prepare --> Publish
-```
 
 ---
 
@@ -467,7 +345,7 @@ function checkCommand(cmd) {
 
 // 检查必要的编译工具
 const requirements = ['python3', 'make', 'g++'];
-const missing = requirements.filter(cmd => !checkCommand(cmd));
+const missing = requirements.filter((cmd) => !checkCommand(cmd));
 
 if (missing.length > 0) {
   console.error(`Missing required build tools: ${missing.join(', ')}`);
@@ -554,7 +432,10 @@ const requiredVersion = engines.node;
 function satisfiesVersion(current, required) {
   // 移除 'v' 前缀和 '>=' 等符号
   const currentParts = current.replace('v', '').split('.').map(Number);
-  const requiredParts = required.replace(/[>=^~v]/g, '').split('.').map(Number);
+  const requiredParts = required
+    .replace(/[>=^~v]/g, '')
+    .split('.')
+    .map(Number);
 
   for (let i = 0; i < requiredParts.length; i++) {
     if (currentParts[i] > requiredParts[i]) return true;
@@ -671,13 +552,13 @@ try {
 
 推荐使用的跨平台工具：
 
-| 功能 | Unix 命令 | 跨平台替代 |
-|------|----------|-----------|
-| 删除 | `rm -rf` | `rimraf` |
-| 复制 | `cp` | `copyfiles`, `cpy-cli` |
-| 移动 | `mv` | `move-cli` |
-| 环境变量 | `VAR=value` | `cross-env` |
-| 并行执行 | `&` | `npm-run-all`, `concurrently` |
+| 功能     | Unix 命令   | 跨平台替代                    |
+| -------- | ----------- | ----------------------------- |
+| 删除     | `rm -rf`    | `rimraf`                      |
+| 复制     | `cp`        | `copyfiles`, `cpy-cli`        |
+| 移动     | `mv`        | `move-cli`                    |
+| 环境变量 | `VAR=value` | `cross-env`                   |
+| 并行执行 | `&`         | `npm-run-all`, `concurrently` |
 
 ### 5. 性能优化
 
@@ -795,10 +676,10 @@ npm 会在脚本执行时设置一些有用的环境变量：
 
 ```javascript
 // 在脚本中可用的环境变量
-console.log(process.env.npm_package_name);     // 包名
-console.log(process.env.npm_package_version);  // 版本
-console.log(process.env.npm_lifecycle_event);  // 当前脚本名称
-console.log(process.env.npm_config_registry);  // npm registry
+console.log(process.env.npm_package_name); // 包名
+console.log(process.env.npm_package_version); // 版本
+console.log(process.env.npm_lifecycle_event); // 当前脚本名称
+console.log(process.env.npm_config_registry); // npm registry
 ```
 
 ---
