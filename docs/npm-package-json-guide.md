@@ -61,9 +61,9 @@
     - [11.1 config](#111-config)
     - [11.2 sideEffects](#112-sideeffects)
     - [11.3 types / typings](#113-types--typings)
-  - [12. 完整项目配置示例](#12-完整项目配置示例)
+  - [12. 项目配置示例](#12-项目配置示例)
     - [12.1 Web 应用项目](#121-web-应用项目)
-    - [12.2 NPM 库项目（双模式支持）](#122-npm-库项目双模式支持)
+    - [12.2 NPM 库项目（双模式）](#122-npm-库项目双模式)
     - [12.3 CLI 工具项目](#123-cli-工具项目)
     - [12.4 Monorepo 根配置](#124-monorepo-根配置)
   - [13. 最佳实践](#13-最佳实践)
@@ -72,7 +72,8 @@
     - [13.3 脚本编写](#133-脚本编写)
     - [13.4 发布前检查清单](#134-发布前检查清单)
   - [14. 常见问题与解决方案](#14-常见问题与解决方案)
-  - [15. 参考资源](#15-参考资源)
+  - [15. 总结](#15-总结)
+  - [16. 参考资源](#16-参考资源)
 
 ---
 
@@ -161,7 +162,7 @@ pnpm init
 
 ```json
 {
-  "name": "@myorg/mypackage"
+  "name": "@org/my-package"
 }
 ```
 
@@ -382,7 +383,7 @@ pnpm init
   "repository": {
     "type": "git",
     "url": "https://github.com/user/monorepo.git",
-    "directory": "packages/mypackage"
+    "directory": "packages/my-package"
   }
 }
 ```
@@ -756,39 +757,22 @@ NPM 在特定操作时自动执行的脚本。
 ```json
 {
   "scripts": {
-    // 开发
     "dev": "vite",
-    "dev:debug": "DEBUG=* vite",
-
-    // 构建
     "build": "vite build",
-    "build:analyze": "vite build --mode analyze",
-
-    // 测试
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
-    "test:e2e": "playwright test",
-
-    // 代码质量
-    "lint": "eslint . --ext .js,.ts,.vue",
-    "lint:fix": "eslint . --ext .js,.ts,.vue --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-
-    // 发布
-    "prepublishOnly": "npm run build && npm test",
-    "release": "standard-version",
-    "release:minor": "standard-version --release-as minor",
-    "release:major": "standard-version --release-as major",
-
-    // 工具
     "clean": "rm -rf dist node_modules",
     "prepare": "husky install"
   }
 }
 ```
+
+**命名规范**：使用动词开头，变体用冒号分隔（如 `test:watch`）。
 
 ---
 
@@ -1088,7 +1072,7 @@ engine-strict=true
 
 ```json
 {
-  "name": "@myorg/mypackage",
+  "name": "@org/my-package",
   "publishConfig": {
     "access": "public"
   }
@@ -1141,12 +1125,7 @@ my-monorepo/
   "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "build": "npm run build --workspaces",
-    "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "eslint": "^8.0.0"
+    "test": "npm run test --workspaces --if-present"
   }
 }
 ```
@@ -1155,15 +1134,11 @@ my-monorepo/
 
 ```json
 {
-  "name": "@myorg/core",
+  "name": "@org/core",
   "version": "1.0.0",
   "main": "./dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "test": "vitest"
-  },
   "dependencies": {
-    "@myorg/utils": "workspace:*"
+    "@org/utils": "workspace:*"
   }
 }
 ```
@@ -1175,14 +1150,10 @@ my-monorepo/
 npm run build --workspaces
 
 # 在特定工作空间运行
-npm run build --workspace=@myorg/core
-npm run build -w @myorg/core
+npm run build -w @org/core
 
 # 添加依赖到特定工作空间
-npm install lodash -w @myorg/utils
-
-# 添加工作空间互相依赖
-npm install @myorg/utils -w @myorg/core
+npm install lodash -w @org/utils
 
 # 运行脚本（跳过没有该脚本的包）
 npm run test --workspaces --if-present
@@ -1274,7 +1245,9 @@ npm config set my-package:port 3000
 
 ---
 
-## 12. 完整项目配置示例
+## 12. 项目配置示例
+
+> **注意**：以下示例仅展示各类项目的核心配置，实际项目可根据需要扩展。
 
 ### 12.1 Web 应用项目
 
@@ -1283,68 +1256,33 @@ npm config set my-package:port 3000
   "name": "my-web-app",
   "version": "1.0.0",
   "private": true,
-  "description": "A modern web application",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
     "test": "vitest",
-    "test:e2e": "playwright test",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "format": "prettier --write src",
-    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
     "prepare": "husky install"
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.0.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-react": "^4.0.0",
-    "eslint": "^8.0.0",
-    "husky": "^8.0.0",
-    "lint-staged": "^15.0.0",
-    "prettier": "^3.0.0",
-    "typescript": "^5.0.0",
     "vite": "^5.0.0",
-    "vitest": "^1.0.0"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,md}": ["prettier --write"]
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "typescript": "^5.0.0"
   }
 }
 ```
 
-### 12.2 NPM 库项目（双模式支持）
+**关键点**：`private: true` 防止意外发布。
+
+### 12.2 NPM 库项目（双模式）
 
 ```json
 {
-  "name": "@myorg/utils",
+  "name": "@org/utils",
   "version": "1.0.0",
-  "description": "A utility library supporting both ESM and CommonJS",
-  "keywords": ["utils", "utility", "helpers"],
-  "author": "Your Name <your@email.com>",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/myorg/utils.git"
-  },
-  "bugs": {
-    "url": "https://github.com/myorg/utils/issues"
-  },
-  "homepage": "https://github.com/myorg/utils#readme",
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/myorg"
-  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -1354,84 +1292,35 @@ npm config set my-package:port 3000
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    },
-    "./helpers": {
-      "types": "./dist/helpers/index.d.ts",
-      "import": "./dist/helpers/index.js",
-      "require": "./dist/helpers/index.cjs"
-    },
-    "./package.json": "./package.json"
+    }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": ["dist"],
   "sideEffects": false,
   "scripts": {
-    "dev": "tsup --watch",
     "build": "tsup",
-    "test": "vitest",
-    "test:coverage": "vitest --coverage",
-    "lint": "eslint src",
-    "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build && npm test",
-    "release": "npm run build && changeset publish"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "@changesets/cli": "^2.0.0",
-    "eslint": "^8.0.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
-  },
-  "peerDependencies": {},
-  "engines": {
-    "node": ">=16.0.0"
+    "prepublishOnly": "npm run build && npm test"
   },
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "access": "public"
   }
 }
 ```
+
+**关键点**：`exports` 实现条件导出，`sideEffects: false` 启用 Tree Shaking。
 
 ### 12.3 CLI 工具项目
 
 ```json
 {
-  "name": "my-cli-tool",
+  "name": "my-cli",
   "version": "1.0.0",
-  "description": "A powerful command-line tool",
-  "keywords": ["cli", "tool", "automation"],
-  "author": "Your Name <your@email.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/username/my-cli-tool.git"
-  },
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "bin": {
-    "mycli": "./dist/cli.js",
-    "mc": "./dist/cli.js"
+    "my-cli": "./dist/cli.js"
   },
-  "files": ["dist", "README.md"],
-  "scripts": {
-    "dev": "tsup --watch",
-    "build": "tsup",
-    "test": "vitest",
-    "lint": "eslint src",
-    "prepublishOnly": "npm run build"
-  },
+  "files": ["dist"],
   "dependencies": {
-    "commander": "^11.0.0",
-    "chalk": "^5.0.0",
-    "ora": "^7.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "commander": "^11.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -1439,38 +1328,23 @@ npm config set my-package:port 3000
 }
 ```
 
+**关键点**：`bin` 定义可执行命令，入口文件需添加 `#!/usr/bin/env node`。
+
 ### 12.4 Monorepo 根配置
 
 ```json
 {
   "name": "my-monorepo",
-  "version": "0.0.0",
   "private": true,
-  "description": "Monorepo for my projects",
   "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "build": "npm run build --workspaces",
-    "build:packages": "npm run build --workspace=packages/*",
-    "build:apps": "npm run build --workspace=apps/*",
-    "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "npm run build:packages && changeset publish",
-    "prepare": "husky install"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.0.0",
-    "husky": "^8.0.0",
-    "typescript": "^5.0.0"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "test": "npm run test --workspaces --if-present"
   }
 }
 ```
+
+**关键点**：`workspaces` 定义子包路径，`--if-present` 跳过无对应脚本的包。
 
 ---
 
@@ -1644,11 +1518,9 @@ tar -tzf my-package-1.0.0.tgz
 **Q5: 如何处理 monorepo 中的内部依赖？**
 
 ```json
-// 使用 workspace 协议
 {
   "dependencies": {
-    "@myorg/utils": "workspace:*",
-    "@myorg/core": "workspace:^1.0.0"
+    "@org/utils": "workspace:*"
   }
 }
 ```
@@ -1691,13 +1563,39 @@ tar -tzf my-package-1.0.0.tgz
 或在 `.npmrc` 中配置：
 
 ```ini
-@yourscope:registry=https://npm.your-company.com/
+@your-org:registry=https://npm.your-company.com/
 //npm.your-company.com/:_authToken=${NPM_TOKEN}
 ```
 
 ---
 
-## 15. 参考资源
+## 15. 总结
+
+`package.json` 是 Node.js 项目的核心配置文件，掌握其配置对于高效开发至关重要。
+
+### 核心要点回顾
+
+| 场景 | 关键字段 | 注意事项 |
+|-----|---------|---------|
+| 包标识 | `name`, `version` | 遵循命名规则和语义化版本 |
+| 模块入口 | `main`, `exports`, `type` | 优先使用 `exports` 实现条件导出 |
+| 依赖管理 | `dependencies`, `devDependencies`, `peerDependencies` | 正确分类，定期审计 |
+| 脚本命令 | `scripts` | 善用生命周期钩子和命名规范 |
+| 发布控制 | `private`, `files`, `publishConfig` | 发布前检查包含文件 |
+| Monorepo | `workspaces` | 使用 `workspace:*` 协议管理内部依赖 |
+
+### 最佳实践速查
+
+- ✅ 同时设置 `main` 和 `exports` 以兼容不同 Node.js 版本
+- ✅ 使用 `files` 白名单而非 `.npmignore` 黑名单
+- ✅ 在 CI 环境使用 `npm ci` 而非 `npm install`
+- ✅ 定期运行 `npm audit` 检查安全漏洞
+- ❌ 避免将敏感信息写入 `package.json`
+- ❌ 避免在 `dependencies` 中放置开发工具
+
+---
+
+## 16. 参考资源
 
 - [npm 官方文档 - package.json](https://docs.npmjs.com/cli/v10/configuring-npm/package-json)
 - [Node.js 文档 - Packages](https://nodejs.org/api/packages.html)
