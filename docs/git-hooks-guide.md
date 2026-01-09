@@ -186,6 +186,7 @@ exit 0
 **触发时机**：在默认提交信息生成后、编辑器打开之前
 
 **参数**：
+
 - `$1` - 包含提交信息的文件路径
 - `$2` - 提交信息的来源（`message`、`template`、`merge`、`squash`、`commit`）
 - `$3` - 提交的 SHA-1（仅在 `$2` 为 `commit` 时存在）
@@ -279,11 +280,11 @@ echo "提交成功: [$BRANCH] $COMMIT_HASH - $COMMIT_MSG"
 
 这些 hooks 用于 `git am` 命令（通过邮件应用补丁）：
 
-| Hook             | 触发时机             | 用途             |
-| ---------------- | -------------------- | ---------------- |
-| applypatch-msg   | 应用补丁前           | 验证补丁提交信息 |
-| pre-applypatch   | 补丁应用后、提交前   | 检查代码状态     |
-| post-applypatch  | 补丁提交后           | 通知             |
+| Hook            | 触发时机           | 用途             |
+| --------------- | ------------------ | ---------------- |
+| applypatch-msg  | 应用补丁前         | 验证补丁提交信息 |
+| pre-applypatch  | 补丁应用后、提交前 | 检查代码状态     |
+| post-applypatch | 补丁提交后         | 通知             |
 
 ### 3.3 其他客户端 Hooks
 
@@ -690,16 +691,16 @@ Git Hooks 是 Git 工作流自动化的强大工具。通过合理使用 Hooks�
 
 #### 客户端 Hooks
 
-| Hook               | 触发时机         | 可阻止 | 常见用途         |
-| ------------------ | ---------------- | ------ | ---------------- |
-| pre-commit         | commit 前        | ✅     | 代码检查         |
-| prepare-commit-msg | 生成消息后       | ✅     | 自动填充提交信息 |
-| commit-msg         | 输入消息后       | ✅     | 验证提交信息     |
-| post-commit        | commit 后        | ❌     | 通知             |
-| pre-rebase         | rebase 前        | ✅     | 保护分支         |
-| post-checkout      | checkout 后      | ❌     | 安装依赖         |
-| post-merge         | merge 后         | ❌     | 更新依赖         |
-| pre-push           | push 前          | ✅     | 运行测试         |
+| Hook               | 触发时机    | 可阻止 | 常见用途         |
+| ------------------ | ----------- | ------ | ---------------- |
+| pre-commit         | commit 前   | ✅     | 代码检查         |
+| prepare-commit-msg | 生成消息后  | ✅     | 自动填充提交信息 |
+| commit-msg         | 输入消息后  | ✅     | 验证提交信息     |
+| post-commit        | commit 后   | ❌     | 通知             |
+| pre-rebase         | rebase 前   | ✅     | 保护分支         |
+| post-checkout      | checkout 后 | ❌     | 安装依赖         |
+| post-merge         | merge 后    | ❌     | 更新依赖         |
+| pre-push           | push 前     | ✅     | 运行测试         |
 
 #### 服务端 Hooks
 

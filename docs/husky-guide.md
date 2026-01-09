@@ -240,7 +240,7 @@ npm install @commitlint/cli @commitlint/config-conventional --save-dev
 
 ```javascript
 module.exports = {
-  extends: ['@commitlint/config-conventional'],
+  extends: ["@commitlint/config-conventional"],
 };
 ```
 

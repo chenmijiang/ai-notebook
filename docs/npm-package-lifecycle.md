@@ -332,11 +332,11 @@ npm version major  # 1.0.0 -> 2.0.0
 `scripts/check-dependencies.js`:
 
 ```javascript
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 
 function checkCommand(cmd) {
   try {
-    execSync(`which ${cmd}`, { stdio: 'ignore' });
+    execSync(`which ${cmd}`, { stdio: "ignore" });
     return true;
   } catch {
     return false;
@@ -344,16 +344,16 @@ function checkCommand(cmd) {
 }
 
 // 检查必要的编译工具
-const requirements = ['python3', 'make', 'g++'];
+const requirements = ["python3", "make", "g++"];
 const missing = requirements.filter((cmd) => !checkCommand(cmd));
 
 if (missing.length > 0) {
-  console.error(`Missing required build tools: ${missing.join(', ')}`);
-  console.error('Please install them before continuing.');
+  console.error(`Missing required build tools: ${missing.join(", ")}`);
+  console.error("Please install them before continuing.");
   process.exit(1);
 }
 
-console.log('All build dependencies are satisfied.');
+console.log("All build dependencies are satisfied.");
 ```
 
 ### 示例 3：Git Hooks 集成（Husky）
@@ -423,7 +423,7 @@ npx --no -- commitlint --edit $1
 
 ```javascript
 // 注意：preinstall 阶段依赖尚未安装，必须使用原生 Node.js 方法
-const { engines } = require('../package.json');
+const { engines } = require("../package.json");
 
 const currentVersion = process.version;
 const requiredVersion = engines.node;
@@ -431,10 +431,10 @@ const requiredVersion = engines.node;
 // 简单的版本检查（不使用 semver 库）
 function satisfiesVersion(current, required) {
   // 移除 'v' 前缀和 '>=' 等符号
-  const currentParts = current.replace('v', '').split('.').map(Number);
+  const currentParts = current.replace("v", "").split(".").map(Number);
   const requiredParts = required
-    .replace(/[>=^~v]/g, '')
-    .split('.')
+    .replace(/[>=^~v]/g, "")
+    .split(".")
     .map(Number);
 
   for (let i = 0; i < requiredParts.length; i++) {
@@ -446,9 +446,9 @@ function satisfiesVersion(current, required) {
 
 if (!satisfiesVersion(currentVersion, requiredVersion)) {
   console.error(
-    `Required Node.js version ${requiredVersion}, but current version is ${currentVersion}`
+    `Required Node.js version ${requiredVersion}, but current version is ${currentVersion}`,
   );
-  console.error('Please upgrade your Node.js version.');
+  console.error("Please upgrade your Node.js version.");
   process.exit(1);
 }
 ```
@@ -456,16 +456,16 @@ if (!satisfiesVersion(currentVersion, requiredVersion)) {
 `scripts/setup-env.js`:
 
 ```javascript
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const envExample = path.join(__dirname, '..', '.env.example');
-const envFile = path.join(__dirname, '..', '.env');
+const envExample = path.join(__dirname, "..", ".env.example");
+const envFile = path.join(__dirname, "..", ".env");
 
 if (!fs.existsSync(envFile) && fs.existsSync(envExample)) {
   fs.copyFileSync(envExample, envFile);
-  console.log('Created .env file from .env.example');
-  console.log('Please update the .env file with your configuration.');
+  console.log("Created .env file from .env.example");
+  console.log("Please update the .env file with your configuration.");
 }
 ```
 
@@ -492,8 +492,8 @@ if (!fs.existsSync(envFile) && fs.existsSync(envExample)) {
     // 测试相关
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
-  }
+    "test:coverage": "jest --coverage",
+  },
 }
 ```
 
@@ -503,13 +503,13 @@ if (!fs.existsSync(envFile) && fs.existsSync(envExample)) {
 
 ```javascript
 // ❌ 不好的做法
-const fs = require('fs');
-fs.appendFileSync('log.txt', 'installed\n');
+const fs = require("fs");
+fs.appendFileSync("log.txt", "installed\n");
 
 // ✅ 好的做法
-const fs = require('fs');
-if (!fs.existsSync('config.json')) {
-  fs.writeFileSync('config.json', JSON.stringify(defaultConfig));
+const fs = require("fs");
+if (!fs.existsSync("config.json")) {
+  fs.writeFileSync("config.json", JSON.stringify(defaultConfig));
 }
 ```
 
@@ -517,16 +517,16 @@ if (!fs.existsSync('config.json')) {
 
 ```javascript
 // scripts/postinstall.js
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 
 try {
-  execSync('some-command', { stdio: 'inherit' });
+  execSync("some-command", { stdio: "inherit" });
 } catch (error) {
-  console.error('Postinstall script failed:', error.message);
+  console.error("Postinstall script failed:", error.message);
   // 决定是否应该终止安装
   // process.exit(1);  // 终止安装
   // 或者只是警告
-  console.warn('Continuing despite error...');
+  console.warn("Continuing despite error...");
 }
 ```
 
@@ -593,7 +593,7 @@ try {
 ```javascript
 // scripts/postinstall.js
 if (process.env.CI) {
-  console.log('Skipping postinstall in CI environment');
+  console.log("Skipping postinstall in CI environment");
   process.exit(0);
 }
 

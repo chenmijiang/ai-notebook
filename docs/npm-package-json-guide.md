@@ -128,17 +128,17 @@ pnpm init
 
 ### 1.3 字段分类概览
 
-| 分类       | 字段                                           | 说明               |
-| ---------- | ---------------------------------------------- | ------------------ |
-| 必需字段   | name, version                                  | 包的唯一标识       |
-| 描述性字段 | description, keywords, author, license, etc.   | 包的元信息         |
-| 入口点字段 | main, module, browser, exports, imports, type  | 模块解析入口       |
-| 文件字段   | files, bin, man, directories                   | 发布包含的文件     |
-| 脚本字段   | scripts                                        | npm 命令脚本       |
-| 依赖字段   | dependencies, devDependencies, etc.            | 依赖管理           |
-| 环境字段   | engines, os, cpu                               | 运行环境要求       |
-| 发布字段   | private, publishConfig                         | 发布控制           |
-| 工作空间   | workspaces                                     | Monorepo 配置      |
+| 分类       | 字段                                          | 说明           |
+| ---------- | --------------------------------------------- | -------------- |
+| 必需字段   | name, version                                 | 包的唯一标识   |
+| 描述性字段 | description, keywords, author, license, etc.  | 包的元信息     |
+| 入口点字段 | main, module, browser, exports, imports, type | 模块解析入口   |
+| 文件字段   | files, bin, man, directories                  | 发布包含的文件 |
+| 脚本字段   | scripts                                       | npm 命令脚本   |
+| 依赖字段   | dependencies, devDependencies, etc.           | 依赖管理       |
+| 环境字段   | engines, os, cpu                              | 运行环境要求   |
+| 发布字段   | private, publishConfig                        | 发布控制       |
+| 工作空间   | workspaces                                    | Monorepo 配置  |
 
 ---
 
@@ -152,9 +152,9 @@ pnpm init
 
 - 长度不超过 214 个字符
 - 必须小写
-- 可以包含连字符（-）和下划线（_）
+- 可以包含连字符（-）和下划线（\_）
 - 不能包含空格
-- 不能以点（.）或下划线（_）开头
+- 不能以点（.）或下划线（\_）开头
 - 不能包含 URL 不安全字符
 
 **作用域包（Scoped Packages）：**
@@ -166,6 +166,7 @@ pnpm init
 ```
 
 作用域包的优点：
+
 - 命名空间隔离，避免命名冲突
 - 组织相关包
 - 可配置私有或公开访问
@@ -194,11 +195,11 @@ pnpm init
 
 **版本号含义：**
 
-| 部分  | 含义         | 递增时机                         |
-| ----- | ------------ | -------------------------------- |
-| MAJOR | 主版本号     | 不兼容的 API 修改                |
-| MINOR | 次版本号     | 向后兼容的功能性新增             |
-| PATCH | 修订号       | 向后兼容的问题修正               |
+| 部分  | 含义     | 递增时机             |
+| ----- | -------- | -------------------- |
+| MAJOR | 主版本号 | 不兼容的 API 修改    |
+| MINOR | 次版本号 | 向后兼容的功能性新增 |
+| PATCH | 修订号   | 向后兼容的问题修正   |
 
 **预发布版本：**
 
@@ -286,13 +287,13 @@ pnpm init
 
 **常见许可证对比：**
 
-| 许可证      | 商业使用 | 修改分发 | 专利授权 | 需保留版权 |
-| ----------- | -------- | -------- | -------- | ---------- |
-| MIT         | ✓        | ✓        | -        | ✓          |
-| Apache-2.0  | ✓        | ✓        | ✓        | ✓          |
-| GPL-3.0     | ✓        | ✓（开源）| ✓        | ✓          |
-| BSD-3       | ✓        | ✓        | -        | ✓          |
-| ISC         | ✓        | ✓        | -        | ✓          |
+| 许可证     | 商业使用 | 修改分发  | 专利授权 | 需保留版权 |
+| ---------- | -------- | --------- | -------- | ---------- |
+| MIT        | ✓        | ✓         | -        | ✓          |
+| Apache-2.0 | ✓        | ✓         | ✓        | ✓          |
+| GPL-3.0    | ✓        | ✓（开源） | ✓        | ✓          |
+| BSD-3      | ✓        | ✓         | -        | ✓          |
+| ISC        | ✓        | ✓         | -        | ✓          |
 
 ### 3.6 author 和 contributors
 
@@ -455,11 +456,11 @@ pnpm init
 
 **文件扩展名与模块类型对照：**
 
-| type 值      | .js 文件解析为 | .mjs 文件 | .cjs 文件 |
-| ------------ | -------------- | --------- | --------- |
-| "module"     | ES Module      | ES Module | CommonJS  |
-| "commonjs"   | CommonJS       | ES Module | CommonJS  |
-| 未设置       | CommonJS       | ES Module | CommonJS  |
+| type 值    | .js 文件解析为 | .mjs 文件 | .cjs 文件 |
+| ---------- | -------------- | --------- | --------- |
+| "module"   | ES Module      | ES Module | CommonJS  |
+| "commonjs" | CommonJS       | ES Module | CommonJS  |
+| 未设置     | CommonJS       | ES Module | CommonJS  |
 
 ### 4.5 exports（重要）
 
@@ -526,16 +527,16 @@ pnpm init
 
 **条件导出优先级（从上到下）：**
 
-| 条件        | 说明                           |
-| ----------- | ------------------------------ |
-| types       | TypeScript 类型定义（应放首位）|
-| import      | ES Module 环境                 |
-| require     | CommonJS 环境                  |
-| node        | Node.js 环境                   |
-| browser     | 浏览器环境                     |
-| development | 开发环境                       |
-| production  | 生产环境                       |
-| default     | 默认回退                       |
+| 条件        | 说明                            |
+| ----------- | ------------------------------- |
+| types       | TypeScript 类型定义（应放首位） |
+| import      | ES Module 环境                  |
+| require     | CommonJS 环境                   |
+| node        | Node.js 环境                    |
+| browser     | 浏览器环境                      |
+| development | 开发环境                        |
+| production  | 生产环境                        |
+| default     | 默认回退                        |
 
 ### 4.6 imports
 
@@ -555,8 +556,8 @@ pnpm init
 
 ```javascript
 // 不再需要写相对路径
-import { helper } from '#utils';
-import config from '#config';
+import { helper } from "#utils";
+import config from "#config";
 ```
 
 **条件导入：**
@@ -583,17 +584,12 @@ import config from '#config';
 
 ```json
 {
-  "files": [
-    "dist",
-    "lib",
-    "es",
-    "README.md",
-    "LICENSE"
-  ]
+  "files": ["dist", "lib", "es", "README.md", "LICENSE"]
 }
 ```
 
 **始终包含的文件（无需列出）：**
+
 - package.json
 - README（任意扩展名）
 - LICENSE / LICENCE
@@ -601,6 +597,7 @@ import config from '#config';
 - main 字段指定的文件
 
 **始终排除的文件：**
+
 - .git
 - node_modules
 - .npmrc
@@ -632,7 +629,7 @@ import config from '#config';
 ```javascript
 #!/usr/bin/env node
 // bin/cli.js 的第一行必须是 shebang
-console.log('Hello from CLI!');
+console.log("Hello from CLI!");
 ```
 
 ### 5.3 man
@@ -719,16 +716,16 @@ NPM 在特定操作时自动执行的脚本。
 
 **主要生命周期脚本：**
 
-| 脚本            | 触发时机                               |
-| --------------- | -------------------------------------- |
-| preinstall      | 安装包之前                             |
-| install         | 安装包时                               |
-| postinstall     | 安装包之后                             |
-| prepare         | 安装后、发布前（常用于构建和设置 Git hooks） |
-| prepublishOnly  | 仅在 `npm publish` 之前                |
-| prepack         | 打包前（tarball 创建前）               |
-| postpack        | 打包后                                 |
-| prepublish      | 已废弃，避免使用                       |
+| 脚本           | 触发时机                                     |
+| -------------- | -------------------------------------------- |
+| preinstall     | 安装包之前                                   |
+| install        | 安装包时                                     |
+| postinstall    | 安装包之后                                   |
+| prepare        | 安装后、发布前（常用于构建和设置 Git hooks） |
+| prepublishOnly | 仅在 `npm publish` 之前                      |
+| prepack        | 打包前（tarball 创建前）                     |
+| postpack       | 打包后                                       |
+| prepublish     | 已废弃，避免使用                             |
 
 ### 6.3 pre 和 post 钩子
 
@@ -749,6 +746,7 @@ NPM 在特定操作时自动执行的脚本。
 ```
 
 执行 `npm run build` 时，执行顺序为：
+
 1. `prebuild`
 2. `build`
 3. `postbuild`
@@ -826,14 +824,14 @@ NPM 在特定操作时自动执行的脚本。
 
 **dependencies vs devDependencies 选择指南：**
 
-| 依赖类型        | 放置位置          | 示例                            |
-| --------------- | ----------------- | ------------------------------- |
-| 运行时必需      | dependencies      | express, react, lodash          |
-| 构建工具        | devDependencies   | webpack, vite, esbuild          |
-| 测试框架        | devDependencies   | jest, vitest, mocha             |
-| 代码检查        | devDependencies   | eslint, prettier                |
-| 类型定义        | devDependencies   | @types/*, typescript            |
-| 文档生成        | devDependencies   | typedoc, jsdoc                  |
+| 依赖类型   | 放置位置        | 示例                   |
+| ---------- | --------------- | ---------------------- |
+| 运行时必需 | dependencies    | express, react, lodash |
+| 构建工具   | devDependencies | webpack, vite, esbuild |
+| 测试框架   | devDependencies | jest, vitest, mocha    |
+| 代码检查   | devDependencies | eslint, prettier       |
+| 类型定义   | devDependencies | @types/\*, typescript  |
+| 文档生成   | devDependencies | typedoc, jsdoc         |
 
 ### 7.3 peerDependencies
 
@@ -850,6 +848,7 @@ NPM 在特定操作时自动执行的脚本。
 ```
 
 **使用场景：**
+
 - 插件或扩展（如 webpack loaders、babel plugins）
 - UI 组件库（依赖宿主的 React/Vue）
 - 框架扩展
@@ -890,7 +889,7 @@ NPM 在特定操作时自动执行的脚本。
 
 ```javascript
 try {
-  const fsevents = require('fsevents');
+  const fsevents = require("fsevents");
   // 使用 fsevents
 } catch (err) {
   // 回退方案
@@ -903,10 +902,7 @@ try {
 
 ```json
 {
-  "bundleDependencies": [
-    "internal-package",
-    "legacy-module"
-  ]
+  "bundleDependencies": ["internal-package", "legacy-module"]
 }
 ```
 
@@ -948,18 +944,18 @@ try {
 
 ### 7.8 版本范围语法
 
-| 语法        | 示例          | 匹配范围                      |
-| ----------- | ------------- | ----------------------------- |
-| 精确版本    | `1.2.3`       | 仅 1.2.3                      |
-| `^`         | `^1.2.3`      | >=1.2.3 <2.0.0（主版本锁定）  |
-| `~`         | `~1.2.3`      | >=1.2.3 <1.3.0（次版本锁定）  |
-| `>`/`<`     | `>1.2.3`      | 大于 1.2.3                    |
-| `>=`/`<=`   | `>=1.2.3`     | 大于等于 1.2.3                |
-| `-`         | `1.2.3 - 2.0.0` | >=1.2.3 <=2.0.0             |
-| `x`/`*`     | `1.2.x`       | >=1.2.0 <1.3.0                |
-| `\|\|`      | `^1.0 \|\| ^2.0` | 1.x 或 2.x                 |
-| `latest`    | `latest`      | 最新发布版本                  |
-| `*`         | `*`           | 任意版本                      |
+| 语法      | 示例             | 匹配范围                     |
+| --------- | ---------------- | ---------------------------- |
+| 精确版本  | `1.2.3`          | 仅 1.2.3                     |
+| `^`       | `^1.2.3`         | >=1.2.3 <2.0.0（主版本锁定） |
+| `~`       | `~1.2.3`         | >=1.2.3 <1.3.0（次版本锁定） |
+| `>`/`<`   | `>1.2.3`         | 大于 1.2.3                   |
+| `>=`/`<=` | `>=1.2.3`        | 大于等于 1.2.3               |
+| `-`       | `1.2.3 - 2.0.0`  | >=1.2.3 <=2.0.0              |
+| `x`/`*`   | `1.2.x`          | >=1.2.0 <1.3.0               |
+| `\|\|`    | `^1.0 \|\| ^2.0` | 1.x 或 2.x                   |
+| `latest`  | `latest`         | 最新发布版本                 |
+| `*`       | `*`              | 任意版本                     |
 
 **URL 依赖：**
 
@@ -1061,6 +1057,7 @@ engine-strict=true
 ```
 
 **使用场景：**
+
 - 私有项目
 - Monorepo 根目录
 - 不打算发布的应用
@@ -1081,11 +1078,11 @@ engine-strict=true
 
 **常用配置项：**
 
-| 字段     | 说明                           |
-| -------- | ------------------------------ |
-| registry | 发布目标仓库                   |
-| access   | `public` 或 `restricted`       |
-| tag      | 发布时的标签（默认 `latest`）  |
+| 字段     | 说明                          |
+| -------- | ----------------------------- |
+| registry | 发布目标仓库                  |
+| access   | `public` 或 `restricted`      |
+| tag      | 发布时的标签（默认 `latest`） |
 
 **发布作用域包为公开：**
 
@@ -1110,10 +1107,7 @@ engine-strict=true
 {
   "name": "my-monorepo",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+  "workspaces": ["packages/*", "apps/*"]
 }
 ```
 
@@ -1144,10 +1138,7 @@ my-monorepo/
 {
   "name": "my-monorepo",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
+  "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces --if-present",
@@ -1371,11 +1362,7 @@ npm config set my-package:port 3000
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist", "README.md", "LICENSE"],
   "sideEffects": false,
   "scripts": {
     "dev": "tsup --watch",
@@ -1427,10 +1414,7 @@ npm config set my-package:port 3000
     "mycli": "./dist/cli.js",
     "mc": "./dist/cli.js"
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
+  "files": ["dist", "README.md"],
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
@@ -1463,10 +1447,7 @@ npm config set my-package:port 3000
   "version": "0.0.0",
   "private": true,
   "description": "Monorepo for my projects",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
+  "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "build": "npm run build --workspaces",
     "build:packages": "npm run build --workspace=packages/*",
@@ -1503,6 +1484,7 @@ npm config set my-package:port 3000
    - Bug 修复 → 升级修订版本
 
 2. **使用版本管理工具**
+
    ```bash
    # 使用 npm version
    npm version patch  # 1.0.0 → 1.0.1
@@ -1522,6 +1504,7 @@ npm config set my-package:port 3000
 ### 13.2 依赖管理
 
 1. **定期更新依赖**
+
    ```bash
    # 检查过期依赖
    npm outdated
@@ -1549,6 +1532,7 @@ npm config set my-package:port 3000
 ### 13.3 脚本编写
 
 1. **使用跨平台工具**
+
    ```json
    {
      "scripts": {
