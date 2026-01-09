@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+bun.lockb
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist
+build
+out
+.next
+.nuxt
+
+# Cache
+.cache
+.parcel-cache
+.vscode
+.idea
+
+# Logs
+*.log
+logs
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Other
+coverage
+.env
+.env.local
