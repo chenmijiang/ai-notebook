@@ -1575,14 +1575,14 @@ tar -tzf my-package-1.0.0.tgz
 
 ### 核心要点回顾
 
-| 场景 | 关键字段 | 注意事项 |
-|-----|---------|---------|
-| 包标识 | `name`, `version` | 遵循命名规则和语义化版本 |
-| 模块入口 | `main`, `exports`, `type` | 优先使用 `exports` 实现条件导出 |
-| 依赖管理 | `dependencies`, `devDependencies`, `peerDependencies` | 正确分类，定期审计 |
-| 脚本命令 | `scripts` | 善用生命周期钩子和命名规范 |
-| 发布控制 | `private`, `files`, `publishConfig` | 发布前检查包含文件 |
-| Monorepo | `workspaces` | 使用 `workspace:*` 协议管理内部依赖 |
+| 场景     | 关键字段                                              | 注意事项                            |
+| -------- | ----------------------------------------------------- | ----------------------------------- |
+| 包标识   | `name`, `version`                                     | 遵循命名规则和语义化版本            |
+| 模块入口 | `main`, `exports`, `type`                             | 优先使用 `exports` 实现条件导出     |
+| 依赖管理 | `dependencies`, `devDependencies`, `peerDependencies` | 正确分类，定期审计                  |
+| 脚本命令 | `scripts`                                             | 善用生命周期钩子和命名规范          |
+| 发布控制 | `private`, `files`, `publishConfig`                   | 发布前检查包含文件                  |
+| Monorepo | `workspaces`                                          | 使用 `workspace:*` 协议管理内部依赖 |
 
 ### 最佳实践速查
 
