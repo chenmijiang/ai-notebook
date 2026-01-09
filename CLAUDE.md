@@ -1,22 +1,51 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+本文件为 Claude Code (claude.ai/code) 在处理本仓库代码时提供指导。
 
-## Repository Overview
+## 仓库概述
 
-This is a documentation repository (ai-notebook) containing Chinese technical guides and notes about software development topics. There is no application code, build system, or tests.
+这是一个文档仓库（ai-notebook），包含关于软件开发主题的中文技术指南和笔记。本仓库没有应用程序代码、构建系统或测试。
 
-## Content Structure
+## 内容结构
 
-The repository consists of standalone markdown files, each covering a specific technical topic:
+本仓库由独立的 Markdown 文件组成，每个文件涵盖一个特定的技术主题：
 
-- Technical guides are written in Chinese
-- Each guide is a comprehensive reference document with examples
+- 技术指南使用中文编写
+- 每篇指南都是包含示例的综合参考文档
+- 文件命名反映其内容主题
+- 文件存放在**docs/** 目录下
 
-## Writing Guidelines
+## 写作规范
 
-When creating or editing documentation in this repository:
+在本仓库中创建或编辑文档时：
 
-- Write content in Chinese (简体中文)
-- Keep code examples concise and focused on core concepts
-- Include practical examples that demonstrate real-world usage
+### 基本要求
+
+- 使用简体中文编写内容
+- 代码示例应简洁，聚焦于核心概念，避免冗长
+- 使用清晰的标题和子标题组织内容
+- 包含展示实际应用场景的实用示例
+- 确保内容准确且易于理解，必要时需要`web fetch/search`验证信息
+
+### 文档结构
+
+- **标题命名**：使用「主题 + 完全指南/使用指南」格式，如 `# Git Hooks 完全指南`
+- **目录**：文档开头提供完整的目录，使用 markdown 锚点链接
+- **章节编号**：使用数字编号（1. 2. 3.），子章节使用点号分隔（1.1, 1.2）
+- **结尾部分**：包含「总结」和「参考资源」章节
+
+### 内容格式
+
+- **表格**：使用 markdown 表格对比和总结信息
+- **UML图**：使用 Mermaid 语法绘制 UML 图，如类图、时序图、流程图
+- **代码块**：标注语言类型（bash, json(c), javascript 等），添加必要注释
+- **提示信息**：使用 `> **注意**：` 格式的引用块
+- **对比说明**：使用 ✅ 和 ❌ 标记好/坏实践
+- **FAQ**：使用 `**Q1: 问题**` 格式
+- **速查表**：提供简洁的表格形式速查内容
+
+### 示例规范
+
+- 提供完整可运行的代码示例
+- 包含多个实际应用场景
+- 代码示例中使用中文注释说明关键步骤
