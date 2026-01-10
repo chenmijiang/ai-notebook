@@ -272,6 +272,8 @@ pnpm init
 
 包的许可证类型。
 
+> 说明：npm 推荐使用 **SPDX License ID** 或 **SPDX License Expression**。如果是自定义许可证，可使用 `SEE LICENSE IN <filename>`，并在包根目录包含对应的许可证文件。
+
 ```json
 // SPDX 标识符
 { "license": "MIT" }
@@ -284,17 +286,24 @@ pnpm init
 
 // 多许可证（用户可选择）
 { "license": "(MIT OR Apache-2.0)" }
+
+// 自定义/非 SPDX 许可证
+{ "license": "SEE LICENSE IN LICENSE" }
 ```
+
+补充：旧式的 `licenses: [{ type, url }]` 或 `license: { type, url }` 写法已被 npm 标记为过时（deprecated），建议改用 SPDX 表达式。
 
 **常见许可证对比：**
 
-| 许可证     | 商业使用 | 修改分发  | 专利授权 | 需保留版权 |
-| ---------- | -------- | --------- | -------- | ---------- |
-| MIT        | ✓        | ✓         | -        | ✓          |
-| Apache-2.0 | ✓        | ✓         | ✓        | ✓          |
-| GPL-3.0    | ✓        | ✓（开源） | ✓        | ✓          |
-| BSD-3      | ✓        | ✓         | -        | ✓          |
-| ISC        | ✓        | ✓         | -        | ✓          |
+| 许可证       | 商业使用 | 修改分发  | 专利授权 | 需保留版权 |
+| ------------ | -------- | --------- | -------- | ---------- |
+| MIT          | ✓        | ✓         | -        | ✓          |
+| Apache-2.0   | ✓        | ✓         | ✓        | ✓          |
+| GPL-3.0-only | ✓        | ✓（开源） | ✓        | ✓          |
+| BSD-3-Clause | ✓        | ✓         | -        | ✓          |
+| ISC          | ✓        | ✓         | -        | ✓          |
+
+> 注：上表为“快速对比”而非严格法律结论。这里的“专利授权”指**许可证文本中是否包含明确的专利许可条款**；MIT/BSD/ISC 通常不包含显式专利授权条款，但在不同司法辖区可能存在“默示授权/禁止反悔”等解释空间。
 
 ### 3.6 author 和 contributors
 
@@ -1079,6 +1088,15 @@ engine-strict=true
 }
 ```
 
+> **提示**：`publishConfig` 中的配置项也可以在项目的 `.npmrc` 文件中设置。例如：
+>
+> ```ini
+> registry=https://npm.company.com/
+> access=public
+> ```
+>
+> 两者的区别在于：`package.json` 中的 `publishConfig` 会随包一起发布，而 `.npmrc` 通常用于本地或 CI 环境配置，且可以包含敏感信息（如 token），不建议提交到版本控制。
+
 ---
 
 ## 10. 工作空间配置
@@ -1597,10 +1615,10 @@ tar -tzf my-package-1.0.0.tgz
 
 ## 16. 参考资源
 
-- [npm 官方文档 - package.json](https://docs.npmjs.com/cli/v10/configuring-npm/package-json)
+- [npm 官方文档 - package.json](https://docs.npmjs.com/cli/v11/configuring-npm/package-json)
 - [Node.js 文档 - Packages](https://nodejs.org/api/packages.html)
 - [语义化版本规范](https://semver.org/lang/zh-CN/)
-- [npm scripts 文档](https://docs.npmjs.com/cli/v10/using-npm/scripts)
+- [npm scripts 文档](https://docs.npmjs.com/cli/v11/using-npm/scripts)
 - [Node.js ESM 文档](https://nodejs.org/api/esm.html)
 - [webpack package exports 指南](https://webpack.js.org/guides/package-exports/)
 - [package.json exports 字段指南](https://hirok.io/posts/package-json-exports)
