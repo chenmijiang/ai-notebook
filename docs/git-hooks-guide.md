@@ -1,40 +1,5 @@
 # Git Hooks 完全指南
 
-## 目录
-
-- [Git Hooks 完全指南](#git-hooks-完全指南)
-  - [目录](#目录)
-  - [1. 概述](#1-概述)
-    - [1.1 什么是 Git Hooks](#11-什么是-git-hooks)
-    - [1.2 Git Hooks 的作用](#12-git-hooks-的作用)
-    - [1.3 使用场景](#13-使用场景)
-  - [2. 基础知识](#2-基础知识)
-    - [2.1 Hooks 存放位置](#21-hooks-存放位置)
-    - [2.2 Hooks 的执行权限](#22-hooks-的执行权限)
-    - [2.3 Hooks 的返回值](#23-hooks-的返回值)
-    - [2.4 支持的脚本语言](#24-支持的脚本语言)
-  - [3. 客户端 Hooks](#3-客户端-hooks)
-    - [3.1 提交工作流 Hooks](#31-提交工作流-hooks)
-    - [3.2 邮件工作流 Hooks](#32-邮件工作流-hooks)
-    - [3.3 其他客户端 Hooks](#33-其他客户端-hooks)
-  - [4. 服务端 Hooks](#4-服务端-hooks)
-    - [4.1 pre-receive](#41-pre-receive)
-    - [4.2 update](#42-update)
-    - [4.3 post-receive](#43-post-receive)
-    - [4.4 post-update](#44-post-update)
-  - [5. 实用配置示例](#5-实用配置示例)
-    - [5.1 完整的提交前检查流程](#51-完整的提交前检查流程)
-    - [5.2 团队 Hooks 共享方案](#52-团队-hooks-共享方案)
-  - [6. 最佳实践](#6-最佳实践)
-    - [6.1 编写 Hooks 的原则](#61-编写-hooks-的原则)
-    - [6.2 性能优化建议](#62-性能优化建议)
-    - [6.3 调试技巧](#63-调试技巧)
-  - [7. 常见问题解答 (FAQ)](#7-常见问题解答-faq)
-  - [8. 工具推荐](#8-工具推荐)
-  - [9. 总结](#9-总结)
-
----
-
 ## 1. 概述
 
 ### 1.1 什么是 Git Hooks
@@ -625,13 +590,7 @@ git config core.hooksPath .githooks
 npm install husky --save-dev
 ```
 
-**Q4: 如何获取当前分支名？**
-
-```bash
-git symbolic-ref --short HEAD
-```
-
-**Q5: 如何检测合并提交？**
+**Q4: 如何检测合并提交？**
 
 ```bash
 if [ -f .git/MERGE_HEAD ]; then
