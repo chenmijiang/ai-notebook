@@ -4,7 +4,9 @@
   "scripts": {
     "prepare": "husky",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "create:home": "./scripts/create-home.sh",
+    "check:home": "./scripts/check-home.sh"
   },
   "devDependencies": {
     "husky": "^9.1.7",

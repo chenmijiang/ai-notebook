@@ -1,4 +1,4 @@
-# npm Package Lifecycle 完全指南
+# Npm Package Lifecycle 完全指南
 
 ## 概述
 
