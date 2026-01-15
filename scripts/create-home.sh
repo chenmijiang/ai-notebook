@@ -14,20 +14,20 @@ if [ ! -d "$DOCS_DIR" ]; then
     exit 1
 fi
 
-# Get file creation date (cross-platform compatible)
+# Get file creation date from Git history (cross-platform compatible)
 get_creation_date() {
     local file="$1"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS: use birth time
-        stat -f "%SB" -t "%Y-%m-%d" "$file"
+    # Get the date when the file was first committed to Git
+    local git_date=$(git log --follow --format="%as" --diff-filter=A -- "$file" 2>/dev/null | tail -1)
+
+    if [ -n "$git_date" ]; then
+        echo "$git_date"
     else
-        # Linux: try to use birth time, fall back to mtime if not supported
-        local birth_time=$(stat --format="%W" "$file" 2>/dev/null)
-        if [ "$birth_time" != "0" ] && [ "$birth_time" != "-" ] && [ -n "$birth_time" ]; then
-            date -d "@$birth_time" "+%Y-%m-%d"
+        # File not yet committed to Git, fall back to filesystem time
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            stat -f "%Sm" -t "%Y-%m-%d" "$file"
         else
-            # Fall back to modification time
-            stat --format="%y" "$file" | cut -d' ' -f1
+            stat --format="%y" "$file" 2>/dev/null | cut -d' ' -f1
         fi
     fi
 }
