@@ -156,7 +156,7 @@ cd commit-helper
 
 2. 创建 `SKILL.md` 文件：
 
-```yaml
+````yaml
 ---
 name: commit-helper
 description: Generates descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.
@@ -181,11 +181,9 @@ Use this skill when:
 3. Generate a message following conventional commits format:
 
 ```
-
 type(scope): brief description
 
 Detailed explanation of what changed and why.
-
 ```
 
 ## Commit types
@@ -198,7 +196,7 @@ Detailed explanation of what changed and why.
 | refactor | Code refactoring |
 | test | Adding tests |
 | chore | Maintenance tasks |
-```
+````
 
 ### 4.2 添加引用文件
 
@@ -261,10 +259,8 @@ if __name__ == "__main__":
 ```bash
 python scripts/analyze_diff.py
 ```
-````
 
 Output shows files changed and lines added/removed.
-
 ````
 
 ## 5. 最佳实践
@@ -273,8 +269,9 @@ Output shows files changed and lines added/removed.
 
 上下文窗口是共享资源。只添加 Claude 确实不知道的信息：
 
-```python
+````markdown
 # ✅ 简洁的示例（约 50 tokens）
+
 ## Extract PDF text
 
 Use pdfplumber for text extraction:
@@ -284,7 +281,7 @@ import pdfplumber
 
 with pdfplumber.open("file.pdf") as pdf:
     text = pdf.pages[0].extract_text()
-````
+```
 
 # ❌ 冗长的示例（约 150 tokens）
 
@@ -293,18 +290,17 @@ with pdfplumber.open("file.pdf") as pdf:
 PDF (Portable Document Format) files are a common file format that contains
 text, images, and other content. To extract text from a PDF, you'll need to
 use a library. There are many libraries available...
-
 ````
 
 ### 5.2 设置适当的自由度
 
 根据任务的脆弱性和可变性匹配具体程度：
 
-| 自由度 | 适用场景 | 示例 |
-|--------|----------|------|
-| 高 | 多种方法都有效；依赖上下文决策 | 代码审查流程 |
-| 中 | 存在首选模式；允许一定变化 | 带参数的脚本模板 |
-| 低 | 操作脆弱易错；一致性关键 | 数据库迁移脚本 |
+| 自由度 | 适用场景                       | 示例             |
+| ------ | ------------------------------ | ---------------- |
+| 高     | 多种方法都有效；依赖上下文决策 | 代码审查流程     |
+| 中     | 存在首选模式；允许一定变化     | 带参数的脚本模板 |
+| 低     | 操作脆弱易错；一致性关键       | 数据库迁移脚本   |
 
 ### 5.3 渐进式披露模式
 
@@ -314,12 +310,14 @@ use a library. There are many libraries available...
 # PDF Processing
 
 ## Quick start
+
 [基本用法]
 
 ## Advanced features
+
 **Form filling**: See [FORMS.md](FORMS.md) for complete guide
 **API reference**: See [REFERENCE.md](REFERENCE.md) for all methods
-````
+```
 
 **模式 2：按领域组织**
 
@@ -358,7 +356,6 @@ bigquery-skill/
 ## PDF form filling workflow
 
 Copy this checklist and track your progress:
-```
 
 Task Progress:
 
@@ -367,9 +364,6 @@ Task Progress:
 - [ ] Step 3: Validate mapping (run validate_fields.py)
 - [ ] Step 4: Fill the form (run fill_form.py)
 - [ ] Step 5: Verify output (run verify_output.py)
-
-```
-
 ```
 
 **实现反馈循环**：
@@ -398,14 +392,11 @@ Task Progress:
 - 确保使用一致性
 
 ````markdown
-## Utility scripts
-
 **analyze_form.py**: Extract all form fields from PDF
 
 ```bash
 python scripts/analyze_form.py input.pdf > fields.json
 ```
-````
 
 **validate_boxes.py**: Check for overlapping bounding boxes
 
@@ -413,7 +404,6 @@ python scripts/analyze_form.py input.pdf > fields.json
 python scripts/validate_boxes.py fields.json
 # Returns: "OK" or lists conflicts
 ```
-
 ````
 
 ### 6.2 错误处理
@@ -436,7 +426,7 @@ def process_file(path):
 # ❌ 把问题抛给 Agent
 def process_file(path):
     return open(path).read()  # 直接失败
-````
+```
 
 ### 6.3 创建可验证的中间输出
 
