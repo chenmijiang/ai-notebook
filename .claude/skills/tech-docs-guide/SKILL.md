@@ -1,9 +1,15 @@
 ---
 name: tech-docs-guide
-description: 中文技术文档写作规范。当需要在 ai-notebook 仓库中创建或编辑中文技术指南、教程、参考文档时使用此 skill。适用场景：(1) 创建新的技术指南文档 (2) 编辑现有文档以符合规范 (3) 审校文档格式和结构
+description: Provides Chinese technical documentation writing guidelines for ai-notebook repository. Use when creating new technical guides, editing existing docs to follow standards, or reviewing document format and structure.
 ---
 
 # 中文技术文档写作规范
+
+## When to use this skill
+
+- 在 ai-notebook 仓库中创建新的技术指南文档
+- 编辑现有文档使其符合写作规范
+- 审校文档格式和结构
 
 ## 基本要求
 
@@ -72,6 +78,22 @@ function greet(name) {
 - 使用中文注释说明关键步骤
 - 使用 `// ✅` 和 `// ❌` 标记好/坏实践
 
+### 嵌套代码块
+
+当需要在文档中展示包含代码块的 Markdown 示例时，外层使用 4 个反引号，内层使用 3 个反引号：
+
+`````markdown
+````markdown
+## 示例标题
+
+```bash
+python scripts/example.py
+```
+````
+`````
+
+> **注意**：嵌套代码块的开头和结尾反引号数量必须一致，否则会导致渲染错误。
+
 ### 提示信息
 
 使用引用块格式：
@@ -113,5 +135,6 @@ function greet(name) {
 
 1. 严格遵循上述写作规范
 2. 完成初稿后进行自我审校
-3. 使用 web search 验证信息准确性和最新变化
+3. 使用 web search tool 获取最新的相关信息验证内容准确性和时效性
 4. 检查内容是否遵循写作规范
+5. 执行格式化脚本：`npm run format`
