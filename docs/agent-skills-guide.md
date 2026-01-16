@@ -265,12 +265,14 @@ Output shows files changed and lines added/removed.
 
 ## 5. 最佳实践
 
-### 5.1 简洁是关键
+本节介绍编写高质量 `SKILL.md` 的核心原则。
 
-上下文窗口是共享资源。只添加 Claude 确实不知道的信息：
+### 5.1 保持简洁
+
+上下文窗口是 Agent 与用户共享的有限资源。编写 Skill 时只添加 Agent 确实不知道的信息，避免解释基础概念：
 
 ````markdown
-# ✅ 简洁的示例（约 50 tokens）
+# ✅ 简洁示例（约 50 tokens）
 
 ## Extract PDF text
 
@@ -283,7 +285,7 @@ with pdfplumber.open("file.pdf") as pdf:
     text = pdf.pages[0].extract_text()
 ```
 
-# ❌ 冗长的示例（约 150 tokens）
+# ❌ 冗长示例（约 150 tokens）
 
 ## Extract PDF text
 
@@ -292,52 +294,53 @@ text, images, and other content. To extract text from a PDF, you'll need to
 use a library. There are many libraries available...
 ````
 
-### 5.2 设置适当的自由度
+### 5.2 避免时效性内容
 
-根据任务的脆弱性和可变性匹配具体程度：
+Skill 应保持长期有效，避免包含可能过时的信息：
 
-| 自由度 | 适用场景                       | 示例             |
-| ------ | ------------------------------ | ---------------- |
-| 高     | 多种方法都有效；依赖上下文决策 | 代码审查流程     |
-| 中     | 存在首选模式；允许一定变化     | 带参数的脚本模板 |
-| 低     | 操作脆弱易错；一致性关键       | 数据库迁移脚本   |
+| 应避免的内容         | 原因             |
+| -------------------- | ---------------- |
+| 具体软件版本号       | 版本会更新       |
+| 日期和时间引用       | 会过时           |
+| "最新"、"当前"等表述 | 含义会随时间变化 |
+| 可能变化的 API 端点  | 服务商可能修改   |
 
-### 5.3 渐进式披露模式
+```yaml
+# ✅ 好的：无时效性依赖
+description: Generates commit messages following conventional commits format.
 
-**模式 1：高层指南 + 引用**
+# ❌ 差的：包含时效性信息
+description: Uses the latest GPT-4 API released in 2024...
+```
+
+### 5.3 保持术语一致
+
+在整个 Skill 中使用统一的术语，避免混用同义词：
 
 ```markdown
-# PDF Processing
+# ✅ 好的：术语一致
 
-## Quick start
+Use `analyze_form.py` to extract form fields.
+The extracted fields are saved to `fields.json`.
+Review the fields before proceeding.
 
-[基本用法]
+# ❌ 差的：术语混乱
 
-## Advanced features
-
-**Form filling**: See [FORMS.md](FORMS.md) for complete guide
-**API reference**: See [REFERENCE.md](REFERENCE.md) for all methods
+Use `analyze_form.py` to extract form fields.
+The extracted data is saved to `fields.json`.
+Review the properties before proceeding.
 ```
 
-**模式 2：按领域组织**
+### 5.4 组织引用文件
 
-```
-bigquery-skill/
-├── SKILL.md (概述和导航)
-└── reference/
-    ├── finance.md (收入、账单指标)
-    ├── sales.md (机会、管道)
-    └── product.md (API 使用、功能)
-```
+当 Skill 内容超过 500 行时，应将详细内容拆分到引用文件。
 
-### 5.4 避免深层嵌套引用
+**原则 1：保持一层深度**
 
-> **注意**：所有引用文件应直接从 `SKILL.md` 链接，保持一层深度。
+所有引用文件应直接从 `SKILL.md` 链接，避免嵌套引用：
 
 ```markdown
 # ✅ 好的：一层深度
-
-# SKILL.md
 
 **Basic usage**: [instructions in SKILL.md]
 **Advanced features**: See [advanced.md](advanced.md)
@@ -345,53 +348,70 @@ bigquery-skill/
 
 # ❌ 差的：嵌套过深
 
-# SKILL.md → advanced.md → details.md
+SKILL.md → advanced.md → details.md
 ```
 
-### 5.5 工作流和反馈循环
+**原则 2：按领域组织**
 
-**复杂任务使用检查清单**：
+对于涉及多个领域的 Skill，按领域拆分引用文件：
 
-```markdown
-## PDF form filling workflow
-
-Copy this checklist and track your progress:
-
-Task Progress:
-
-- [ ] Step 1: Analyze the form (run analyze_form.py)
-- [ ] Step 2: Create field mapping (edit fields.json)
-- [ ] Step 3: Validate mapping (run validate_fields.py)
-- [ ] Step 4: Fill the form (run fill_form.py)
-- [ ] Step 5: Verify output (run verify_output.py)
+```
+bigquery-skill/
+├── SKILL.md              # 概述和导航
+└── reference/
+    ├── finance.md        # 收入、账单指标
+    ├── sales.md          # 机会、管道
+    └── product.md        # API 使用、功能
 ```
 
-**实现反馈循环**：
+**原则 3：为长文件添加目录**
+
+超过 200 行的引用文件应在开头添加目录：
 
 ```markdown
-## Document editing process
+# API Reference
 
-1. Make your edits to `word/document.xml`
-2. **Validate immediately**: `python scripts/validate.py`
-3. If validation fails:
-   - Review the error message
-   - Fix the issues
-   - Run validation again
-4. **Only proceed when validation passes**
+## Table of Contents
+
+- [Authentication](#authentication)
+- [Query Methods](#query-methods)
+- [Error Handling](#error-handling)
+```
+
+### 5.5 使用正斜杠路径
+
+为确保跨平台兼容性，所有路径都应使用正斜杠 `/`：
+
+```markdown
+# ✅ 好的：使用正斜杠
+
+See [reference/api.md](reference/api.md)
+
+# ❌ 差的：使用反斜杠
+
+See [reference\api.md](reference\api.md)
 ```
 
 ## 6. 进阶特性
 
+本节介绍 Agent Skills 的高级功能，帮助构建更强大的 Skill。
+
 ### 6.1 可执行脚本
 
-脚本相比生成代码的优势：
+Skill 可以包含脚本来扩展 Agent 的能力。相比让 Agent 生成代码，预置脚本有以下优势：
 
-- 比生成的代码更可靠
-- 节省 tokens（无需在上下文中包含代码）
-- 节省时间（无需代码生成）
-- 确保使用一致性
+| 优势        | 说明                         |
+| ----------- | ---------------------------- |
+| 更可靠      | 经过测试的代码，避免生成错误 |
+| 节省 tokens | 无需在上下文中包含完整代码   |
+| 节省时间    | 无需等待代码生成             |
+| 使用一致    | 确保每次执行行为相同         |
+
+**脚本示例**
 
 ````markdown
+## Utility scripts
+
 **analyze_form.py**: Extract all form fields from PDF
 
 ```bash
@@ -402,18 +422,18 @@ python scripts/analyze_form.py input.pdf > fields.json
 
 ```bash
 python scripts/validate_boxes.py fields.json
-# Returns: "OK" or lists conflicts
+# 返回: "OK" 或列出冲突项
 ```
 ````
 
-### 6.2 错误处理
+**脚本编写原则**
 
-脚本应处理错误，而不是把问题抛给 Agent：
+脚本应主动处理错误，而不是把问题抛给 Agent：
 
 ```python
-# ✅ 显式处理错误
+# ✅ 好的：显式处理错误
 def process_file(path):
-    """Process a file, creating it if it doesn't exist."""
+    """处理文件，如不存在则创建默认文件"""
     try:
         with open(path) as f:
             return f.read()
@@ -423,14 +443,32 @@ def process_file(path):
             f.write('')
         return ''
 
-# ❌ 把问题抛给 Agent
+# ❌ 差的：直接失败，让 Agent 处理
 def process_file(path):
-    return open(path).read()  # 直接失败
+    return open(path).read()
 ```
 
-### 6.3 创建可验证的中间输出
+### 6.2 工作流编排
 
-对于复杂任务，使用"计划-验证-执行"模式：
+对于复杂的多步骤任务，可以在 Skill 中定义结构化的工作流。
+
+**使用检查清单**
+
+```markdown
+## PDF form filling workflow
+
+Copy this checklist and track your progress:
+
+- [ ] Step 1: Analyze the form (run analyze_form.py)
+- [ ] Step 2: Create field mapping (edit fields.json)
+- [ ] Step 3: Validate mapping (run validate_fields.py)
+- [ ] Step 4: Fill the form (run fill_form.py)
+- [ ] Step 5: Verify output (run verify_output.py)
+```
+
+**计划-验证-执行模式**
+
+对于容易出错的任务，使用中间验证步骤：
 
 ```
 分析 → 创建计划文件 → 验证计划 → 执行 → 验证结果
@@ -446,20 +484,34 @@ def process_file(path):
 5. Verify: `python scripts/verify_output.py output.pdf`
 ```
 
-### 6.4 MCP 工具引用
+> **提示**：在关键步骤后添加验证，可以及早发现问题，避免错误传播。
 
-如果 Skill 使用 MCP 工具，始终使用完全限定名称：
+### 6.3 MCP 工具引用
+
+如果 Skill 需要使用 MCP（Model Context Protocol）工具，应使用完全限定名称以确保 Agent 能正确找到工具：
 
 ```markdown
-# ✅ 使用完全限定名称
+# ✅ 好的：使用完全限定名称
 
 Use the BigQuery:bigquery_schema tool to retrieve table schemas.
 Use the GitHub:create_issue tool to create issues.
 
-# ❌ 可能找不到工具
+# ❌ 差的：可能找不到工具
 
 Use the bigquery_schema tool...
 ```
+
+### 6.4 测试 Skill
+
+发布 Skill 前应进行充分测试：
+
+| 测试维度   | 建议                                           |
+| ---------- | ---------------------------------------------- |
+| 场景覆盖   | 至少创建 3 个不同的使用场景进行测试            |
+| 模型兼容性 | 用不同能力的模型测试（如 Haiku、Sonnet、Opus） |
+| 真实环境   | 用真实的使用场景测试，而非仅用理想化的示例     |
+
+> **注意**：不同模型的理解能力不同，在较小模型上测试可以确保指令足够清晰。
 
 ## 7. 集成到 Agent
 
@@ -594,42 +646,46 @@ Agent Skills 和 Rules 文件是两种不同的 Agent 配置机制，各有其�
 
 ### 9.1 Skill 质量检查清单
 
-**核心质量**：
+以下检查项对应本指南各章节的要点：
 
-- [ ] 描述具体且包含关键术语
-- [ ] 描述包含功能和使用场景
+**元数据（参考 3.2-3.4 节）**
+
+- [ ] `name` 符合命名规范（小写字母、数字、连字符）
+- [ ] `description` 使用第三人称
+- [ ] `description` 包含功能说明和使用场景
+
+**内容质量（参考第 5 节）**
+
+- [ ] 内容简洁，只包含 Agent 不知道的信息
+- [ ] 无时效性内容（版本号、日期、"最新"等表述）
+- [ ] 术语使用一致，无同义词混用
 - [ ] `SKILL.md` 主体在 500 行以内
-- [ ] 使用单独文件存放详细内容
-- [ ] 无时效性信息
-- [ ] 术语一致
-- [ ] 示例具体
-- [ ] 引用只有一层深度
+- [ ] 引用文件保持一层深度
+- [ ] 所有路径使用正斜杠 `/`
 
-**代码和脚本**：
+**脚本（参考 6.1 节）**
 
-- [ ] 脚本解决问题而非抛给 Agent
-- [ ] 显式且有帮助的错误处理
-- [ ] 所有常量都有说明
-- [ ] 列出必需的包
-- [ ] 使用正斜杠路径
+- [ ] 脚本主动处理错误，而非抛给 Agent
+- [ ] 脚本有清晰的使用说明和输出格式
 
-**测试**：
+**测试（参考 6.4 节）**
 
-- [ ] 至少创建三个评估场景
-- [ ] 用 Haiku、Sonnet、Opus 测试
-- [ ] 用真实使用场景测试
+- [ ] 至少创建 3 个不同的使用场景
+- [ ] 用不同能力的模型测试（如 Haiku、Sonnet、Opus）
+- [ ] 用真实场景测试，而非理想化示例
 
 ### 9.2 速查表
 
-| 项目            | 建议                                         |
-| --------------- | -------------------------------------------- |
-| `name`          | 小写字母 + 数字 + 连字符，最多 64 字符       |
-| `description`   | 第三人称，包含功能和使用场景，最多 1024 字符 |
-| `SKILL.md` 长度 | < 500 行                                     |
-| 引用深度        | 1 层                                         |
-| 路径格式        | 使用正斜杠 `/`                               |
-| 长引用文件      | 添加目录                                     |
-| 复杂任务        | 使用检查清单 + 反馈循环                      |
+| 项目            | 要求                                         | 参考章节 |
+| --------------- | -------------------------------------------- | -------- |
+| `name`          | 小写字母 + 数字 + 连字符，最多 64 字符       | 3.2, 3.3 |
+| `description`   | 第三人称，包含功能和使用场景，最多 1024 字符 | 3.2, 3.4 |
+| `SKILL.md` 长度 | < 500 行，超出部分移至引用文件               | 5.4      |
+| 引用深度        | 保持 1 层，避免嵌套引用                      | 5.4      |
+| 路径格式        | 使用正斜杠 `/`                               | 5.5      |
+| 长引用文件      | 添加目录便于导航                             | 5.4      |
+| 复杂任务        | 使用检查清单 + 验证步骤                      | 6.2      |
+| 脚本错误处理    | 显式处理，提供有帮助的错误信息               | 6.1      |
 
 ## 10. 参考资源
 
