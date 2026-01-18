@@ -69,7 +69,7 @@ unset IFS
 
 # Generate index.md content
 cat > "$INDEX_FILE" << 'EOF'
-A comprehensive repository of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
+A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
 EOF
 
