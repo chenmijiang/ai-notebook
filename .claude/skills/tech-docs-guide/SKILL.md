@@ -1,15 +1,24 @@
 ---
 name: tech-docs-guide
-description: Provides Chinese technical documentation writing guidelines for ai-notebook repository. Use when creating new technical guides, editing existing docs to follow standards, or reviewing document format and structure.
+description: Provides Chinese technical documentation writing guidelines. Use when creating new technical guides, editing existing docs to follow standards, or reviewing document format and structure.
 ---
 
 # 中文技术文档写作规范
 
-## When to use this skill
+## 什么时候使用
 
-- 在 ai-notebook 仓库中创建新的技术指南文档
+- 创建新的技术指南文档
 - 编辑现有文档使其符合写作规范
 - 审校文档格式和结构
+
+## 执行流程
+
+- [ ] Step 1: 严格遵循基本要求、文档结构要求、内容结构以及示例要求
+- [ ] Step 2: 完成初稿后进行自我审校
+- [ ] Step 2.1: 通过web fetch 最新的相关信息验证内容准确性和时效性
+- [ ] Step 2.2: 检查内容是否遵循写作规范
+- [ ] Step 3: 根据审校建议修改内容，然后执行 Step 2 重新审校，直到审校问题修复
+- [ ] Step 4: 执行格式化脚本：`npm run format`
 
 ## 基本要求
 
@@ -130,11 +139,3 @@ python scripts/example.py
 - 包含多个实际应用场景（场景1、场景2...）
 - 代码示例中使用中文注释说明关键步骤
 - 复杂操作提供分步骤说明（1. 2. 3.）
-
-## 编写流程
-
-1. 严格遵循上述写作规范
-2. 完成初稿后进行自我审校
-3. 使用 web search tool 获取最新的相关信息验证内容准确性和时效性
-4. 检查内容是否遵循写作规范
-5. 执行格式化脚本：`npm run format`
