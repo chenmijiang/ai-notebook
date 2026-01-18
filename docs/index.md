@@ -1,6 +1,6 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
-- 2026-01-18 - [AntV L7 地理可视化引擎原理解析](./antv-l7-guide.md)
+- 2026-01-18 - [AntV L7 使用指南](./antv-l7-guide.md)
 - 2026-01-15 - [Agent Skills 完全指南](./agent-skills-guide.md)
 - 2026-01-13 - [GeoJSON 完全指南](./geojson-guide.md)
 - 2026-01-10 - [Git Stash 完全指南](./git-stash-guide.md)
