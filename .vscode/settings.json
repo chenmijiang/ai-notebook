@@ -3,9 +3,12 @@
     "antv",
     "flyline",
     "Gaode",
+    "gitfile",
     "GLSL",
     "Lnglat",
     "Mapbox",
-    "mediump"
+    "mediump",
+    "worktree",
+    "worktrees"
   ]
 }
