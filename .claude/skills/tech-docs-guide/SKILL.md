@@ -3,8 +3,6 @@ name: tech-docs-guide
 description: Provides Chinese technical documentation writing guidelines. Use when creating new technical guides, editing existing docs to follow standards, or reviewing document format and structure.
 ---
 
-# 中文技术文档写作规范
-
 ## 什么时候使用
 
 - 创建新的技术指南文档
@@ -15,9 +13,9 @@ description: Provides Chinese technical documentation writing guidelines. Use wh
 
 - [ ] Step 1: 严格遵循基本要求、文档结构要求、内容结构以及示例要求
 - [ ] Step 2: 完成初稿后进行自我审校
-- [ ] Step 2.1: 通过web fetch 最新的相关信息验证内容准确性和时效性
+- [ ] Step 2.1: 通过 web fetch 最新的相关信息验证内容准确性和时效性
 - [ ] Step 2.2: 检查内容是否遵循写作规范
-- [ ] Step 3: 根据审校建议修改内容，然后执行 Step 2 重新审校，直到审校问题修复
+- [ ] Step 3: 根据审校建议修改内容，然后执行 `Step 2` 重新审校，直到审校问题修复
 - [ ] Step 4: 执行格式化脚本：`npm run format`
 
 ## 基本要求
@@ -119,7 +117,7 @@ python scripts/example.py
 
 使用 ✅ 和 ❌ 标记好/坏实践，可在正文或代码注释中使用。
 
-### FAQ
+### FAQ（可选，QA可以加深技术理解）
 
 ```markdown
 **Q1: 问题内容？**
@@ -127,7 +125,7 @@ python scripts/example.py
 解答段落或代码示例...
 ```
 
-问题聚焦于技术实现、常见错误排查、配置疑难等技术内容。
+问题聚焦于技术实现、常见错误排查、配置疑难等技术内容（和当前的技术主题相关联）。
 
 ### 速查表
 
