@@ -4,7 +4,7 @@
 
 ### 1.1 什么是 Git Worktree
 
-`git worktree` 用来管理同一个仓库（repository）下的多个工作区（working tree）。它允许你在不同目录中同时检出多个分支或提交，从而并行开发/测试。
+`git worktree` 用来管理本地同一个仓库（repository）下的多个工作区（working tree）。它允许你在不同目录中同时检出多个分支或提交，从而并行开发/测试。
 
 它解决的核心痛点是：
 
@@ -12,11 +12,11 @@
 - 你需要同时维护多个版本（比如 `main` 修 bug、`feature/*` 开发新需求、`release/*` 打包）
 - 你希望并行跑不同分支的测试/构建，而不是反复 `git checkout`
 
-一句话：`git worktree` 让“一个仓库，多份工作区”成为原生能力。
+一句话：`git worktree` 让"一个仓库，多份工作区"成为原生能力。
 
 ### 1.2 Worktree 的工作原理
 
-Git 的一个“仓库”（repository）可以绑定多个工作区：
+Git 的一个"仓库"（repository）可以绑定多个工作区：
 
 - 一个 **主工作区**（通常就是你 `git clone` 得到的目录）
 - 多个 **附加工作区**（由 `git worktree add` 创建）
@@ -38,14 +38,39 @@ repo/                      # 主 worktree
 repo/.git/worktrees/       # worktree 元数据（每个附加 worktree 一份）
 
 ../repo-feature-x/         # 附加 worktree 1
+├── .git                   # 指向主仓库的 gitfile
+├── src/
+└── ...
+
 ../repo-hotfix/            # 附加 worktree 2
+├── .git                   # 指向主仓库的 gitfile
+├── src/
+└── ...
 ```
 
-> **注意**：附加 worktree 目录中通常不会有完整的 `.git/` 目录，而是一个指向主仓库的“gitfile”。
+工作原理示意图：
+
+```
+┌─────────────────────────────────────────────────────┐
+│            共享的 Git 对象数据库                       │
+│         repo/.git/objects, refs, hooks              │
+└─────────────────────────────────────────────────────┘
+                        ▲
+                        │ 共享引用
+        ┌───────────────┼────────────────┐
+        │               │                │
+    ┌───▼──┐      ┌─────▼───┐      ┌─────▼──┐
+    │ repo │      │repo-fe  │      │repo-fix│
+    │(main)│      │-x       │      │        │
+    └──────┘      │(feature)│      │(hotfix)│
+                  └─────────┘      └────────┘
+```
+
+> **注意**：附加 worktree 目录中通常不会有完整的 `.git/` 目录，而是一个指向主仓库的"gitfile"。
 
 ### 1.3 与 clone / stash 的区别
 
-很多人第一次遇到并行开发需求时，会用 `git stash` 或者多次 `git clone`。它们都能“凑合”，但 `git worktree` 更适合长期和频繁并行。
+很多人第一次遇到并行开发需求时，会用 `git stash` 或者多次 `git clone`。它们都能"凑合"，但 `git worktree` 更适合长期和频繁并行。
 
 | 方案             | 适合场景         | 优点                                   | 缺点                                                         |
 | ---------------- | ---------------- | -------------------------------------- | ------------------------------------------------------------ |
@@ -76,23 +101,24 @@ git worktree add ../repo-main2 main
 如果你确实需要同一份代码在两个目录存在，通常有三种方法：
 
 1. 基于同一 commit 创建另一个分支（推荐）
-2. 使用 detached HEAD（只读/临时）
+2. 使用 detached HEAD（临时检出，可修改但改动需及时保存）
 3. 再 clone（极少数需要完全隔离配置时）
 
 ### 2.3 Detached HEAD worktree
 
-你可以把 worktree 绑定到某个提交（而不是分支）：
+你可以把 worktree 绑定到某个提交（而不是分支），这样的 worktree 称为 detached HEAD 状态：
 
 ```bash
 git worktree add --detach ../repo-debug HEAD~3
 ```
 
-这种方式适合：
+**核心特性**：
 
-- bisect / debug 老版本问题
-- 对历史提交跑一次构建验证
+- ✅ 可以修改、测试、甚至提交（非只读）
+- ✅ 修改不会影响任何分支
+- ⚠️ 改动必须创建分支才能保存，否则删除 worktree 时会丢失
 
-> **提示**：detached worktree 里产生的新提交如果不创建分支，很容易“丢”。完成后记得 `git switch -c <branch>`。
+> **重要**：在 detached worktree 里做了改动就**立刻创建分支** `git switch -c <branch>` 保存。
 
 ## 3. 安装与前置条件
 
@@ -124,10 +150,9 @@ git worktree list
 常用选项：
 
 ```bash
+# 输出机器可读格式（便于脚本解析）
 git worktree list --porcelain
 ```
-
-`--porcelain` 更适合脚本解析。
 
 ### 4.2 创建新的 worktree
 
@@ -147,12 +172,14 @@ Git 会把路径的最后一段（这里是 `hotfix`）当做分支名：
 #### 4.2.2 基于已有分支创建
 
 ```bash
+# 把已存在的分支检出到新 worktree
 git worktree add ../repo-feature-x feature/x
 ```
 
 #### 4.2.3 创建新分支并创建 worktree（最常用）
 
 ```bash
+# -b: 创建新分支 | ../repo-feature-x: worktree 目录 | origin/main: 新分支起点
 git worktree add -b feature/x ../repo-feature-x origin/main
 ```
 
@@ -165,6 +192,7 @@ git worktree add -b feature/x ../repo-feature-x origin/main
 #### 4.2.4 使用 detached HEAD 创建
 
 ```bash
+# 基于某个版本号或提交 hash 创建 detached worktree
 git worktree add --detach ../repo-debug v1.2.3
 ```
 
@@ -175,6 +203,7 @@ git worktree add --detach ../repo-debug v1.2.3
 ```bash
 cd ../repo-feature-x
 git status
+# 在该 worktree 内切换到新分支
 git switch -c feature/x-2
 ```
 
@@ -186,7 +215,7 @@ git switch -c feature/x-2
 git worktree remove ../repo-feature-x
 ```
 
-只有“干净”的 worktree（无已跟踪文件修改、无未跟踪文件）才能被删除；否则 Git 会拒绝：
+只有"干净"的 worktree（无已跟踪文件修改、无未跟踪文件）才能被删除；否则 Git 会拒绝：
 
 ```bash
 # 强制删除（谨慎）
@@ -221,8 +250,7 @@ git worktree unlock ../repo-debug
 当你手动移动了 worktree 目录，或 `.git` 连接文件损坏导致 worktree 失联时，可以尝试修复：
 
 ```bash
-# 在任意 worktree 里执行
-# 修复当前 worktree
+# 在任意 worktree 里执行，修复当前 worktree
 git worktree repair
 
 # 修复指定路径（可一次多个）
@@ -252,31 +280,36 @@ git worktree list
 - `../repo-feature-x` 开发 feature
 - 主目录 `repo/` 保持 `main` 干净，随时修 hotfix
 
-操作：
+操作流程：
 
 ```bash
-# 主目录：保持 main
+# 1. 主目录：保持 main
 cd repo
 git switch main
 
-# 创建 feature worktree（新分支）
+# 2. 创建 feature worktree（新分支）
 git worktree add -b feature/x ../repo-feature-x origin/main
 
-# 在 feature worktree 开发
+# 3. 在 feature worktree 开发
 cd ../repo-feature-x
-# ... 写代码、提交 ...
+# 编写代码、测试、提交...
+git add .
+git commit -m "feat: 添加新功能"
 
-# 紧急 bug 来了：回到主目录处理
+# 4. 紧急 bug 来了：回到主目录处理
 cd ../repo
 git switch -c hotfix/urgent
-# ... 修复、提交、push、发 PR ...
+# 修复 bug、测试、提交、push...
+git add .
+git commit -m "fix: 修复紧急 bug"
+git push
 ```
 
 优势：
 
-- 不需要 stash
-- 不需要频繁 checkout
-- 两条线互不影响
+- ✅ 不需要 stash
+- ✅ 不需要频繁 checkout
+- ✅ 两条线互不影响
 
 ### 5.2 场景 2：并行跑测试/构建
 
@@ -286,94 +319,139 @@ git switch -c hotfix/urgent
 - `feature/x` 跑增量/本地开发
 
 ```bash
-# worktree A
+# worktree A: 主目录跑测试
 cd repo
 npm test
 
-# worktree B
+# worktree B: 另开窗口，在 feature worktree 开发和调试
 cd ../repo-feature-x
 npm run dev
 ```
 
-> **提示**：如果项目会生成大量构建产物（dist、.next、target 等），worktree 比 “同目录切分支” 更干净。
+> **提示**：如果项目会生成大量构建产物（dist、.next、target 等），worktree 比 "同目录切分支" 更干净。
 
 ### 5.3 场景 3：Review PR 或复现 CI 失败
 
 你可以把某个远端分支拉到独立 worktree，用完就删：
 
 ```bash
+# 1. 拉取 PR 分支
 git fetch origin pull/123/head:pr/123
+
+# 2. 创建 worktree 检出该分支
 git worktree add ../repo-pr-123 pr/123
 
+# 3. 在隔离环境复现、跑测试、review
 cd ../repo-pr-123
-# 复现、跑测试、review
+npm test
+npm run build
 
+# 4. 用完后清理（两个命令都需要）
 cd ../repo
 git worktree remove ../repo-pr-123
 git branch -D pr/123
 ```
 
-### 5.4 场景 4：用 detached worktree debug 老版本
+### 5.4 场景 4：用 detached worktree debug 和修复老版本
+
+detached worktree 特别适合调试历史版本。根据需求不同，有两类操作流程：
+
+#### 5.4.1 场景 A：验证老版本（临时查看，无需保存改动）
+
+目标：快速在某个历史版本验证 bug 是否存在，验证后丢弃。
 
 ```bash
-git worktree add --detach ../repo-debug v0.9.0
-cd ../repo-debug
-# 复现 bug
+# 1. 创建 detached worktree 检出历史版本
+git worktree add --detach ../repo-verify v1.0.0
 
-# 如果修复需要提交：立刻创建分支
-git switch -c fix/legacy-bug
+# 2. 进入 worktree 并验证
+cd ../repo-verify
+npm install
+npm test  # 验证 bug 是否存在
+
+# 3. 验证完毕，返回主目录清理 worktree（改动自动丢弃）
+cd ../repo
+git worktree remove ../repo-verify
 ```
+
+优点：
+
+- 快速验证历史版本状态
+- 不产生任何分支或提交记录
+- 完全隔离，不影响当前工作
+
+#### 5.4.2 场景 B：修复老版本（需要保存改动）
+
+目标：在历史版本上修复 bug，并保存为新分支。
+
+```bash
+# 1. 创建 detached worktree 检出历史版本
+git worktree add --detach ../repo-bugfix v0.9.0
+
+# 2. 进入 worktree 并修复问题
+cd ../repo-bugfix
+# 编写、测试修复代码...
+npm test
+
+# 3. 重要：改动需要保存，立刻创建分支
+git switch -c fix/v0.9.0-patch
+# 此时所有修改都已转移到新分支
+# 可以继续 git add / git commit（如果有新改动）
+
+# 4. 返回主仓库，清理 worktree（分支已安全保存）
+cd ../repo
+git worktree remove ../repo-bugfix
+
+# 5. 新分支已创建并包含改动，可继续操作
+git log -1 --oneline fix/v0.9.0-patch
+git switch fix/v0.9.0-patch  # 继续在该分支上工作
+```
+
+**核心原则**：改动完成立即创建分支，否则删除 worktree 时丢失。
 
 ### 5.5 场景 5：配合 rebase / cherry-pick 做对比验证
 
 当你需要对比 rebase 前后行为，worktree 特别好用：
 
 ```bash
-# 创建一个对照 worktree
+# 1. 创建一个对照 worktree（记录 rebase 前状态）
 git worktree add ../repo-before-rebase main
 
-# 在主目录做 rebase
+# 2. 在主目录做 rebase
 cd repo
 git switch feature/x
 git rebase main
 
-# 在对照 worktree 跑一次验证
+# 3. 在对照 worktree 跑验证（old 行为）
 cd ../repo-before-rebase
-# 测试 old 行为
+npm test
+
+# 4. 回到主目录跑验证（new 行为）
+cd ../repo
+npm test
+
+# 5. 对比结果，确认 rebase 安全后清理
+git worktree remove ../repo-before-rebase
 ```
 
 ## 6. 常用命令速查
 
-### 6.1 创建/查看/删除
+### 6.1 常见错误与定位
+
+遇到问题时可以用以下命令快速诊断：
 
 ```bash
-# 列表
-git worktree list
-
-# 基于分支创建
-git worktree add <path> <branch>
-
-# 创建新分支并创建 worktree
-git worktree add -b <new-branch> <path> <start-point>
-
-# detached
-git worktree add --detach <path> <commit-ish>
-
-# 删除
-git worktree remove <path>
-
-# 清理元数据
-git worktree prune
-```
-
-### 6.2 常见错误与定位
-
-```bash
-# 分支被哪个 worktree 占用
+# 查看分支被哪个 worktree 占用
 git worktree list
 
 # 查看某个 worktree 的 gitfile 指向
 cat <worktree-path>/.git
+
+# 检查 worktree 列表是否有残留
+git worktree list
+
+# 清理失效元数据
+git worktree prune
 ```
 
 ## 7. 最佳实践与注意事项
@@ -390,7 +468,7 @@ cat <worktree-path>/.git
 - 清理方便
 - 不会把 worktree 嵌套到另一个 worktree 内（避免混乱）
 
-### 7.2 给 worktree 起“能排序”的名字
+### 7.2 给 worktree 起"能排序"的名字
 
 ```text
 repo-wt-main
@@ -416,16 +494,16 @@ worktree 删除只影响工作区，不一定会删除分支。
 常见流程：
 
 ```bash
-# 1) 先 remove worktree
+# 1. 先 remove worktree
 git worktree remove ../repo-feature-x
 
-# 2) 再决定是否删分支
+# 2. 再决定是否删分支
 git branch -d feature/x
 # 或强制删除
 git branch -D feature/x
 ```
 
-### 7.5 处理“目录已不存在，但 Git 还认为存在”的情况
+### 7.5 处理"目录已不存在，但 Git 还认为存在"的情况
 
 ```bash
 # 先清理元数据
@@ -486,19 +564,43 @@ worktree 对子模块也能用，但注意：
 git worktree prune
 ```
 
-**Q3：worktree 可以放在仓库内部的子目录吗？**
+这会清理所有失效的 worktree 元数据。
 
-技术上可以，但不推荐：目录层级容易混乱，删除时也更容易误删。
+**Q3：删除 worktree 时报错"worktree contains modified files"怎么办？**
 
-**Q4：worktree 会影响我现有的 hooks / config 吗？**
+这是安全保护——Git 不允许删除包含未提交改动的 worktree。解决方案：
 
-worktree 共享同一仓库配置（`.git/config`）和 hooks（`.git/hooks`）。
+```bash
+# 方案 1: 进入 worktree 提交或放弃改动
+cd ../repo-feature-x
+git add .
+git commit -m "save changes"
 
-如果你需要“每个 worktree 独立 hooks”，通常意味着你更需要多次 clone。
+# 或丢弃改动
+git reset --hard HEAD
+
+# 方案 2: 强制删除（不推荐，容易丢失代码）
+git worktree remove --force ../repo-feature-x
+```
+
+**Q4：worktree 中的改动会影响其他 worktree 吗？**
+
+不会。每个 worktree 有独立的工作目录、index 和 HEAD，改动不会相互影响。但是：
+
+- ✅ 各 worktree 独立管理文件状态
+- ❌ 如果多个 worktree 同时 push 同一分支会有冲突（这是正常 Git 问题，不是 worktree 特有）
+
+**Q5：worktree 对大仓库有特殊支持吗？**
+
+有。worktree 特别适合大仓库：
+
+- 省空间：共享 `.git/objects`，不重复存储
+- 快速：创建 worktree 只需几毫秒（vs clone 需要分钟级）
+- 节省带宽：无需重复下载对象
 
 ## 10. 总结
 
-`git worktree` 是解决并行分支开发的“正统方案”，尤其适合：
+`git worktree` 是解决并行分支开发的"正统方案"，尤其适合：
 
 - 同时处理 feature / hotfix / release
 - 本地复现 PR、CI、历史 bug
