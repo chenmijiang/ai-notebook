@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit configuration file
+# See https://coderabbit.ai/docs/configuration for more details
+
+reviews:
+  review_status: true
+  auto_review:
+    enabled: true
