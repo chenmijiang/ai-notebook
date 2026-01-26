@@ -1,5 +1,12 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
+- 2026-01-26 - [Prettier 高级用法与疑难解决](./prettier-advanced.md)
+- 2026-01-26 - [Prettier 团队协作实践](./prettier-team-practices.md)
+- 2026-01-26 - [Prettier 工具链整合指南](./prettier-toolchain.md)
+- 2026-01-26 - [Prettier 编辑器集成指南](./prettier-editor-integration.md)
+- 2026-01-26 - [Prettier 多语言支持指南](./prettier-multi-language.md)
+- 2026-01-26 - [Prettier 配置完全指南](./prettier-configuration.md)
+- 2026-01-26 - [Prettier 基础概念与原理](./prettier-fundamentals.md)
 - 2026-01-26 - [Git Submodule 完全指南](./git-submodule-guide.md)
 - 2026-01-20 - [Babel 入门指南](./babel-guide.md)
 - 2026-01-19 - [Git Worktree 完全指南](./git-worktree-guide.md)
