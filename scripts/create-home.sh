@@ -1,33 +1,34 @@
 #!/bin/bash
 
-# Automatically generate docs/index.md homepage file
+# Automatically generate sites/index.md homepage file
 # Usage: ./scripts/create-home.sh
 
 set -e
 
-DOCS_DIR="docs"
-INDEX_FILE="$DOCS_DIR/index.md"
+SITES_DIR="sites"
+INDEX_FILE="$SITES_DIR/index.md"
 
-# Check if docs directory exists
-if [ ! -d "$DOCS_DIR" ]; then
-    echo "Error: $DOCS_DIR directory does not exist"
+# Check if sites directory exists
+if [ ! -d "$SITES_DIR" ]; then
+    echo "Error: $SITES_DIR directory does not exist"
     exit 1
 fi
 
 # Get file creation date from Git history (cross-platform compatible)
+# Returns timestamp in ISO 8601 format (YYYY-MM-DD HH:MM:SS +TZ)
 get_creation_date() {
     local file="$1"
     # Get the date when the file was first committed to Git
-    local git_date=$(git log --follow --format="%as" --diff-filter=A -- "$file" 2>/dev/null | tail -1)
+    local git_date=$(git log --follow --format="%ai" --diff-filter=A -- "$file" 2>/dev/null | tail -1)
 
     if [ -n "$git_date" ]; then
         echo "$git_date"
     else
         # File not yet committed to Git, fall back to filesystem time
         if [[ "$OSTYPE" == "darwin"* ]]; then
-            stat -f "%Sm" -t "%Y-%m-%d" "$file"
+            stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S %z" "$file"
         else
-            stat --format="%y" "$file" 2>/dev/null | cut -d' ' -f1
+            stat --format="%y" "$file" 2>/dev/null
         fi
     fi
 }
@@ -46,7 +47,7 @@ get_title() {
 # Collect all document information
 declare -a docs_info=()
 
-for file in "$DOCS_DIR"/*.md; do
+for file in "$SITES_DIR"/*.md; do
     [ -f "$file" ] || continue
 
     filename=$(basename "$file")
@@ -75,7 +76,9 @@ EOF
 
 for doc in "${sorted_docs[@]}"; do
     IFS='|' read -r date title filename <<< "$doc"
-    echo "- $date - [$title](./$filename)" >> "$INDEX_FILE"
+    # Extract only the date part (YYYY-MM-DD) for display
+    display_date=$(echo "$date" | cut -d' ' -f1)
+    echo "- $display_date - [$title](./$filename)" >> "$INDEX_FILE"
 done
 
 echo ""

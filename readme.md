@@ -9,5 +9,5 @@ ai-notebook/
 ├── readme.md                # Project documentation
 ├── package.json             # Project dependencies configuration
 ├── CLAUDE.md                # AI writing guidelines
-└── docs/                    # Technical guides directory
+└── sites/                    # Technical guides directory
 ```

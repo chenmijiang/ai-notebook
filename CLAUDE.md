@@ -13,8 +13,8 @@
 - 技术指南使用中文编写
 - 每篇指南都是包含示例的综合参考文档
 - 文件命名反映其内容主题
-- 文件存放在**docs/** 目录下
+- 文件存放在**sites/** 目录下
 
 ## 写作规范
 
-创建或编辑文档时，请参考 `.claude/skills/zh-tech-guide/SKILL.md` 中的写作规范。
+创建或编辑文档时，请参考 `.claude/skills/tech-docs-guide/SKILL.md` 中的写作规范。
