@@ -1,5 +1,6 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
+- 2026-01-26 - [Git Submodule 完全指南](./git-submodule-guide.md)
 - 2026-01-20 - [Babel 入门指南](./babel-guide.md)
 - 2026-01-19 - [Git Worktree 完全指南](./git-worktree-guide.md)
 - 2026-01-18 - [AntV L7 使用指南](./antv-l7-guide.md)
