@@ -198,16 +198,16 @@ Prettier 的工作流程可以概括为三个阶段：**解析（Parse）→ 构
 
 **Prettier 内置的解析器：**
 
-| 解析器     | 用途            | 底层实现                        |
-| ---------- | --------------- | ------------------------------- |
-| babel      | JavaScript、JSX | @babel/parser                   |
-| typescript | TypeScript、TSX | @typescript-eslint/typescript-estree |
-| babel-ts   | TypeScript（支持更多 JS 提案） | @babel/parser + TypeScript 插件 |
-| css        | CSS             | postcss-selector-parser         |
-| html       | HTML            | angular-html-parser             |
-| markdown   | Markdown        | remark                          |
-| yaml       | YAML            | yaml                            |
-| graphql    | GraphQL         | graphql-js                      |
+| 解析器     | 用途                           | 底层实现                             |
+| ---------- | ------------------------------ | ------------------------------------ |
+| babel      | JavaScript、JSX                | @babel/parser                        |
+| typescript | TypeScript、TSX                | @typescript-eslint/typescript-estree |
+| babel-ts   | TypeScript（支持更多 JS 提案） | @babel/parser + TypeScript 插件      |
+| css        | CSS                            | postcss-selector-parser              |
+| html       | HTML                           | angular-html-parser                  |
+| markdown   | Markdown                       | remark                               |
+| yaml       | YAML                           | yaml                                 |
+| graphql    | GraphQL                        | graphql-js                           |
 
 **示例：源代码到 AST**
 
@@ -367,35 +367,35 @@ Prettier 开箱即用支持以下语言，无需安装额外插件。
 | JSX        | babel                | .jsx            |
 | TypeScript | typescript, babel-ts | .ts, .mts, .cts |
 | TSX        | typescript, babel-ts | .tsx            |
-| JSON       | json          | .json           |
-| JSON5      | json5         | .json5          |
-| CSS        | css           | .css            |
-| Less       | less          | .less           |
-| SCSS       | scss          | .scss           |
-| HTML       | html          | .html           |
-| Vue        | vue           | .vue            |
-| Angular    | angular       | .component.html |
-| Markdown   | markdown      | .md, .markdown  |
-| MDX        | mdx           | .mdx            |
-| YAML       | yaml          | .yml, .yaml     |
-| GraphQL    | graphql       | .graphql, .gql  |
-| Handlebars | glimmer       | .hbs            |
+| JSON       | json                 | .json           |
+| JSON5      | json5                | .json5          |
+| CSS        | css                  | .css            |
+| Less       | less                 | .less           |
+| SCSS       | scss                 | .scss           |
+| HTML       | html                 | .html           |
+| Vue        | vue                  | .vue            |
+| Angular    | angular              | .component.html |
+| Markdown   | markdown             | .md, .markdown  |
+| MDX        | mdx                  | .mdx            |
+| YAML       | yaml                 | .yml, .yaml     |
+| GraphQL    | graphql              | .graphql, .gql  |
+| Handlebars | glimmer              | .hbs            |
 
 ### 4.2 需要插件的语言
 
 以下语言需要安装社区或官方提供的插件。
 
-| 语言/格式       | 插件名称                    | 安装命令                                     |
-| --------------- | --------------------------- | -------------------------------------------- |
-| PHP             | @prettier/plugin-php        | npm install -D @prettier/plugin-php          |
-| Ruby            | @prettier/plugin-ruby       | npm install -D @prettier/plugin-ruby         |
-| Java            | prettier-plugin-java        | npm install -D prettier-plugin-java          |
-| XML             | @prettier/plugin-xml        | npm install -D @prettier/plugin-xml          |
-| SQL             | prettier-plugin-sql         | npm install -D prettier-plugin-sql           |
-| Blade (Laravel) | prettier-plugin-blade       | npm install -D prettier-plugin-blade         |
-| Tailwind CSS    | prettier-plugin-tailwindcss | npm install -D prettier-plugin-tailwindcss   |
-| Svelte          | prettier-plugin-svelte      | npm install -D prettier-plugin-svelte        |
-| Astro           | prettier-plugin-astro       | npm install -D prettier-plugin-astro         |
+| 语言/格式       | 插件名称                    | 安装命令                                   |
+| --------------- | --------------------------- | ------------------------------------------ |
+| PHP             | @prettier/plugin-php        | npm install -D @prettier/plugin-php        |
+| Ruby            | @prettier/plugin-ruby       | npm install -D @prettier/plugin-ruby       |
+| Java            | prettier-plugin-java        | npm install -D prettier-plugin-java        |
+| XML             | @prettier/plugin-xml        | npm install -D @prettier/plugin-xml        |
+| SQL             | prettier-plugin-sql         | npm install -D prettier-plugin-sql         |
+| Blade (Laravel) | prettier-plugin-blade       | npm install -D prettier-plugin-blade       |
+| Tailwind CSS    | prettier-plugin-tailwindcss | npm install -D prettier-plugin-tailwindcss |
+| Svelte          | prettier-plugin-svelte      | npm install -D prettier-plugin-svelte      |
+| Astro           | prettier-plugin-astro       | npm install -D prettier-plugin-astro       |
 
 **插件使用示例：**
 
