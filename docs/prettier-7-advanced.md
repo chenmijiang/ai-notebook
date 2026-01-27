@@ -657,7 +657,7 @@ npx prettier --write --cache --cache-location .cache/prettier .
   uses: actions/cache@v3
   with:
     path: node_modules/.cache/prettier
-    key: prettier-${{ hashFiles('**/package-lock.json') }}
+    key: prettier-{% raw %}${{ hashFiles('**/package-lock.json') }}{% endraw %}
 
 - name: Format check with cache
   run: npx prettier --check --cache .
@@ -725,9 +725,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules/.cache/prettier
-          key: prettier-${{ runner.os }}-${{ hashFiles('**/*.{js,ts,jsx,tsx,json,md}') }}
+          key: prettier-{% raw %}${{ runner.os }}{% endraw %}-{% raw %}${{ hashFiles('**/*.{js,ts,jsx,tsx,json,md}') }}{% endraw %}
           restore-keys: |
-            prettier-${{ runner.os }}-
+            prettier-{% raw %}${{ runner.os }}{% endraw %}-
 
       - run: npm ci
 
