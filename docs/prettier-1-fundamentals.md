@@ -19,7 +19,7 @@ Prettier 是一个「固执己见」（Opinionated）的代码格式化工具。
 **格式化前后对比：**
 
 ```
-❌ 格式化前：风格混乱
+// ❌ 格式化前：风格混乱
 function example(  a,b,c){return a+b+c}
 const obj={foo:1,bar:2,baz:3}
 ```
