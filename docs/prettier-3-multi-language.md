@@ -65,7 +65,7 @@ export default {
 
 Prettier 3.x 自动发现 `node_modules` 中已安装的插件，大多数情况下无需手动配置 `plugins` 数组。
 
-> **提示**：关于 Prettier 的基础概念和工作原理，请参阅 [Prettier 基础概念与原理](./prettier-fundamentals.md)。
+> **提示**：关于 Prettier 的基础概念和工作原理，请参阅 [Prettier 基础概念与原理](./prettier-1-fundamentals.md)。
 
 ## 2. 各语言配置详解
 
@@ -564,7 +564,7 @@ query GetUser($id: ID!) {
 
 ## 3. overrides 进阶用法
 
-`overrides` 是 Prettier 实现多语言差异化配置的核心机制。关于 overrides 的基础用法，请参阅 [Prettier 配置完全指南](./prettier-configuration.md)。
+`overrides` 是 Prettier 实现多语言差异化配置的核心机制。关于 overrides 的基础用法，请参阅 [Prettier 配置文件指南](./prettier-2-configuration.md)。
 
 ### 3.1 按扩展名定制
 
@@ -843,20 +843,20 @@ Prettier 通过文件扩展名自动选择合适的解析器。
    │
    ↓
 ┌─────────────────────┐
-│ 1. 检查 overrides   │  ← 配置文件中的 parser 设置
-│    是否指定 parser  │
+│ 1. 检查 overrides    │  ← 配置文件中的 parser 设置
+│    是否指定 parser    │
 └──────────┬──────────┘
            │ 否
            ↓
 ┌─────────────────────┐
-│ 2. 根据文件扩展名   │  ← 内置映射表
-│    匹配 parser      │
+│ 2. 根据文件扩展名      │  ← 内置映射表
+│    匹配 parser       │
 └──────────┬──────────┘
            │ 未匹配
            ↓
 ┌─────────────────────┐
-│ 3. 检查已加载插件   │  ← 插件提供的扩展名映射
-│    支持的扩展名     │
+│ 3. 检查已加载插件      │  ← 插件提供的扩展名映射
+│    支持的扩展名        │
 └──────────┬──────────┘
            │ 未匹配
            ↓
@@ -1274,7 +1274,7 @@ npx prettier --check "**/*.svelte"
 | 非标准扩展名文件           | 在 overrides 中显式指定 parser               |
 | 特殊文件（如 .prettierrc） | 在 overrides 中指定 `parser: "json"`         |
 
-> **下一步**：了解多语言支持后，建议阅读 [Prettier 编辑器集成指南](./prettier-editor-integration.md) 学习如何在编辑器中配置 Prettier，或阅读 [Prettier 工具链整合指南](./prettier-toolchain-integration.md) 了解与 ESLint、Git Hooks 的集成方案。
+> **下一步**：了解多语言支持后，建议阅读 [Prettier 编辑器集成指南](./prettier-4-editor-integration.md) 学习如何在编辑器中配置 Prettier，或阅读 [Prettier 工具链整合指南](./prettier-5-toolchain-integration.md) 了解与 ESLint、Git Hooks 的集成方案。
 
 ## 参考资源
 
