@@ -304,9 +304,9 @@ function greet() {
 }
 
 // semi: false（无分号风格）
-const name = "Prettier";
+const name = "Prettier"
 function greet() {
-  return "Hello";
+  return "Hello"
 }
 ```
 
@@ -317,7 +317,7 @@ function greet() {
 const message = "Hello, World!";
 
 // ✅ singleQuote: true（常用于 JavaScript 项目）
-const message = "Hello, World!";
+const message = 'Hello, World!';
 ```
 
 > **注意**：`singleQuote` 不影响 JSX 属性，JSX 属性由 `jsxSingleQuote` 控制。
@@ -343,14 +343,14 @@ const obj = {
 
 // quoteProps: "consistent"（只要有一个需要引号，全部加引号）
 const obj = {
-  name: "value",
+  "name": "value",
   "content-type": "application/json",
 };
 
 // quoteProps: "preserve"（保留原始写法）
 const obj = {
   name: "value", // 原来没引号就没引号
-  origin: "prettier.io", // 原来有引号就保留
+  "origin": "prettier.io", // 原来有引号就保留
 };
 ```
 
@@ -360,7 +360,7 @@ const obj = {
 // trailingComma: "none"（不加尾随逗号）
 const obj = {
   foo: 1,
-  bar: 2,
+  bar: 2
 };
 
 // trailingComma: "es5"（ES5 支持的地方加逗号）
@@ -402,7 +402,7 @@ function fn(
 const obj = { foo: 1, bar: 2 };
 
 // bracketSpacing: false
-const obj = { foo: 1, bar: 2 };
+const obj = {foo: 1, bar: 2};
 ```
 
 **bracketSameLine 示例：**
@@ -432,7 +432,7 @@ const double = (x) => x * 2;
 const add = (a, b) => a + b;
 
 // arrowParens: "avoid"（单参数时省略括号）
-const double = (x) => x * 2;
+const double = x => x * 2;
 const add = (a, b) => a + b; // 多参数仍需括号
 ```
 
@@ -508,7 +508,12 @@ This is a very long line that was written this way in the original file. It will
 <div data-a="1" data-b="2" data-c="3">content</div>
 
 <!-- singleAttributePerLine: true -->
-<div data-a="1" data-b="2" data-c="3">content</div>
+<div
+  data-a="1"
+  data-b="2"
+  data-c="3">
+  content
+</div>
 ```
 
 ### 3.5 配置选项速查表
