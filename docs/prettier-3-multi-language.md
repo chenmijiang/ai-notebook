@@ -172,19 +172,27 @@ Prettier 对 HTML 及其衍生模板语言有专门的处理逻辑，主要关�
 **htmlWhitespaceSensitivity 详解：**
 
 ```html
-<!-- 源代码 -->
-<span>Hello</span><span>World</span>
+<!-- 源代码（较长的一行，需要换行处理） -->
+<a href="/user/profile" class="link"><img src="avatar.png" /><span>Username</span></a>
 
 <!-- "css"（默认）：遵循 CSS display 属性 -->
-<!-- inline 元素保持紧凑，block 元素可换行 -->
-<span>Hello</span><span>World</span>
+<!-- inline 元素（如 a、span）空白敏感，闭合标签紧贴内容避免引入空白 -->
+<a href="/user/profile" class="link"
+  ><img src="avatar.png" /><span>Username</span></a
+>
 
-<!-- "strict"：严格保留空白，不做任何换行处理 -->
-<span>Hello</span><span>World</span>
+<!-- "strict"：所有元素都视为空白敏感 -->
+<!-- 与 css 模式类似，但更保守 -->
+<a href="/user/profile" class="link"
+  ><img src="avatar.png" /><span>Username</span></a
+>
 
 <!-- "ignore"：忽略空白敏感性，自由格式化 -->
-<span> Hello </span>
-<span> World </span>
+<!-- 可读性更好，但可能在 inline 元素间引入空白 -->
+<a href="/user/profile" class="link">
+  <img src="avatar.png" />
+  <span>Username</span>
+</a>
 ```
 
 **Vue 单文件组件配置：**
@@ -212,12 +220,7 @@ export default {
 ```vue
 <!-- ❌ 格式化前：属性混乱 -->
 <template>
-  <button
-    class="btn primary"
-    @click="handleClick"
-    :disabled="loading"
-    v-if="visible"
-  >
+  <button class="btn primary" @click="handleClick" :disabled="loading" v-if="visible">
     Click me
   </button>
 </template>
@@ -293,15 +296,8 @@ export default {
 
 ```css
 /* ❌ 格式化前 */
-.button {
-  color: red;
-  background: #fff;
-  padding: 10px 20px;
-}
-.button:hover,
-.button:focus {
-  color: blue;
-}
+.button{color:red;background:#fff;padding:10px 20px;}
+.button:hover,.button:focus{color:blue;}
 
 /* ✅ 格式化后 */
 .button {
@@ -318,7 +314,19 @@ export default {
 **SCSS 嵌套格式化：**
 
 ```scss
-// ✅ 格式化后的 SCSS
+// ❌ 格式化前：缩进混乱
+.card {
+    padding: 1rem;
+  &__title {
+      font-size: 1.5rem;
+    font-weight: bold;}
+    &__content {margin-top: 0.5rem;}
+  @media (min-width: 768px) {
+      padding: 2rem;}}
+```
+
+```scss
+// ✅ 格式化后：统一缩进、规范空行
 .card {
   padding: 1rem;
 
@@ -398,10 +406,10 @@ Prettier 对 Markdown 的格式化主要关注一致性，同时尊重文档的�
 ```markdown
 <!-- ❌ 格式化前：列表缩进不一致 -->
 
-- 第一项
-  - 子项 A
-  - 子项 B
-- 第二项
+-  第一项
+   - 子项 A
+    - 子项 B
+-   第二项
 
 <!-- ✅ 格式化后：统一缩进 -->
 
@@ -524,15 +532,7 @@ Prettier 内置支持 GraphQL schema 和 query 的格式化。
 
 ```graphql
 # ❌ 格式化前
-query GetUser($id: ID!) {
-  user(id: $id) {
-    name
-    email
-    posts {
-      title
-    }
-  }
-}
+query GetUser($id:ID!){user(id:$id){name email posts{title}}}
 
 # ✅ 格式化后
 query GetUser($id: ID!) {
