@@ -1,4 +1,4 @@
-# Prettier 配置完全指南
+# Prettier 配置文件指南
 
 ## 1. 概述
 
@@ -331,13 +331,14 @@ function example() {
 
 控制 JavaScript/TypeScript 的语法风格。
 
-| 选项             | 类型                                      | 默认值      | 说明                 |
-| ---------------- | ----------------------------------------- | ----------- | -------------------- |
-| `semi`           | boolean                                   | true        | 语句末尾添加分号     |
-| `singleQuote`    | boolean                                   | false       | 使用单引号而非双引号 |
-| `jsxSingleQuote` | boolean                                   | false       | JSX 中使用单引号     |
-| `quoteProps`     | "as-needed" \| "consistent" \| "preserve" | "as-needed" | 对象属性引号策略     |
-| `trailingComma`  | "all" \| "es5" \| "none"                  | "all"       | 尾随逗号策略         |
+| 选项             | 类型                                      | 默认值      | 说明                     |
+| ---------------- | ----------------------------------------- | ----------- | ------------------------ |
+| `semi`           | boolean                                   | true        | 语句末尾添加分号         |
+| `singleQuote`    | boolean                                   | false       | 使用单引号而非双引号     |
+| `jsxSingleQuote` | boolean                                   | false       | JSX 中使用单引号         |
+| `quoteProps`     | "as-needed" \| "consistent" \| "preserve" | "as-needed" | 对象属性引号策略         |
+| `trailingComma`  | "all" \| "es5" \| "none"                  | "all"       | 尾随逗号策略             |
+| `arrowParens`    | "always" \| "avoid"                       | "always"    | 箭头函数单参数是否加括号 |
 
 **semi 示例：**
 
@@ -430,15 +431,26 @@ function fn(
 
 > **注意**：Prettier v3 起，默认值从 `"es5"` 改为 `"all"`。如果项目使用 Prettier v2.x，默认值是 `"es5"`。
 
+**arrowParens 示例：**
+
+```javascript
+// ✅ arrowParens: "always"（默认，始终加括号）
+const double = (x) => x * 2;
+const add = (a, b) => a + b;
+
+// arrowParens: "avoid"（单参数时省略括号）
+const double = x => x * 2;
+const add = (a, b) => a + b; // 多参数仍需括号
+```
+
 ### 3.3 括号与空格
 
 控制括号和空格的使用方式。
 
-| 选项              | 类型                | 默认值   | 说明                        |
-| ----------------- | ------------------- | -------- | --------------------------- |
-| `bracketSpacing`  | boolean             | true     | 对象字面量括号内加空格      |
-| `bracketSameLine` | boolean             | false    | 多行元素的 `>` 放在最后一行 |
-| `arrowParens`     | "always" \| "avoid" | "always" | 箭头函数单参数是否加括号    |
+| 选项              | 类型    | 默认值 | 说明                        |
+| ----------------- | ------- | ------ | --------------------------- |
+| `bracketSpacing`  | boolean | true   | 对象字面量括号内加空格      |
+| `bracketSameLine` | boolean | false  | 多行元素的 `>` 放在最后一行 |
 
 **bracketSpacing 示例：**
 
@@ -467,18 +479,6 @@ const obj = {foo: 1, bar: 2};
   onClick={handleClick}>
   Click me
 </button>
-```
-
-**arrowParens 示例：**
-
-```javascript
-// ✅ arrowParens: "always"（默认，始终加括号）
-const double = (x) => x * 2;
-const add = (a, b) => a + b;
-
-// arrowParens: "avoid"（单参数时省略括号）
-const double = x => x * 2;
-const add = (a, b) => a + b; // 多参数仍需括号
 ```
 
 ### 3.4 特殊处理
@@ -584,6 +584,8 @@ This is a very long line that was written this way in the original file. It will
 | `experimentalTernaries`      | false       | `--experimental-ternaries`       | 实验性三元格式 |
 
 ## 4. 配置作用域
+
+了解了配置选项后，接下来需要理解这些配置在哪里生效——Prettier 支持全局、项目、目录等多个层级的配置。
 
 ### 4.1 全局配置
 
@@ -868,6 +870,8 @@ apps/old-app/**
 ```
 
 ## 6. 实战配置示例
+
+前面介绍了配置文件的格式、选项和作用域，本节将这些知识整合为可直接使用的配置模板。
 
 ### 6.1 前端项目配置
 
@@ -1180,7 +1184,7 @@ export default {
 | 与团队协商      | 配置应得到团队一致同意       |
 | 版本控制        | 配置文件应提交到 Git         |
 
-> **下一步**：了解了配置方法后，建议阅读 [Prettier 编辑器集成指南](./prettier-4-editor-integration.md) 学习如何在编辑器中使用 Prettier，或阅读 [Prettier 工具链整合指南](./prettier-5-toolchain-integration.md) 了解如何与 ESLint、Git Hooks 等工具配合使用。
+> **下一步**：了解了配置方法后，建议阅读 [Prettier 编辑器集成指南](./prettier-4-editor-integration.md) 学习如何在编辑器中使用 Prettier，或阅读 [Prettier 工具链整合指南](./prettier-5-toolchain.md) 了解如何与 ESLint、Git Hooks 等工具配合使用。
 
 ## 参考资源
 
