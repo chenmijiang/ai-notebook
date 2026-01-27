@@ -543,7 +543,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .eslintcache
-          key: eslint-${{ hashFiles('**/package-lock.json') }}
+          key: eslint-{% raw %}${{ hashFiles('**/package-lock.json') }}{% endraw %}
 
       - name: Install dependencies
         run: npm ci
