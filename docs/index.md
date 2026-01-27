@@ -5,7 +5,7 @@ A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-g
 - 2026-01-26 - [Prettier 工具链整合指南](./prettier-5-toolchain.md)
 - 2026-01-26 - [Prettier 编辑器集成指南](./prettier-4-editor-integration.md)
 - 2026-01-26 - [Prettier 多语言支持指南](./prettier-3-multi-language.md)
-- 2026-01-26 - [Prettier 配置完全指南](./prettier-2-configuration.md)
+- 2026-01-26 - [Prettier 配置文件指南](./prettier-2-configuration.md)
 - 2026-01-26 - [Prettier 基础概念与原理](./prettier-1-fundamentals.md)
 - 2026-01-26 - [Git Submodule 完全指南](./git-submodule-guide.md)
 - 2026-01-20 - [Babel 入门指南](./babel-guide.md)
