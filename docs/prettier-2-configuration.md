@@ -1135,7 +1135,7 @@ export default {
 | 与团队协商      | 配置应得到团队一致同意       |
 | 版本控制        | 配置文件应提交到 Git         |
 
-> **下一步**：了解了配置方法后，建议阅读 [Prettier 编辑器集成指南](./prettier-editor-integration.md) 学习如何在编辑器中使用 Prettier，或阅读 [Prettier 工具链整合指南](./prettier-toolchain-integration.md) 了解如何与 ESLint、Git Hooks 等工具配合使用。
+> **下一步**：了解了配置方法后，建议阅读 [Prettier 编辑器集成指南](./prettier-4-editor-integration.md) 学习如何在编辑器中使用 Prettier，或阅读 [Prettier 工具链整合指南](./prettier-toolchain-integration.md) 了解如何与 ESLint、Git Hooks 等工具配合使用。
 
 ## 参考资源
 
@@ -1143,4 +1143,4 @@ export default {
 - [Prettier Options](https://prettier.io/docs/en/options)
 - [Prettier Ignoring Code](https://prettier.io/docs/en/ignore)
 - [Prettier CLI](https://prettier.io/docs/en/cli)
-- [Prettier 基础概念与原理](./prettier-fundamentals.md)
+- [Prettier 基础概念与原理](./prettier-1-fundamentals.md)
