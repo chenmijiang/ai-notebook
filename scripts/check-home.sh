@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Validate that sites/index.md is up to date
+# Validate that docs/index.md is up to date
 # Used for pre-push hook
 
 set -e
 
-INDEX_FILE="sites/index.md"
+INDEX_FILE="docs/index.md"
 TEMP_FILE=$(mktemp)
 
 # Cleanup function
@@ -31,7 +31,7 @@ npm run create:home --silent > /dev/null 2>&1
 if ! diff -q "$TEMP_FILE" "$INDEX_FILE" > /dev/null 2>&1; then
     # Restore original content
     cp "$TEMP_FILE" "$INDEX_FILE"
-    echo "Error: sites/index.md content is not up to date"
+    echo "Error: docs/index.md content is not up to date"
     echo "Please run npm run create:home to update the index before pushing"
     exit 1
 fi

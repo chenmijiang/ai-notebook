@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Automatically generate sites/index.md homepage file
+# Automatically generate docs/index.md homepage file
 # Usage: ./scripts/create-home.sh
 
 set -e
 
-SITES_DIR="sites"
-INDEX_FILE="$SITES_DIR/index.md"
+DOCS_DIR="docs"
+INDEX_FILE="$DOCS_DIR/index.md"
 
-# Check if sites directory exists
-if [ ! -d "$SITES_DIR" ]; then
-    echo "Error: $SITES_DIR directory does not exist"
+# Check if docs directory exists
+if [ ! -d "$DOCS_DIR" ]; then
+    echo "Error: $DOCS_DIR directory does not exist"
     exit 1
 fi
 
@@ -47,7 +47,7 @@ get_title() {
 # Collect all document information
 declare -a docs_info=()
 
-for file in "$SITES_DIR"/*.md; do
+for file in "$DOCS_DIR"/*.md; do
     [ -f "$file" ] || continue
 
     filename=$(basename "$file")
