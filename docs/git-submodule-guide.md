@@ -525,7 +525,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.PAT_TOKEN }}
+          token: {% raw %}${{ secrets.PAT_TOKEN }}{% endraw %}
 ```
 
 GitLab CI 示例：
