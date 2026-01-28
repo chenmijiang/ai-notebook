@@ -63,7 +63,7 @@ export default {
 };
 ```
 
-Prettier 3.x 自动发现 `node_modules` 中已安装的插件，大多数情况下无需手动配置 `plugins` 数组。
+Prettier 3.x 自动发现 `node_modules` 中已安装的插件，大多数情况下无需手动配置 `plugins` 数组。自动发现基于包名约定：Prettier 会扫描符合 `prettier-plugin-*`、`@*/prettier-plugin-*` 或 `@prettier/plugin-*` 模式的包。
 
 > **提示**：关于 Prettier 的基础概念和工作原理，请参阅 [Prettier 基础概念与原理](./prettier-1-fundamentals.md)。
 
@@ -323,9 +323,7 @@ export default {
     &__content {margin-top: 0.5rem;}
   @media (min-width: 768px) {
       padding: 2rem;}}
-```
 
-```scss
 // ✅ 格式化后：统一缩进、规范空行
 .card {
   padding: 1rem;
@@ -1281,5 +1279,5 @@ npx prettier --check "**/*.svelte"
 - [Prettier Options](https://prettier.io/docs/en/options)
 - [Prettier Configuration](https://prettier.io/docs/en/configuration)
 - [Prettier Plugins](https://prettier.io/docs/en/plugins)
-- [Prettier 基础概念与原理](./prettier-fundamentals.md)
-- [Prettier 配置完全指南](./prettier-configuration.md)
+- [Prettier 基础概念与原理](./prettier-1-fundamentals.md)
+- [Prettier 配置完全指南](./prettier-2-configuration.md)
