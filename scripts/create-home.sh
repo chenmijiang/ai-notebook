@@ -33,6 +33,32 @@ get_creation_date() {
     fi
 }
 
+# Get file last modification date from Git history
+# Returns date in YYYY-MM-DD format
+# Uses --diff-filter=M to exclude rename-only commits
+get_last_modified_date() {
+    local file="$1"
+    # Get the date of the most recent commit that actually modified file content
+    # --diff-filter=M excludes rename/move operations
+    local git_date=$(git log -1 --diff-filter=M --format="%ai" -- "$file" 2>/dev/null)
+
+    # If no content modification found, fall back to any commit (including renames)
+    if [ -z "$git_date" ]; then
+        git_date=$(git log -1 --format="%ai" -- "$file" 2>/dev/null)
+    fi
+
+    if [ -n "$git_date" ]; then
+        echo "$git_date" | cut -d' ' -f1
+    else
+        # File not yet committed to Git, fall back to filesystem time
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            stat -f "%Sm" -t "%Y-%m-%d" "$file"
+        else
+            stat --format="%y" "$file" 2>/dev/null | cut -d' ' -f1
+        fi
+    fi
+}
+
 # Extract title from Markdown file (first # heading)
 get_title() {
     local file="$1"
@@ -58,10 +84,11 @@ for file in "$DOCS_DIR"/*.md; do
     fi
 
     date=$(get_creation_date "$file")
+    last_modified=$(get_last_modified_date "$file")
     title=$(get_title "$file")
 
-    # Store as "date|title|filename" format for later sorting
-    docs_info+=("$date|$title|$filename")
+    # Store as "date|title|filename|last_modified" format for later sorting
+    docs_info+=("$date|$title|$filename|$last_modified")
 done
 
 # Sort by date in descending order
@@ -75,10 +102,10 @@ A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-g
 EOF
 
 for doc in "${sorted_docs[@]}"; do
-    IFS='|' read -r date title filename <<< "$doc"
+    IFS='|' read -r date title filename last_modified <<< "$doc"
     # Extract only the date part (YYYY-MM-DD) for display
     display_date=$(echo "$date" | cut -d' ' -f1)
-    echo "- $display_date - [$title](./$filename)" >> "$INDEX_FILE"
+    echo "- $display_date - [$title](./$filename) (L: $last_modified)" >> "$INDEX_FILE"
 done
 
 echo ""
