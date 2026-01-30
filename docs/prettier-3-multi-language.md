@@ -2,44 +2,9 @@
 
 ## 1. 概述
 
-### 1.1 支持语言概览
+Prettier 内置支持前端开发中常见的语言和数据格式，包括 JavaScript/TypeScript、HTML/Vue/Angular、CSS/SCSS/Less、Markdown、JSON、YAML 和 GraphQL 等。
 
-Prettier 开箱即用支持多种前端主流语言和数据格式：
-
-- **JavaScript 系**：JavaScript、JSX、TypeScript、TSX、Flow
-- **样式表**：CSS、Less、SCSS
-- **标记语言**：HTML、Vue、Angular
-- **文档格式**：Markdown、MDX
-- **数据格式**：JSON、JSON5、YAML
-- **其他**：GraphQL、Handlebars
-
-每种语言由对应的解析器（Parser）处理，Prettier 根据文件扩展名自动选择合适的解析器。解析器和打印器的工作原理见 [第 4 节：解析器与打印器](#4-解析器与打印器)。
-
-> **提示**：关于 Prettier 的设计理念和支持范围的详细说明，请参阅 [Prettier 基础概念与原理](./prettier-1-fundamentals.md)。
-
-### 1.2 插件扩展机制
-
-对于 Prettier 未内置支持的语言，可以通过插件扩展。插件提供两个核心能力：
-
-| 能力   | 说明                        |
-| ------ | --------------------------- |
-| 解析器 | 将源代码解析为 AST          |
-| 打印器 | 将 AST 转换为格式化后的代码 |
-
-**插件加载方式：**
-
-```javascript
-// prettier.config.js
-// 通过 plugins 数组加载插件
-export default {
-  plugins: [
-    "prettier-plugin-tailwindcss", // npm 包名
-    "./my-custom-plugin.js", // 本地文件路径
-  ],
-};
-```
-
-> **提示**：Prettier 3.x 支持自动发现 `node_modules` 中的插件，大多数情况下无需手动配置 `plugins` 数组。详见 [5.2 插件加载机制](#52-插件加载机制)。
+每种语言都有对应的解析器和打印器：解析器负责理解代码结构，打印器负责按配置输出格式化结果。Prettier 会根据文件扩展名自动选择解析器，无需手动配置。对于未内置支持的语言（如 PHP、Svelte），可通过插件扩展。
 
 ## 2. 各语言配置详解
 
@@ -826,10 +791,10 @@ Prettier 格式化代码的流程分为两个阶段：
 源代码 → 解析器（Parser） → AST → 打印器（Printer） → 格式化代码
 ```
 
-| 阶段   | 组件   | 输入     | 输出         |
-| ------ | ------ | -------- | ------------ |
-| 解析   | 解析器 | 源代码   | AST          |
-| 打印   | 打印器 | AST + options | 格式化代码 |
+| 阶段 | 组件   | 输入          | 输出       |
+| ---- | ------ | ------------- | ---------- |
+| 解析 | 解析器 | 源代码        | AST        |
+| 打印 | 打印器 | AST + options | 格式化代码 |
 
 每种语言都有对应的解析器和打印器。Prettier 内置了常用语言的支持，也可以通过插件扩展更多语言（见 [第 5 节：插件扩展](#5-插件扩展)）。
 
@@ -841,21 +806,21 @@ Prettier 格式化代码的流程分为两个阶段：
 
 **解析器的作用：**
 
-| 职责     | 说明                                   |
-| -------- | -------------------------------------- |
+| 职责     | 说明                                     |
+| -------- | ---------------------------------------- |
 | 词法分析 | 将源代码拆分为 token（标识符、运算符等） |
-| 语法分析 | 根据语言规则构建 AST                    |
-| 错误检测 | 报告语法错误                           |
+| 语法分析 | 根据语言规则构建 AST                     |
+| 错误检测 | 报告语法错误                             |
 
 **同一语言的多个解析器：**
 
 某些语言有多个可选的解析器，适用于不同场景：
 
-| 语言       | 解析器选项                           | 选择建议                   |
-| ---------- | ------------------------------------ | -------------------------- |
-| JavaScript | babel、espree、meriyah、acorn        | babel（默认，支持最新语法） |
-| TypeScript | typescript、babel-ts                 | typescript（更严格）        |
-| Flow       | babel-flow                           | 唯一选项                   |
+| 语言       | 解析器选项                    | 选择建议                    |
+| ---------- | ----------------------------- | --------------------------- |
+| JavaScript | babel、espree、meriyah、acorn | babel（默认，支持最新语法） |
+| TypeScript | typescript、babel-ts          | typescript（更严格）        |
+| Flow       | babel-flow                    | 唯一选项                    |
 
 ```javascript
 // 示例：为 TypeScript 文件指定解析器
@@ -875,22 +840,22 @@ Prettier 格式化代码的流程分为两个阶段：
 
 **打印器的作用：**
 
-| 职责       | 说明                                     |
-| ---------- | ---------------------------------------- |
-| 读取 AST   | 遍历解析器生成的语法树                   |
-| 应用 options | 根据配置选项决定格式化规则               |
-| 生成代码   | 输出符合规则的格式化代码                 |
+| 职责         | 说明                       |
+| ------------ | -------------------------- |
+| 读取 AST     | 遍历解析器生成的语法树     |
+| 应用 options | 根据配置选项决定格式化规则 |
+| 生成代码     | 输出符合规则的格式化代码   |
 
 **options 如何影响打印器输出：**
 
 不同语言的打印器读取不同的 options。这就是为什么某些选项只对特定语言生效：
 
-| 打印器类型  | 读取的 options                                   | 示例效果                     |
-| ----------- | ------------------------------------------------ | ---------------------------- |
-| JS/TS 打印器 | semi、singleQuote、trailingComma、arrowParens    | 分号、引号风格、尾逗号       |
-| HTML 打印器  | htmlWhitespaceSensitivity、bracketSameLine       | 空白处理、标签闭合位置       |
-| CSS 打印器   | singleQuote                                      | 引号风格                     |
-| Markdown 打印器 | proseWrap、tabWidth                            | 段落换行、列表缩进           |
+| 打印器类型      | 读取的 options                                | 示例效果               |
+| --------------- | --------------------------------------------- | ---------------------- |
+| JS/TS 打印器    | semi、singleQuote、trailingComma、arrowParens | 分号、引号风格、尾逗号 |
+| HTML 打印器     | htmlWhitespaceSensitivity、bracketSameLine    | 空白处理、标签闭合位置 |
+| CSS 打印器      | singleQuote                                   | 引号风格               |
+| Markdown 打印器 | proseWrap、tabWidth                           | 段落换行、列表缩进     |
 
 **JavaScript 打印器示例：**
 
@@ -1208,14 +1173,14 @@ npx prettier --check "**/*.svelte"
 
 ### 6.1 核心要点回顾
 
-| 要点           | 说明                                          |
-| -------------- | --------------------------------------------- |
-| 内置语言支持   | JS/TS/CSS/HTML/Vue/Markdown/JSON/YAML/GraphQL |
-| 解析器自动选择 | 根据文件扩展名自动匹配，可通过 overrides 覆盖 |
+| 要点             | 说明                                          |
+| ---------------- | --------------------------------------------- |
+| 内置语言支持     | JS/TS/CSS/HTML/Vue/Markdown/JSON/YAML/GraphQL |
+| 解析器自动选择   | 根据文件扩展名自动匹配，可通过 overrides 覆盖 |
 | 打印器与 options | 每种语言的打印器读取对应的 options 控制格式化 |
-| overrides 机制 | 按文件模式为不同文件设置不同配置              |
-| 插件扩展       | 通过插件支持 PHP/Ruby/Svelte/Astro 等更多语言 |
-| 配置优先级     | CLI > overrides > 基础配置 > 默认值           |
+| overrides 机制   | 按文件模式为不同文件设置不同配置              |
+| 插件扩展         | 通过插件支持 PHP/Ruby/Svelte/Astro 等更多语言 |
+| 配置优先级       | CLI > overrides > 基础配置 > 默认值           |
 
 ### 6.2 解析器综合对照表
 
