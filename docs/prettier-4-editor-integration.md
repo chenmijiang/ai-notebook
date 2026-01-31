@@ -56,7 +56,7 @@ project/
 └── package.json          # 包含 prettier 依赖
 ```
 
-> **提示**：关于 Prettier 配置文件的详细说明，请参阅 [Prettier 配置完全指南](./prettier-configuration.md)。
+> **提示**：关于 Prettier 配置文件的详细说明，请参阅 [Prettier 配置完全指南](./prettier-2-configuration.md)。
 
 ## 2. VS Code
 
@@ -856,7 +856,7 @@ project/
 └── README.md               # 包含编辑器配置说明
 ```
 
-> **下一步**：了解编辑器集成后，建议阅读 [Prettier 工具链整合指南](./prettier-toolchain-integration.md) 学习如何将 Prettier 与 ESLint、Git Hooks、CI/CD 等工具整合。
+> **下一步**：了解编辑器集成后，建议阅读 [Prettier 工具链整合指南](./prettier-5-toolchain.md) 学习如何将 Prettier 与 ESLint、Git Hooks、CI/CD 等工具整合。
 
 ## 参考资源
 
@@ -866,4 +866,4 @@ project/
 - [Prettier Vim Setup](https://prettier.io/docs/vim)
 - [conform.nvim](https://github.com/stevearc/conform.nvim)
 - [EditorConfig](https://editorconfig.org/)
-- [Prettier 配置完全指南](./prettier-configuration.md)
+- [Prettier 配置完全指南](./prettier-2-configuration.md)
