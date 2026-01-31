@@ -958,11 +958,7 @@ Prettier 的设计目标是可读性而非紧凑性。当代码超过 `printWidt
 
 ```javascript
 // 格式化前（紧凑但超过 printWidth）
-const result = await fetchData(endpoint, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(data),
-});
+const result = await fetchData(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
 
 // 格式化后（更长但更易读）
 const result = await fetchData(endpoint, {
