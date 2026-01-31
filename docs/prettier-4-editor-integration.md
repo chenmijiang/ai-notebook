@@ -221,7 +221,7 @@ code --install-extension esbenp.prettier-vscode
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   }
-  // 保存时的执行顺序：先 ESLint 修复，再 Prettier 格式化
+  // VS Code 保存时执行顺序：codeActionsOnSave（ESLint）→ formatOnSave（Prettier）
 }
 ```
 
