@@ -840,4 +840,4 @@ Prettier + ESLint + eslint-config-prettier + husky + lint-staged
 - [husky](https://typicode.github.io/husky/)
 - [Husky 使用指南](./husky-guide.md)
 - [Prettier 基础概念与原理](./prettier-1-fundamentals.md)
-- [Prettier 配置完全指南](./prettier-2-configuration.md)
+- [Prettier 配置文件指南](./prettier-2-configuration.md)

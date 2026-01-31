@@ -288,18 +288,18 @@ console.log(info.ignored); // true
                            │
                            ↓
 ┌──────────────────────────────────────────────────────────┐
-│  问题类型是什么？                                         │
+│  问题类型是什么？                                           │
 └──────────────────────────────────────────────────────────┘
         │              │              │              │
         ↓              ↓              ↓              ↓
-   配置不生效      文件被跳过     结果不一致     性能问题
+   配置不生效         文件被跳过      结果不一致        性能问题
         │              │              │              │
         ↓              ↓              ↓              ↓
- --find-config-path  --file-info   检查版本      --cache
+ --find-config-path  --file-info   检查版本        --cache
         │              │              │              │
         ↓              ↓              ↓              ↓
-  检查配置文件     检查 ignored   统一版本号    分析缓存
-  位置和内容       和 parser      和配置
+  检查配置文件     检查 ignored       统一版本号      分析缓存
+  位置和内容        和 parser         和配置
 ```
 
 **完整排查示例：**
@@ -436,7 +436,7 @@ $ npx prettier --check "src/**/*.{js,mjs,cjs}"
 
 **配置解析器覆盖：**
 
-```json
+```jsonc
 // .prettierrc
 {
   "overrides": [
@@ -524,7 +524,7 @@ export default {
 
 **VS Code 正确配置：**
 
-```json
+```jsonc
 // .vscode/settings.json
 {
   // 指定使用项目本地的 Prettier
@@ -574,7 +574,7 @@ npx prettier --version    # CLI 版本
 
 **确保一致性的最佳实践：**
 
-```json
+```jsonc
 // .vscode/settings.json（提交到仓库）
 {
   "prettier.prettierPath": "./node_modules/prettier",
@@ -583,7 +583,7 @@ npx prettier --version    # CLI 版本
 }
 ```
 
-```json
+```jsonc
 // .vscode/extensions.json（推荐安装的扩展）
 {
   "recommendations": ["esbenp.prettier-vscode"]
@@ -883,7 +883,7 @@ module.exports = {
 npm install --save-dev @trivago/prettier-plugin-sort-imports
 ```
 
-```json
+```jsonc
 // .prettierrc
 {
   "plugins": ["@trivago/prettier-plugin-sort-imports"],
@@ -894,7 +894,7 @@ npm install --save-dev @trivago/prettier-plugin-sort-imports
 
 **推荐的工具组合：**
 
-```json
+```jsonc
 // package.json
 {
   "devDependencies": {
@@ -986,7 +986,7 @@ Prettier 核心不支持 import 排序，需要使用插件或 ESLint。
 npm install --save-dev @trivago/prettier-plugin-sort-imports
 ```
 
-```json
+```jsonc
 // .prettierrc
 {
   "plugins": ["@trivago/prettier-plugin-sort-imports"],
@@ -1041,7 +1041,7 @@ npx prettier --file-info path/to/file.xyz
 
 **解决无法识别的文件类型：**
 
-```json
+```jsonc
 // .prettierrc
 {
   "overrides": [
@@ -1135,7 +1135,7 @@ npx prettier --file-info path/to/file.xyz
 - [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier)
 - [@trivago/prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports)
 - [Prettier 基础概念与原理](./prettier-1-fundamentals.md)
-- [Prettier 配置完全指南](./prettier-2-configuration.md)
+- [Prettier 配置文件指南](./prettier-2-configuration.md)
 - [Prettier 编辑器集成指南](./prettier-4-editor-integration.md)
 - [Prettier 工具链整合指南](./prettier-5-toolchain.md)
 - [Prettier 团队协作实践](./prettier-6-team-practices.md)
