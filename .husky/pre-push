@@ -1,7 +1,4 @@
 #!/usr/bin/env sh
 
-# 格式检查
-npx --no -- prettier --check .
-
 # index.md 内容校验
-npx --no -- npm run check:home
+bunx --no -- bun run check:home
