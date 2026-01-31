@@ -241,7 +241,7 @@ git blame --ignore-revs-file .git-blame-ignore-revs src/index.js
 
 **团队配置自动化：**
 
-```json
+```jsonc
 // package.json
 {
   "scripts": {
@@ -352,7 +352,7 @@ Prettier 虽然号称「固执己见」，但仍提供少量配置选项。以�
 
 **策略二：采用「默认值 + 最小覆盖」原则**
 
-```json
+```jsonc
 // .prettierrc
 // 只覆盖确实需要调整的选项，其余使用默认值
 {
@@ -580,7 +580,7 @@ src/old-modules/
 
 **渐进格式化配置：**
 
-```json
+```jsonc
 // package.json
 {
   "lint-staged": {
@@ -625,7 +625,7 @@ Prettier 的不同版本可能产生不同的格式化结果，因此锁定版�
 
 **正确的锁定方式：**
 
-```json
+```jsonc
 // package.json
 {
   "devDependencies": {
@@ -746,7 +746,7 @@ npm list -g prettier
 
 **VS Code 配置使用项目本地 Prettier：**
 
-```json
+```jsonc
 // .vscode/settings.json
 {
   "prettier.prettierPath": "./node_modules/prettier"
@@ -814,6 +814,6 @@ fi
 - [Ignoring Code](https://prettier.io/docs/en/ignore)
 - [Git blame ignore revs](https://git-scm.com/docs/git-blame#Documentation/git-blame.txt---ignore-revs-fileltfilegt)
 - [GitHub - Ignoring commits in blame view](https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#ignore-commits-in-the-blame-view)
-- [Prettier 基础概念与原理](./prettier-fundamentals.md)
-- [Prettier 配置完全指南](./prettier-configuration.md)
-- [Prettier 工具链整合指南](./prettier-toolchain.md)
+- [Prettier 基础概念与原理](./prettier-1-fundamentals.md)
+- [Prettier 配置文件指南](./prettier-2-configuration.md)
+- [Prettier 工具链整合指南](./prettier-5-toolchain.md)

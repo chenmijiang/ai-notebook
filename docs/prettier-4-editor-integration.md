@@ -56,7 +56,7 @@ project/
 └── package.json          # 包含 prettier 依赖
 ```
 
-> **提示**：关于 Prettier 配置文件的详细说明，请参阅 [Prettier 配置完全指南](./prettier-configuration.md)。
+> **提示**：关于 Prettier 配置文件的详细说明，请参阅 [Prettier 配置文件指南](./prettier-2-configuration.md)。
 
 ## 2. VS Code
 
@@ -97,7 +97,7 @@ code --install-extension esbenp.prettier-vscode
 
 **用户设置（settings.json）：**
 
-```json
+```jsonc
 {
   // 将 Prettier 设为默认格式化工具
   "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -112,7 +112,7 @@ code --install-extension esbenp.prettier-vscode
 
 **按语言设置默认格式化工具：**
 
-```json
+```jsonc
 {
   // 全局默认格式化工具
   "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -159,7 +159,7 @@ code --install-extension esbenp.prettier-vscode
 
 **推荐的工作区配置（.vscode/settings.json）：**
 
-```json
+```jsonc
 {
   // ===== 格式化设置 =====
   // 默认格式化工具
@@ -211,7 +211,7 @@ code --install-extension esbenp.prettier-vscode
 
 **配合 ESLint 使用：**
 
-```json
+```jsonc
 {
   // Prettier 作为格式化工具
   "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -221,7 +221,7 @@ code --install-extension esbenp.prettier-vscode
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   }
-  // 保存时的执行顺序：先 ESLint 修复，再 Prettier 格式化
+  // VS Code 保存时执行顺序：codeActionsOnSave（ESLint）→ formatOnSave（Prettier）
 }
 ```
 
@@ -239,11 +239,9 @@ code --install-extension esbenp.prettier-vscode
 
 **查看 Prettier 输出日志：**
 
-```
 1. 点击 VS Code 底部状态栏的 "Prettier"
 2. 或：View → Output → 选择 "Prettier"
 3. 查看错误信息
-```
 
 **问题二：格式化结果与预期不符**
 
@@ -266,15 +264,13 @@ VS Code 的工作区信任功能会限制不受信任文件夹中的 Prettier �
 
 **解决方法：**
 
-```
 1. 打开命令面板（Ctrl+Shift+P / Cmd+Shift+P）
 2. 运行 "Workspaces: Manage Workspace Trust"
 3. 将工作区标记为受信任
-```
 
 **问题四：与其他扩展冲突**
 
-```json
+```jsonc
 {
   // 禁用 VS Code 内置的 JavaScript 格式化
   "javascript.format.enable": false,
@@ -670,7 +666,7 @@ yarn add -D prettier
 
 **VS Code 配置：**
 
-```json
+```jsonc
 {
   // 仅在有配置文件时格式化，避免使用全局设置
   "prettier.requireConfig": true,
@@ -732,7 +728,7 @@ Prettier 默认值
 
 **VS Code 配合 .editorconfig：**
 
-```json
+```jsonc
 {
   // 启用 .editorconfig 支持
   "prettier.useEditorConfig": true
@@ -856,7 +852,7 @@ project/
 └── README.md               # 包含编辑器配置说明
 ```
 
-> **下一步**：了解编辑器集成后，建议阅读 [Prettier 工具链整合指南](./prettier-toolchain-integration.md) 学习如何将 Prettier 与 ESLint、Git Hooks、CI/CD 等工具整合。
+> **下一步**：了解编辑器集成后，建议阅读 [Prettier 工具链整合指南](./prettier-5-toolchain.md) 学习如何将 Prettier 与 ESLint、Git Hooks、CI/CD 等工具整合。
 
 ## 参考资源
 
@@ -866,4 +862,4 @@ project/
 - [Prettier Vim Setup](https://prettier.io/docs/vim)
 - [conform.nvim](https://github.com/stevearc/conform.nvim)
 - [EditorConfig](https://editorconfig.org/)
-- [Prettier 配置完全指南](./prettier-configuration.md)
+- [Prettier 配置文件指南](./prettier-2-configuration.md)

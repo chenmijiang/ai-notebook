@@ -2,44 +2,7 @@
 
 ## 1. 概述
 
-### 1.1 支持语言概览
-
-Prettier 开箱即用支持多种前端主流语言和数据格式：
-
-- **JavaScript 系**：JavaScript、JSX、TypeScript、TSX、Flow
-- **样式表**：CSS、Less、SCSS
-- **标记语言**：HTML、Vue、Angular
-- **文档格式**：Markdown、MDX
-- **数据格式**：JSON、JSON5、YAML
-- **其他**：GraphQL、Handlebars
-
-每种语言由对应的解析器（Parser）处理，Prettier 根据文件扩展名自动选择合适的解析器。解析器的完整列表和技术细节见 [第 4 节：解析器与插件系统](#4-解析器与插件系统)。
-
-> **提示**：关于 Prettier 的设计理念和支持范围的详细说明，请参阅 [Prettier 基础概念与原理](./prettier-1-fundamentals.md)。
-
-### 1.2 插件扩展机制
-
-对于 Prettier 未内置支持的语言，可以通过插件扩展。插件提供两个核心能力：
-
-| 能力   | 说明                        |
-| ------ | --------------------------- |
-| 解析器 | 将源代码解析为 AST          |
-| 打印器 | 将 AST 转换为格式化后的代码 |
-
-**插件加载方式：**
-
-```javascript
-// prettier.config.js
-// 通过 plugins 数组加载插件
-export default {
-  plugins: [
-    "prettier-plugin-tailwindcss", // npm 包名
-    "./my-custom-plugin.js", // 本地文件路径
-  ],
-};
-```
-
-> **提示**：Prettier 3.x 支持自动发现 `node_modules` 中的插件，大多数情况下无需手动配置 `plugins` 数组。详见 [4.2 插件加载机制](#42-插件加载机制)。
+Prettier 内置支持前端开发中常见的语言和数据格式，包括 JavaScript/TypeScript、HTML/Vue/Angular、CSS/SCSS/Less、Markdown、JSON、YAML 和 GraphQL 等。每种语言都有对应的解析器和打印器：解析器负责理解代码结构，打印器负责按配置输出格式化结果。Prettier 会根据文件扩展名自动选择解析器，无需手动配置。对于未内置支持的语言（如 PHP、Svelte），可通过插件扩展。
 
 ## 2. 各语言配置详解
 
@@ -814,152 +777,152 @@ export default {
 
 > **注意**：`legacy/*.js` 只会使用 `singleQuote: false`，不会继承第一个 override 的其他选项。
 
-## 4. 解析器与插件系统
+## 4. 解析器与打印器
 
-Prettier 通过解析器（Parser）和插件（Plugin）支持多种语言。本节介绍其工作机制。
+Prettier 的多语言支持依赖于解析器（Parser）和打印器（Printer）的协作。本节介绍它们的工作原理。
 
-### 4.1 整体架构
+### 4.1 工作流程概述
 
-Prettier 的多语言支持基于以下架构：
+Prettier 格式化代码的流程分为两个阶段：
 
 ```
 源代码 → 解析器（Parser） → AST → 打印器（Printer） → 格式化代码
-           ↑                        ↑
-      内置解析器                  内置打印器
-           +                        +
-      插件提供的解析器            插件提供的打印器
 ```
 
-**解析器综合对照表：**
+| 阶段 | 组件   | 输入          | 输出       |
+| ---- | ------ | ------------- | ---------- |
+| 解析 | 解析器 | 源代码        | AST        |
+| 打印 | 打印器 | AST + options | 格式化代码 |
 
-| 解析器       | 语言/格式          | 文件扩展名            | 底层实现            | 说明                                     |
-| ------------ | ------------------ | --------------------- | ------------------- | ---------------------------------------- |
-| `babel`      | JavaScript、JSX    | .js, .mjs, .cjs, .jsx | @babel/parser       | 默认 JS 解析器，支持最新 ECMAScript 提案 |
-| `babel-flow` | Flow               | .js（需指定）         | @babel/parser       | 支持 Flow 类型注解                       |
-| `babel-ts`   | TypeScript         | .ts, .tsx（需指定）   | @babel/parser       | Babel 的 TS 支持，兼容更多 JS 提案       |
-| `typescript` | TypeScript         | .ts, .mts, .cts, .tsx | typescript-estree   | 官方 TS 解析器，更严格                   |
-| `espree`     | JavaScript         | .js（需指定）         | espree              | ESLint 默认解析器，保持 AST 一致性       |
-| `meriyah`    | JavaScript         | .js（需指定）         | meriyah             | 高性能解析器                             |
-| `acorn`      | JavaScript         | .js（需指定）         | acorn               | 轻量级解析器                             |
-| `css`        | CSS                | .css                  | postcss             | CSS 解析                                 |
-| `less`       | Less               | .less                 | postcss-less        | Less 预处理器                            |
-| `scss`       | SCSS               | .scss                 | postcss-scss        | SCSS 预处理器                            |
-| `html`       | HTML               | .html, .htm           | angular-html-parser | HTML 解析                                |
-| `vue`        | Vue SFC            | .vue                  | vue-eslint-parser   | Vue 单文件组件                           |
-| `angular`    | Angular 模板       | .component.html       | angular-html-parser | Angular 模板                             |
-| `lwc`        | LWC                | .html（需指定）       | angular-html-parser | Lightning Web Components                 |
-| `markdown`   | Markdown           | .md, .markdown        | remark              | Markdown 解析                            |
-| `mdx`        | MDX                | .mdx                  | remark + mdx        | MDX 格式                                 |
-| `yaml`       | YAML               | .yml, .yaml           | yaml                | YAML 解析                                |
-| `json`       | JSON               | .json                 | @babel/parser       | 标准 JSON                                |
-| `json5`      | JSON5              | .json5                | json5               | 宽松 JSON 语法                           |
-| `jsonc`      | JSON with Comments | .jsonc, tsconfig.json | @babel/parser       | 带注释的 JSON                            |
-| `graphql`    | GraphQL            | .graphql, .gql        | graphql-js          | GraphQL 解析                             |
-| `glimmer`    | Handlebars         | .hbs, .handlebars     | glimmer-engine      | Handlebars 模板                          |
+每种语言都有对应的解析器和打印器。Prettier 内置了常用语言的支持，也可以通过插件扩展更多语言（见 [第 5 节：插件扩展](#5-插件扩展)）。
 
-### 4.2 插件加载机制
+> **提示**：完整的解析器列表见 [6.2 解析器综合对照表](#62-解析器综合对照表)。
 
-Prettier 的解析器分为两类：内置解析器和插件提供的解析器。
+### 4.2 解析器（Parser）
 
-**插件结构：**
+解析器负责将源代码解析为抽象语法树（AST）。不同语言需要不同的解析器来理解其语法结构。
 
-每个插件需要提供：
+**解析器的作用：**
 
-| 组件              | 说明                        |
-| ----------------- | --------------------------- |
-| 解析器（Parser）  | 将源代码解析为 AST          |
-| 打印器（Printer） | 将 AST 转换为格式化后的代码 |
+| 职责     | 说明                                     |
+| -------- | ---------------------------------------- |
+| 词法分析 | 将源代码拆分为 token（标识符、运算符等） |
+| 语法分析 | 根据语言规则构建 AST                     |
+| 错误检测 | 报告语法错误                             |
+
+**同一语言的多个解析器：**
+
+某些语言有多个可选的解析器，适用于不同场景：
+
+| 语言       | 解析器选项                    | 选择建议                    |
+| ---------- | ----------------------------- | --------------------------- |
+| JavaScript | babel、espree、meriyah、acorn | babel（默认，支持最新语法） |
+| TypeScript | typescript、babel-ts          | typescript（更严格）        |
+| Flow       | babel-flow                    | 唯一选项                    |
 
 ```javascript
-// 一个 Prettier 插件的基本结构
-export const languages = [
-  {
-    name: "My Language",
-    parsers: ["my-parser"],
-    extensions: [".mylang"],
-  },
-];
-
-export const parsers = {
-  "my-parser": {
-    parse: (text) => {
-      /* 返回 AST */
-    },
-    astFormat: "my-ast",
-  },
-};
-
-export const printers = {
-  "my-ast": {
-    print: (path, options, print) => {
-      /* 返回格式化代码 */
-    },
-  },
-};
+// 示例：为 TypeScript 文件指定解析器
+{
+  "overrides": [
+    {
+      "files": "*.ts",
+      "options": { "parser": "typescript" }  // 使用官方 TS 解析器
+    }
+  ]
+}
 ```
 
-**加载方式：**
+### 4.3 打印器（Printer）
 
-| 方式     | 说明                       | 适用场景         |
-| -------- | -------------------------- | ---------------- |
-| 自动发现 | Prettier 扫描 node_modules | 最简便，推荐     |
-| 显式配置 | 在 plugins 数组中指定      | 需要控制加载顺序 |
-| 本地文件 | 指定文件路径               | 自定义插件开发   |
+打印器负责将 AST 转换为格式化后的代码。它读取用户配置的 options，决定如何输出代码。
 
-**自动发现机制（Prettier 3.x）：**
+**打印器的作用：**
 
-Prettier 会自动扫描 `node_modules` 中符合以下命名模式的包：
+| 职责         | 说明                       |
+| ------------ | -------------------------- |
+| 读取 AST     | 遍历解析器生成的语法树     |
+| 应用 options | 根据配置选项决定格式化规则 |
+| 生成代码     | 输出符合规则的格式化代码   |
 
-| 模式                   | 示例                            |
-| ---------------------- | ------------------------------- |
-| `prettier-plugin-*`    | prettier-plugin-tailwindcss     |
-| `@*/prettier-plugin-*` | @company/prettier-plugin-custom |
-| `@prettier/plugin-*`   | @prettier/plugin-php            |
+**options 如何影响打印器输出：**
 
-大多数情况下，只需安装插件即可使用，无需手动配置 `plugins` 数组。
+不同语言的打印器读取不同的 options。这就是为什么某些选项只对特定语言生效：
 
-**显式配置示例：**
+| 打印器类型      | 读取的 options                                | 示例效果               |
+| --------------- | --------------------------------------------- | ---------------------- |
+| JS/TS 打印器    | semi、singleQuote、trailingComma、arrowParens | 分号、引号风格、尾逗号 |
+| HTML 打印器     | htmlWhitespaceSensitivity、bracketSameLine    | 空白处理、标签闭合位置 |
+| CSS 打印器      | singleQuote                                   | 引号风格               |
+| Markdown 打印器 | proseWrap、tabWidth                           | 段落换行、列表缩进     |
+
+**JavaScript 打印器示例：**
 
 ```javascript
-// prettier.config.js
-export default {
-  plugins: [
-    // npm 包名（从 node_modules 加载）
-    "prettier-plugin-tailwindcss",
-    "@prettier/plugin-php",
+// 配置
+{ "semi": false, "singleQuote": true }
 
-    // 本地插件文件
-    "./plugins/my-custom-plugin.js",
-  ],
-};
+// 输入
+const message = "Hello, World!";
+
+// 输出（打印器根据 options 调整）
+const message = 'Hello, World!'
 ```
 
-> **注意**：插件加载顺序可能影响格式化结果。例如 `prettier-plugin-tailwindcss` 需要在其他处理 HTML/JSX 的插件之后加载。
+**HTML 打印器示例：**
 
-### 4.3 解析器选择流程
+```javascript
+// 配置
+{ "htmlWhitespaceSensitivity": "ignore", "singleAttributePerLine": true }
+```
+
+```html
+<!-- 输入 -->
+<button class="btn" @click="handleClick" :disabled="loading">Click</button>
+
+<!-- 输出（打印器根据 options 调整） -->
+<button
+  class="btn"
+  :disabled="loading"
+  @click="handleClick"
+>
+  Click
+</button>
+```
+
+**为什么不同语言有不同的专用选项？**
+
+每种语言的打印器只关心与该语言相关的格式化规则：
+
+- `semi` 只对 JS/TS 有意义（CSS、HTML 没有分号的概念）
+- `htmlWhitespaceSensitivity` 只对 HTML 类语言有意义
+- `proseWrap` 只对 Markdown 有意义
+
+这种设计让每个打印器专注于自己语言的特点，配置选项也更加清晰。
+
+### 4.4 解析器选择机制
 
 Prettier 根据以下流程选择解析器：
 
 ```
-文件路径
-   │
-   ↓
+         文件路径
+            │
+            ↓
 ┌─────────────────────────┐
 │ 1. 检查 overrides 配置   │ ← 是否显式指定 parser
 └───────────┬─────────────┘
             │ 否
             ↓
 ┌─────────────────────────┐
-│ 2. 匹配文件扩展名        │ ← 内置扩展名映射表
+│ 2. 匹配文件扩展名          │ ← 内置扩展名映射表
 └───────────┬─────────────┘
             │ 未匹配
             ↓
 ┌─────────────────────────┐
-│ 3. 检查插件支持的扩展名   │ ← 插件提供的映射
+│ 3. 检查插件支持的扩展名     │ ← 插件提供的映射
 └───────────┬─────────────┘
             │ 未匹配
             ↓
-       跳过该文件
+         跳过该文件
 ```
 
 **显式指定解析器的场景：**
@@ -1011,7 +974,93 @@ echo "const x=1" | prettier --parser babel
 | Flow 项目                | `babel-flow` | Flow 类型支持    |
 | 与 ESLint 集成           | `espree`     | AST 一致性       |
 
-### 4.4 常用社区插件
+## 5. 插件扩展
+
+对于 Prettier 未内置支持的语言，可以通过插件扩展。本节介绍插件的工作机制和常用插件。
+
+### 5.1 插件的作用
+
+插件为 Prettier 提供三种扩展能力：
+
+| 类型         | 说明                       | 示例                                         |
+| ------------ | -------------------------- | -------------------------------------------- |
+| 新增语言支持 | 提供新的解析器和打印器     | @prettier/plugin-php, prettier-plugin-svelte |
+| 修改现有行为 | 在现有解析器基础上增强功能 | prettier-plugin-tailwindcss（类名排序）      |
+| 新增配置选项 | 提供额外的格式化选项       | prettier-plugin-organize-imports             |
+
+**插件结构：**
+
+每个插件需要提供解析器和打印器，使 Prettier 能够处理新的语言：
+
+```javascript
+// 一个 Prettier 插件的基本结构
+export const languages = [
+  {
+    name: "My Language",
+    parsers: ["my-parser"],
+    extensions: [".mylang"],
+  },
+];
+
+export const parsers = {
+  "my-parser": {
+    parse: (text) => {
+      /* 返回 AST */
+    },
+    astFormat: "my-ast",
+  },
+};
+
+export const printers = {
+  "my-ast": {
+    print: (path, options, print) => {
+      /* 返回格式化代码 */
+    },
+  },
+};
+```
+
+### 5.2 插件加载机制
+
+**加载方式：**
+
+| 方式     | 说明                       | 适用场景         |
+| -------- | -------------------------- | ---------------- |
+| 自动发现 | Prettier 扫描 node_modules | 最简便，推荐     |
+| 显式配置 | 在 plugins 数组中指定      | 需要控制加载顺序 |
+| 本地文件 | 指定文件路径               | 自定义插件开发   |
+
+**自动发现机制（Prettier 3.x）：**
+
+Prettier 会自动扫描 `node_modules` 中符合以下命名模式的包：
+
+| 模式                   | 示例                            |
+| ---------------------- | ------------------------------- |
+| `prettier-plugin-*`    | prettier-plugin-tailwindcss     |
+| `@*/prettier-plugin-*` | @company/prettier-plugin-custom |
+| `@prettier/plugin-*`   | @prettier/plugin-php            |
+
+大多数情况下，只需安装插件即可使用，无需手动配置 `plugins` 数组。
+
+**显式配置示例：**
+
+```javascript
+// prettier.config.js
+export default {
+  plugins: [
+    // npm 包名（从 node_modules 加载）
+    "prettier-plugin-tailwindcss",
+    "@prettier/plugin-php",
+
+    // 本地插件文件
+    "./plugins/my-custom-plugin.js",
+  ],
+};
+```
+
+> **注意**：插件加载顺序可能影响格式化结果。例如 `prettier-plugin-tailwindcss` 需要在其他处理 HTML/JSX 的插件之后加载。
+
+### 5.3 常用社区插件
 
 **官方维护的插件：**
 
@@ -1035,15 +1084,7 @@ echo "const x=1" | prettier --parser babel
 | `prettier-plugin-toml`             | TOML              | `npm i -D prettier-plugin-toml`             |
 | `prettier-plugin-prisma`           | Prisma Schema     | `npm i -D prettier-plugin-prisma`           |
 
-**插件功能分类：**
-
-| 类型         | 说明                       | 示例                                         |
-| ------------ | -------------------------- | -------------------------------------------- |
-| 新增语言支持 | 提供新的解析器和打印器     | @prettier/plugin-php, prettier-plugin-svelte |
-| 修改现有行为 | 在现有解析器基础上增强功能 | prettier-plugin-tailwindcss（类名排序）      |
-| 新增配置选项 | 提供额外的格式化选项       | prettier-plugin-organize-imports             |
-
-### 4.5 插件配置示例
+### 5.4 插件配置示例
 
 **Tailwind CSS 插件：**
 
@@ -1126,19 +1167,47 @@ npx prettier --find-config-path ./src/App.svelte
 npx prettier --check "**/*.svelte"
 ```
 
-## 5. 总结
+## 6. 总结与速查
 
-### 5.1 核心要点回顾
+### 6.1 核心要点回顾
 
-| 要点           | 说明                                          |
-| -------------- | --------------------------------------------- |
-| 内置语言支持   | JS/TS/CSS/HTML/Vue/Markdown/JSON/YAML/GraphQL |
-| 解析器自动选择 | 根据文件扩展名自动匹配，可通过 overrides 覆盖 |
-| overrides 机制 | 按文件模式为不同文件设置不同配置              |
-| 插件扩展       | 通过插件支持 PHP/Ruby/Svelte/Astro 等更多语言 |
-| 配置优先级     | CLI > overrides > 基础配置 > 默认值           |
+| 要点             | 说明                                          |
+| ---------------- | --------------------------------------------- |
+| 内置语言支持     | JS/TS/CSS/HTML/Vue/Markdown/JSON/YAML/GraphQL |
+| 解析器自动选择   | 根据文件扩展名自动匹配，可通过 overrides 覆盖 |
+| 打印器与 options | 每种语言的打印器读取对应的 options 控制格式化 |
+| overrides 机制   | 按文件模式为不同文件设置不同配置              |
+| 插件扩展         | 通过插件支持 PHP/Ruby/Svelte/Astro 等更多语言 |
+| 配置优先级       | CLI > overrides > 基础配置 > 默认值           |
 
-### 5.2 多语言配置速查表
+### 6.2 解析器综合对照表
+
+| 解析器       | 语言/格式          | 文件扩展名            | 底层实现            | 说明                                     |
+| ------------ | ------------------ | --------------------- | ------------------- | ---------------------------------------- |
+| `babel`      | JavaScript、JSX    | .js, .mjs, .cjs, .jsx | @babel/parser       | 默认 JS 解析器，支持最新 ECMAScript 提案 |
+| `babel-flow` | Flow               | .js（需指定）         | @babel/parser       | 支持 Flow 类型注解                       |
+| `babel-ts`   | TypeScript         | .ts, .tsx（需指定）   | @babel/parser       | Babel 的 TS 支持，兼容更多 JS 提案       |
+| `typescript` | TypeScript         | .ts, .mts, .cts, .tsx | typescript-estree   | 官方 TS 解析器，更严格                   |
+| `espree`     | JavaScript         | .js（需指定）         | espree              | ESLint 默认解析器，保持 AST 一致性       |
+| `meriyah`    | JavaScript         | .js（需指定）         | meriyah             | 高性能解析器                             |
+| `acorn`      | JavaScript         | .js（需指定）         | acorn               | 轻量级解析器                             |
+| `css`        | CSS                | .css                  | postcss             | CSS 解析                                 |
+| `less`       | Less               | .less                 | postcss-less        | Less 预处理器                            |
+| `scss`       | SCSS               | .scss                 | postcss-scss        | SCSS 预处理器                            |
+| `html`       | HTML               | .html, .htm           | angular-html-parser | HTML 解析                                |
+| `vue`        | Vue SFC            | .vue                  | vue-eslint-parser   | Vue 单文件组件                           |
+| `angular`    | Angular 模板       | .component.html       | angular-html-parser | Angular 模板                             |
+| `lwc`        | LWC                | .html（需指定）       | angular-html-parser | Lightning Web Components                 |
+| `markdown`   | Markdown           | .md, .markdown        | remark              | Markdown 解析                            |
+| `mdx`        | MDX                | .mdx                  | remark + mdx        | MDX 格式                                 |
+| `yaml`       | YAML               | .yml, .yaml           | yaml                | YAML 解析                                |
+| `json`       | JSON               | .json                 | @babel/parser       | 标准 JSON                                |
+| `json5`      | JSON5              | .json5                | json5               | 宽松 JSON 语法                           |
+| `jsonc`      | JSON with Comments | .jsonc, tsconfig.json | @babel/parser       | 带注释的 JSON                            |
+| `graphql`    | GraphQL            | .graphql, .gql        | graphql-js          | GraphQL 解析                             |
+| `glimmer`    | Handlebars         | .hbs, .handlebars     | glimmer-engine      | Handlebars 模板                          |
+
+### 6.3 多语言配置速查表
 
 | 语言       | 解析器     | 关键选项                              |
 | ---------- | ---------- | ------------------------------------- |
@@ -1152,7 +1221,7 @@ npx prettier --check "**/*.svelte"
 | YAML       | yaml       | tabWidth                              |
 | GraphQL    | graphql    | printWidth                            |
 
-### 5.3 常见问题速查
+### 6.4 常见问题速查
 
 | 问题                       | 解决方案                                     |
 | -------------------------- | -------------------------------------------- |

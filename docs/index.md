@@ -1,10 +1,10 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
-- 2026-01-26 - [Prettier 高级用法与疑难解决](./prettier-7-advanced.md) (L: 2026-01-27)
-- 2026-01-26 - [Prettier 团队协作实践](./prettier-6-team-practices.md) (L: 2026-01-27)
-- 2026-01-26 - [Prettier 工具链整合指南](./prettier-5-toolchain.md) (L: 2026-01-27)
-- 2026-01-26 - [Prettier 编辑器集成指南](./prettier-4-editor-integration.md) (L: 2026-01-27)
-- 2026-01-26 - [Prettier 多语言支持指南](./prettier-3-multi-language.md) (L: 2026-01-29)
+- 2026-01-26 - [Prettier 高级用法与疑难解决](./prettier-7-advanced.md) (L: 2026-01-31)
+- 2026-01-26 - [Prettier 团队协作实践](./prettier-6-team-practices.md) (L: 2026-01-31)
+- 2026-01-26 - [Prettier 工具链整合指南](./prettier-5-toolchain.md) (L: 2026-01-31)
+- 2026-01-26 - [Prettier 编辑器集成指南](./prettier-4-editor-integration.md) (L: 2026-01-31)
+- 2026-01-26 - [Prettier 多语言支持指南](./prettier-3-multi-language.md) (L: 2026-01-31)
 - 2026-01-26 - [Prettier 配置文件指南](./prettier-2-configuration.md) (L: 2026-01-27)
 - 2026-01-26 - [Prettier 基础概念与原理](./prettier-1-fundamentals.md) (L: 2026-01-27)
 - 2026-01-26 - [Git Submodule 完全指南](./git-submodule-guide.md) (L: 2026-01-27)
