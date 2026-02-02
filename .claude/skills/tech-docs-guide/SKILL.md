@@ -15,6 +15,7 @@ description: Provides Chinese technical documentation writing guidelines. Use wh
 - [ ] Step 2: 完成初稿后进行自我审校
 - [ ] Step 2.1: 通过 web fetch 最新的相关信息验证内容准确性和时效性
 - [ ] Step 2.2: 检查内容是否遵循写作规范
+- [ ] Step 2.3: 检查内容逻辑是否清晰，是否易于理解
 - [ ] Step 3: 根据审校建议修改内容，然后执行 `Step 2` 重新审校，直到审校问题修复
 - [ ] Step 4: 执行格式化脚本：`npm run format`
 
