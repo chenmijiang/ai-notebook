@@ -494,7 +494,7 @@ erDiagram
         boolean is_default
     }
 
-    ORDER ||--|{ ORDER_ITEM : contains
+    ORDER ||--o{ ORDER_ITEM : contains
     ORDER {
         int id PK
         int customer_id FK
@@ -506,7 +506,7 @@ erDiagram
         datetime paid_at
     }
 
-    ORDER_ITEM }|--|| PRODUCT : references
+    ORDER_ITEM }o--|| PRODUCT : references
     ORDER_ITEM {
         int id PK
         int order_id FK
@@ -516,7 +516,7 @@ erDiagram
         decimal subtotal
     }
 
-    PRODUCT }|--|| CATEGORY : belongs_to
+    PRODUCT }o--|| CATEGORY : belongs_to
     PRODUCT {
         int id PK
         int category_id FK
@@ -535,15 +535,15 @@ erDiagram
     }
 
     ORDER ||--o| PAYMENT : has
-    PAYMENT {
-        int id PK
-        int order_id FK UK
-        string payment_no UK
-        string method
-        decimal amount
-        string status
-        datetime paid_at
-    }
+     PAYMENT {
+         int id PK
+         int order_id FK
+         string payment_no UK
+         string method
+         decimal amount
+         string status
+         datetime paid_at
+     }
 ```
 
 ### 3.4 绘制工具
@@ -838,6 +838,7 @@ sequenceDiagram
     participant Inventory as 库存服务
     participant Payment as 支付服务
     participant MQ as 消息队列
+    participant Logistics as 物流服务
 
     Customer ->> Web: 点击下单
     Web ->> Order: 创建订单请求
@@ -845,10 +846,10 @@ sequenceDiagram
     activate Order
     Order ->> Inventory: 检查库存
     activate Inventory
+    Inventory -->> Order: 库存确认
+    deactivate Inventory
 
     alt 库存充足
-        Inventory -->> Order: 库存确认
-        deactivate Inventory
         Order ->> Inventory: 锁定库存
         activate Inventory
         Inventory -->> Order: 锁定成功
@@ -856,36 +857,36 @@ sequenceDiagram
 
         Order ->> Order: 生成订单
         Order -->> Web: 返回订单信息
-        deactivate Order
 
         Web ->> Payment: 发起支付
         activate Payment
         Payment -->> Web: 返回支付页面
+        deactivate Payment
+
         Customer ->> Web: 完成支付
         Web ->> Payment: 支付确认
+        activate Payment
         Payment -->> Web: 支付成功
         deactivate Payment
 
         Web ->> Order: 更新订单状态
-        activate Order
         Order -) MQ: 发送订单完成消息
         Order -->> Web: 更新成功
-        deactivate Order
 
         par 异步处理
             MQ -) Inventory: 扣减库存
-            MQ -) 物流服务: 创建发货单
+            and
+            MQ -) Logistics: 创建发货单
         end
 
         Web -->> Customer: 下单成功
 
     else 库存不足
-        Inventory -->> Order: 库存不足
-        deactivate Inventory
         Order -->> Web: 下单失败
-        deactivate Order
         Web -->> Customer: 提示库存不足
     end
+
+    deactivate Order
 ```
 
 #### 带注释的示例
