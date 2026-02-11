@@ -239,7 +239,7 @@ doc/*.txt
 
 #### 2.4.2 Prettier 配置
 
-```json
+```jsonc
 // .prettierignore
 node_modules
 dist
@@ -268,7 +268,7 @@ export default {
 
 #### 2.4.3 TypeScript 配置
 
-```json
+```jsonc
 // tsconfig.json
 {
   "include": ["src/**/*", "types/**/*"],
@@ -325,7 +325,7 @@ cat log.txt | grep "error"
 ### 3.2 常用选项
 
 | 选项            | 全称                    | 说明                  | 示例                                          |
-| --------------- | ----------------------- | --------------------- | --------------------------------------------- | ----------------- |
+| --------------- | ----------------------- | --------------------- | --------------------------------------------- |
 | `-i`            | `--ignore-case`         | 忽略大小写            | `grep -i "error" log.txt`                     |
 | `-r`            | `--recursive`           | 递归搜索目录          | `grep -r "TODO" src/`                         |
 | `-n`            | `--line-number`         | 显示行号              | `grep -n "function" app.js`                   |
@@ -336,7 +336,7 @@ cat log.txt | grep "error"
 | `-w`            | `--word-regexp`         | 全词匹配              | `grep -w "log" app.js`                        |
 | `-x`            | `--line-regexp`         | 全行匹配              | `grep -x "done" status.txt`                   |
 | `-o`            | `--only-matching`       | 只输出匹配部分        | `grep -o "error:[0-9]*" log.txt`              |
-| `-E`            | `--extended-regexp`     | 使用扩展正则表达式    | `grep -E "error                               | warning" log.txt` |
+| `-E`            | `--extended-regexp`     | 使用扩展正则表达式    | `grep -E "error\|warning" log.txt`            |
 | `-P`            | `--perl-regexp`         | 使用 Perl 正则表达式  | `grep -P "\d{3}-\d{4}" file.txt`              |
 | `-A n`          | `--after-context`       | 显示匹配行后 n 行     | `grep -A 3 "error" log.txt`                   |
 | `-B n`          | `--before-context`      | 显示匹配行前 n 行     | `grep -B 3 "error" log.txt`                   |
