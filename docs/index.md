@@ -1,6 +1,12 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
-- 2026-02-02 - [lint-staged 使用指南](./lint-staged-guide.md) (L: 2026-02-02)
+- 2026-02-10 - [运维阶段图表指南](./diagrams-operations.md) (L: 2026-02-10)
+- 2026-02-10 - [流程建模阶段图表指南](./diagrams-process.md) (L: 2026-02-10)
+- 2026-02-10 - [架构设计阶段图表指南](./diagrams-architecture.md) (L: 2026-02-10)
+- 2026-02-10 - [详细设计阶段图表指南](./diagrams-design.md) (L: 2026-02-10)
+- 2026-02-10 - [需求分析阶段图表指南](./diagrams-requirements.md) (L: 2026-02-11)
+- 2026-02-08 - [Glob 与 Grep 完全指南](./glob-grep-guide.md) (L: 2026-02-11)
+- 2026-02-02 - [lint-staged 使用指南](./lint-staged-guide.md) (L: 2026-02-04)
 - 2026-01-26 - [Prettier 高级用法与疑难解决](./prettier-7-advanced.md) (L: 2026-01-31)
 - 2026-01-26 - [Prettier 团队协作实践](./prettier-6-team-practices.md) (L: 2026-01-31)
 - 2026-01-26 - [Prettier 工具链整合指南](./prettier-5-toolchain.md) (L: 2026-01-31)
