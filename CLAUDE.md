@@ -17,9 +17,18 @@
 
 ## 写作规范
 
+<<<<<<< HEAD
 创建或编辑文档时，请参考 `.claude/skills/tech-docs-guide/SKILL.md` 中的写作规范。
 
 ## 注意事项
 
 - 当使用 braninstorming skill 生成计划/规划时，内容放到 plans 目录下，不要直接放到 docs 目录
 - 当需要提交代码变更时，调用本项目 commit skill 进行提交，而不是直接提交代码
+=======
+创建或编辑文档时，参考 `.claude/skills/tech-docs-guide/SKILL.md` 中的写作规范，确保一致的风格和格式。
+
+## 注意事项
+
+- 当使用 braninstorming skill 生成计划/规划时，内容放到本项目 plans 目录下
+- 当需要提交代码变更时，先把变更暂存，然后调用 commit skill 进行提交
+>>>>>>> main

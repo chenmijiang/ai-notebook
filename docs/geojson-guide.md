@@ -35,7 +35,81 @@ GeoJSON 是一种用于编码地理数据结构的开放标准格式。它基于
 
 ## 2. 数据结构
 
+<<<<<<< HEAD
 ### 2.1 基本结构
+=======
+### 2.1 对象模型
+
+GeoJSON 的数据结构是一个分层组合体系。下图展示了各对象之间的包含和引用关系：
+
+```mermaid
+classDiagram
+    class FeatureCollection {
+        type: "FeatureCollection"
+        bbox?: [number]
+        features: Feature[]
+    }
+
+    class Feature {
+        type: "Feature"
+        id?: string | number
+        bbox?: [number]
+        geometry: Geometry
+        properties: object | null
+    }
+
+    class Point {
+        type: "Point"
+        coordinates: [lon, lat]
+    }
+
+    class LineString {
+        type: "LineString"
+        coordinates: [[lon, lat], ...]
+    }
+
+    class Polygon {
+        type: "Polygon"
+        coordinates: [[[lon, lat], ...]]
+    }
+
+    class MultiPoint {
+        type: "MultiPoint"
+        coordinates: [[lon, lat], ...]
+    }
+
+    class MultiLineString {
+        type: "MultiLineString"
+        coordinates: [[[lon, lat], ...], ...]
+    }
+
+    class MultiPolygon {
+        type: "MultiPolygon"
+        coordinates: [[[[lon, lat], ...]], ...]
+    }
+
+    class GeometryCollection {
+        type: "GeometryCollection"
+        geometries: Geometry[]
+    }
+
+    FeatureCollection "1" *-- "0..*" Feature : 包含
+    Feature "1" o-- "1" Point : 引用
+    Feature "1" o-- "1" LineString : 引用
+    Feature "1" o-- "1" Polygon : 引用
+    Feature "1" o-- "1" MultiPoint : 引用
+    Feature "1" o-- "1" MultiLineString : 引用
+    Feature "1" o-- "1" MultiPolygon : 引用
+    Feature "1" o-- "1" GeometryCollection : 引用
+    GeometryCollection "1" *-- "0..*" Point : 包含
+    GeometryCollection "1" *-- "0..*" LineString : 包含
+    GeometryCollection "1" *-- "0..*" Polygon : 包含
+```
+
+GeoJSON 的核心设计思路：**几何对象**描述空间形状，**Feature** 将几何与属性数据关联，**FeatureCollection** 将多个 Feature 组织在一起。理解这个嵌套关系是使用 GeoJSON 的基础。
+
+### 2.2 基本结构
+>>>>>>> main
 
 每个 GeoJSON 对象都包含 `type` 属性，可选的 `bbox`（边界框）属性：
 
@@ -54,7 +128,11 @@ GeoJSON 是一种用于编码地理数据结构的开放标准格式。它基于
 
 > **注意**：GeoJSON 坐标顺序是 **[经度, 纬度]**，而非常见的 [纬度, 经度]。
 
+<<<<<<< HEAD
 ### 2.2 几何类型
+=======
+### 2.3 几何类型
+>>>>>>> main
 
 GeoJSON 支持七种几何类型：
 
@@ -78,7 +156,11 @@ GeoJSON 支持七种几何类型：
 └─────────────────────────────────────────────────────────────┘
 ```
 
+<<<<<<< HEAD
 ### 2.3 Point（点）
+=======
+### 2.4 Point（点）
+>>>>>>> main
 
 表示地球上的单个位置：
 
@@ -89,7 +171,11 @@ GeoJSON 支持七种几何类型：
 }
 ```
 
+<<<<<<< HEAD
 ### 2.4 LineString（线）
+=======
+### 2.5 LineString（线）
+>>>>>>> main
 
 由两个或更多点连接形成的线：
 
@@ -104,7 +190,11 @@ GeoJSON 支持七种几何类型：
 }
 ```
 
+<<<<<<< HEAD
 ### 2.5 Polygon（多边形）
+=======
+### 2.6 Polygon（多边形）
+>>>>>>> main
 
 由闭合线环定义的区域，第一个和最后一个坐标必须相同：
 
@@ -149,7 +239,11 @@ GeoJSON 支持七种几何类型：
 }
 ```
 
+<<<<<<< HEAD
 ### 2.6 Multi\* 类型
+=======
+### 2.7 Multi\* 类型
+>>>>>>> main
 
 ```json
 // MultiPoint - 多个独立的点
@@ -180,7 +274,11 @@ GeoJSON 支持七种几何类型：
 }
 ```
 
+<<<<<<< HEAD
 ### 2.7 GeometryCollection（几何集合）
+=======
+### 2.8 GeometryCollection（几何集合）
+>>>>>>> main
 
 包含不同类型几何对象的集合：
 
@@ -302,11 +400,66 @@ const geojson = {
 const transformed = gcoord.transform(geojson, gcoord.WGS84, gcoord.GCJ02);
 ```
 
+<<<<<<< HEAD
+=======
+### 4.4 三维坐标
+
+GeoJSON 坐标支持可选的第三个值来表示高程，格式为 `[经度, 纬度, 高程]`，高程单位为米，基准为 WGS84 椭球面。
+
+```json
+// 三维 Point —— 建筑物位置及高度
+{
+  "type": "Point",
+  "coordinates": [116.4074, 39.9042, 44.0]
+}
+
+// 三维 LineString —— 无人机飞行航线
+{
+  "type": "LineString",
+  "coordinates": [
+    [116.40, 39.90, 100],
+    [116.41, 39.91, 150],
+    [116.42, 39.92, 120]
+  ]
+}
+```
+
+**典型使用场景**：
+
+| 场景           | 说明                                       |
+| -------------- | ------------------------------------------ |
+| 城市三维建模   | 用高程值表示建筑物高度，配合 3D 地图渲染   |
+| 飞行航线规划   | 无人机或航空路径中，每个航点包含飞行高度   |
+| 地形等高线数据 | 等高线上的采样点携带海拔值，用于地形可视化 |
+
+> **注意**：
+>
+> - 高程是可选的，大多数 Web 地图场景不需要。省略高程可以减小数据体积。
+> - 不同数据源的高程基准可能不同（正高/海拔 vs 椭球高），混用会导致高度偏差。使用前应确认数据源的高程基准是否一致。
+
+>>>>>>> main
 ## 5. 边界框（Bounding Box）
 
 ### 5.1 bbox 属性
 
+<<<<<<< HEAD
 bbox 定义几何对象的边界范围，格式为 `[minLon, minLat, maxLon, maxLat]`：
+=======
+bbox（Bounding Box）是包围几何对象的最小矩形范围，用于快速定位和过滤空间数据。格式为 `[minLon, minLat, maxLon, maxLat]`：
+
+```
+        maxLat ┌──────────────────────┐
+               │   ╱╲                 │
+               │  ╱  ╲    ╱╲          │
+               │ ╱    ╲  ╱  ╲         │
+               │╱      ╲╱    ╲        │
+               │              ╲╱      │
+        minLat └──────────────────────┘
+             minLon                maxLon
+
+        ── 不规则多边形    □ bbox 边界
+```
+>>>>>>> main
 
 ```json
 {
@@ -330,7 +483,11 @@ bbox 定义几何对象的边界范围，格式为 `[minLon, minLat, maxLon, max
 
 ### 5.2 三维边界框
 
+<<<<<<< HEAD
 包含高程时，格式为 `[minLon, minLat, minAlt, maxLon, maxLat, maxAlt]`：
+=======
+当坐标包含高程时（参见 [4.4 三维坐标](#44-三维坐标)），bbox 扩展为六个值，格式为 `[minLon, minLat, minAlt, maxLon, maxLat, maxAlt]`：
+>>>>>>> main
 
 ```json
 {
@@ -460,6 +617,47 @@ const isInside = turf.booleanPointInPolygon(point, deliveryArea);
 console.log(isInside); // true
 ```
 
+<<<<<<< HEAD
+=======
+### 6.5 场景5：空间查询过滤
+
+利用 bbox 做矩形相交预判断（O(1)），快速排除无关数据，再对候选要素做精确几何计算：
+
+```javascript
+import * as turf from "@turf/turf";
+
+// 判断两个 bbox 是否相交
+function bboxIntersects(a, b) {
+  return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+}
+
+// 从大量要素中筛选与目标区域可能相交的候选要素
+const targetBbox = [116.3, 39.8, 116.5, 40.0];
+const candidates = features.filter((f) =>
+  bboxIntersects(turf.bbox(f), targetBbox),
+);
+```
+
+### 6.6 场景6：地图视口裁剪
+
+前端地图在平移或缩放时，将当前视口转为 bbox 参数请求后端，只加载可见范围内的数据：
+
+```javascript
+// 获取当前视口范围并请求对应数据
+const bounds = map.getBounds();
+const bbox = [
+  bounds.getWest(),
+  bounds.getSouth(),
+  bounds.getEast(),
+  bounds.getNorth(),
+].join(",");
+
+fetch(`/api/features?bbox=${bbox}`)
+  .then((res) => res.json())
+  .then((geojson) => updateMapLayer(geojson));
+```
+
+>>>>>>> main
 ## 7. JavaScript 操作 GeoJSON
 
 ### 7.1 常用库
@@ -504,6 +702,13 @@ console.log(`面积: ${area} 平方米`);
 // 计算中心点
 const center = turf.center(polygon);
 
+<<<<<<< HEAD
+=======
+// 计算边界框
+const bbox = turf.bbox(polygon);
+console.log(bbox); // [116.0, 39.0, 117.0, 40.0]
+
+>>>>>>> main
 // 合并多个多边形
 const union = turf.union(polygon1, polygon2);
 
@@ -635,6 +840,7 @@ RFC 7946 规定，对于跨越反子午线（±180°）的几何对象，应将�
 
 properties 可以是任何有效的 JSON 值，包括字符串、数字、布尔值、数组、嵌套对象或 null。
 
+<<<<<<< HEAD
 **Q4: 如何表示三维数据？**
 
 在坐标数组中添加第三个值表示高程：`[longitude, latitude, altitude]`。高程单位为米，基准为 WGS84 椭球面。
@@ -646,6 +852,8 @@ properties 可以是任何有效的 JSON 值，包括字符串、数字、布尔
 }
 ```
 
+=======
+>>>>>>> main
 ## 10. 总结
 
 ### 10.1 核心要点
