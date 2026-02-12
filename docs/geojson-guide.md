@@ -35,6 +35,9 @@ GeoJSON 是一种用于编码地理数据结构的开放标准格式。它基于
 
 ## 2. 数据结构
 
+<<<<<<< HEAD
+### 2.1 基本结构
+=======
 ### 2.1 对象模型
 
 GeoJSON 的数据结构是一个分层组合体系。下图展示了各对象之间的包含和引用关系：
@@ -106,6 +109,7 @@ classDiagram
 GeoJSON 的核心设计思路：**几何对象**描述空间形状，**Feature** 将几何与属性数据关联，**FeatureCollection** 将多个 Feature 组织在一起。理解这个嵌套关系是使用 GeoJSON 的基础。
 
 ### 2.2 基本结构
+>>>>>>> main
 
 每个 GeoJSON 对象都包含 `type` 属性，可选的 `bbox`（边界框）属性：
 
@@ -124,7 +128,11 @@ GeoJSON 的核心设计思路：**几何对象**描述空间形状，**Feature**
 
 > **注意**：GeoJSON 坐标顺序是 **[经度, 纬度]**，而非常见的 [纬度, 经度]。
 
+<<<<<<< HEAD
+### 2.2 几何类型
+=======
 ### 2.3 几何类型
+>>>>>>> main
 
 GeoJSON 支持七种几何类型：
 
@@ -148,7 +156,11 @@ GeoJSON 支持七种几何类型：
 └─────────────────────────────────────────────────────────────┘
 ```
 
+<<<<<<< HEAD
+### 2.3 Point（点）
+=======
 ### 2.4 Point（点）
+>>>>>>> main
 
 表示地球上的单个位置：
 
@@ -159,7 +171,11 @@ GeoJSON 支持七种几何类型：
 }
 ```
 
+<<<<<<< HEAD
+### 2.4 LineString（线）
+=======
 ### 2.5 LineString（线）
+>>>>>>> main
 
 由两个或更多点连接形成的线：
 
@@ -174,7 +190,11 @@ GeoJSON 支持七种几何类型：
 }
 ```
 
+<<<<<<< HEAD
+### 2.5 Polygon（多边形）
+=======
 ### 2.6 Polygon（多边形）
+>>>>>>> main
 
 由闭合线环定义的区域，第一个和最后一个坐标必须相同：
 
@@ -219,7 +239,11 @@ GeoJSON 支持七种几何类型：
 }
 ```
 
+<<<<<<< HEAD
+### 2.6 Multi\* 类型
+=======
 ### 2.7 Multi\* 类型
+>>>>>>> main
 
 ```json
 // MultiPoint - 多个独立的点
@@ -250,7 +274,11 @@ GeoJSON 支持七种几何类型：
 }
 ```
 
+<<<<<<< HEAD
+### 2.7 GeometryCollection（几何集合）
+=======
 ### 2.8 GeometryCollection（几何集合）
+>>>>>>> main
 
 包含不同类型几何对象的集合：
 
@@ -372,6 +400,8 @@ const geojson = {
 const transformed = gcoord.transform(geojson, gcoord.WGS84, gcoord.GCJ02);
 ```
 
+<<<<<<< HEAD
+=======
 ### 4.4 三维坐标
 
 GeoJSON 坐标支持可选的第三个值来表示高程，格式为 `[经度, 纬度, 高程]`，高程单位为米，基准为 WGS84 椭球面。
@@ -407,10 +437,14 @@ GeoJSON 坐标支持可选的第三个值来表示高程，格式为 `[经度, �
 > - 高程是可选的，大多数 Web 地图场景不需要。省略高程可以减小数据体积。
 > - 不同数据源的高程基准可能不同（正高/海拔 vs 椭球高），混用会导致高度偏差。使用前应确认数据源的高程基准是否一致。
 
+>>>>>>> main
 ## 5. 边界框（Bounding Box）
 
 ### 5.1 bbox 属性
 
+<<<<<<< HEAD
+bbox 定义几何对象的边界范围，格式为 `[minLon, minLat, maxLon, maxLat]`：
+=======
 bbox（Bounding Box）是包围几何对象的最小矩形范围，用于快速定位和过滤空间数据。格式为 `[minLon, minLat, maxLon, maxLat]`：
 
 ```
@@ -425,6 +459,7 @@ bbox（Bounding Box）是包围几何对象的最小矩形范围，用于快速�
 
         ── 不规则多边形    □ bbox 边界
 ```
+>>>>>>> main
 
 ```json
 {
@@ -448,7 +483,11 @@ bbox（Bounding Box）是包围几何对象的最小矩形范围，用于快速�
 
 ### 5.2 三维边界框
 
+<<<<<<< HEAD
+包含高程时，格式为 `[minLon, minLat, minAlt, maxLon, maxLat, maxAlt]`：
+=======
 当坐标包含高程时（参见 [4.4 三维坐标](#44-三维坐标)），bbox 扩展为六个值，格式为 `[minLon, minLat, minAlt, maxLon, maxLat, maxAlt]`：
+>>>>>>> main
 
 ```json
 {
@@ -578,6 +617,8 @@ const isInside = turf.booleanPointInPolygon(point, deliveryArea);
 console.log(isInside); // true
 ```
 
+<<<<<<< HEAD
+=======
 ### 6.5 场景5：空间查询过滤
 
 利用 bbox 做矩形相交预判断（O(1)），快速排除无关数据，再对候选要素做精确几何计算：
@@ -616,6 +657,7 @@ fetch(`/api/features?bbox=${bbox}`)
   .then((geojson) => updateMapLayer(geojson));
 ```
 
+>>>>>>> main
 ## 7. JavaScript 操作 GeoJSON
 
 ### 7.1 常用库
@@ -660,10 +702,13 @@ console.log(`面积: ${area} 平方米`);
 // 计算中心点
 const center = turf.center(polygon);
 
+<<<<<<< HEAD
+=======
 // 计算边界框
 const bbox = turf.bbox(polygon);
 console.log(bbox); // [116.0, 39.0, 117.0, 40.0]
 
+>>>>>>> main
 // 合并多个多边形
 const union = turf.union(polygon1, polygon2);
 
@@ -795,6 +840,20 @@ RFC 7946 规定，对于跨越反子午线（±180°）的几何对象，应将�
 
 properties 可以是任何有效的 JSON 值，包括字符串、数字、布尔值、数组、嵌套对象或 null。
 
+<<<<<<< HEAD
+**Q4: 如何表示三维数据？**
+
+在坐标数组中添加第三个值表示高程：`[longitude, latitude, altitude]`。高程单位为米，基准为 WGS84 椭球面。
+
+```json
+{
+  "type": "Point",
+  "coordinates": [116.4074, 39.9042, 44.0]
+}
+```
+
+=======
+>>>>>>> main
 ## 10. 总结
 
 ### 10.1 核心要点
