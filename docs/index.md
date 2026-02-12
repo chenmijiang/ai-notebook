@@ -19,7 +19,7 @@ A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-g
 - 2026-01-19 - [Git Worktree 完全指南](./git-worktree-guide.md) (L: 2026-01-20)
 - 2026-01-18 - [AntV L7 使用指南](./antv-l7-guide.md) (L: 2026-01-19)
 - 2026-01-15 - [Agent Skills 完全指南](./agent-skills-guide.md) (L: 2026-01-16)
-- 2026-01-13 - [GeoJSON 完全指南](./geojson-guide.md) (L: 2026-01-13)
+- 2026-01-13 - [GeoJSON 完全指南](./geojson-guide.md) (L: 2026-02-12)
 - 2026-01-10 - [Git Stash 完全指南](./git-stash-guide.md) (L: 2026-01-15)
 - 2026-01-10 - [Git Revert 完全指南](./git-revert-guide.md) (L: 2026-01-13)
 - 2026-01-10 - [Git Reset 完全指南](./git-reset-guide.md) (L: 2026-01-15)

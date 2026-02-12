@@ -409,17 +409,17 @@ GeoJSON 坐标支持可选的第三个值来表示高程，格式为 `[经度, �
 
 ## 5. 边界框（Bounding Box）
 
-### 5.1 什么是 bbox
+### 5.1 bbox 属性
 
 bbox（Bounding Box）是包围几何对象的最小矩形范围，用于快速定位和过滤空间数据。格式为 `[minLon, minLat, maxLon, maxLat]`：
 
 ```
         maxLat ┌──────────────────────┐
                │   ╱╲                 │
-               │  ╱  ╲    ╱╲         │
-               │ ╱    ╲  ╱  ╲        │
-               │╱      ╲╱    ╲       │
-               │              ╲╱     │
+               │  ╱  ╲    ╱╲          │
+               │ ╱    ╲  ╱  ╲         │
+               │╱      ╲╱    ╲        │
+               │              ╲╱      │
         minLat └──────────────────────┘
              minLon                maxLon
 
@@ -446,92 +446,7 @@ bbox（Bounding Box）是包围几何对象的最小矩形范围，用于快速�
 }
 ```
 
-### 5.2 bbox 的计算
-
-从几何对象的坐标中提取所有经纬度的最小和最大值即可得到 bbox：
-
-```javascript
-// 手动计算 bbox
-function computeBbox(coordinates) {
-  let minLon = Infinity,
-    minLat = Infinity;
-  let maxLon = -Infinity,
-    maxLat = -Infinity;
-
-  // 递归展开嵌套坐标数组，直到取到 [lon, lat] 对
-  function flatten(coords) {
-    if (typeof coords[0] === "number") {
-      minLon = Math.min(minLon, coords[0]);
-      minLat = Math.min(minLat, coords[1]);
-      maxLon = Math.max(maxLon, coords[0]);
-      maxLat = Math.max(maxLat, coords[1]);
-    } else {
-      coords.forEach(flatten);
-    }
-  }
-
-  flatten(coordinates);
-  return [minLon, minLat, maxLon, maxLat];
-}
-```
-
-使用 Turf.js 可以直接计算：
-
-```javascript
-import * as turf from "@turf/turf";
-
-const polygon = turf.polygon([
-  [
-    [116.0, 39.0],
-    [117.0, 39.0],
-    [117.0, 40.0],
-    [116.0, 40.0],
-    [116.0, 39.0],
-  ],
-]);
-const bbox = turf.bbox(polygon);
-console.log(bbox); // [116.0, 39.0, 117.0, 40.0]
-```
-
-### 5.3 应用场景
-
-**空间查询过滤**
-
-在大量空间数据中查找与目标区域相关的要素时，先用 bbox 做矩形相交判断（时间复杂度 O(1)），快速排除明显不相关的数据，再对候选数据做精确的几何计算：
-
-```javascript
-// 判断两个 bbox 是否相交
-function bboxIntersects(a, b) {
-  return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
-}
-
-// 从大量要素中筛选与目标区域可能相交的要素
-const targetBbox = [116.3, 39.8, 116.5, 40.0];
-const candidates = features.filter((f) =>
-  bboxIntersects(turf.bbox(f), targetBbox),
-);
-```
-
-**地图视口裁剪**
-
-前端地图在平移或缩放时，将当前视口转换为 bbox 参数传给后端 API，只请求可见范围内的数据：
-
-```javascript
-// 将地图视口作为 bbox 参数请求后端
-const bounds = map.getBounds();
-const bbox = [
-  bounds.getWest(),
-  bounds.getSouth(),
-  bounds.getEast(),
-  bounds.getNorth(),
-].join(",");
-
-fetch(`/api/features?bbox=${bbox}`)
-  .then((res) => res.json())
-  .then((geojson) => updateMapLayer(geojson));
-```
-
-### 5.4 三维边界框
+### 5.2 三维边界框
 
 当坐标包含高程时（参见 [4.4 三维坐标](#44-三维坐标)），bbox 扩展为六个值，格式为 `[minLon, minLat, minAlt, maxLon, maxLat, maxAlt]`：
 
@@ -663,6 +578,44 @@ const isInside = turf.booleanPointInPolygon(point, deliveryArea);
 console.log(isInside); // true
 ```
 
+### 6.5 场景5：空间查询过滤
+
+利用 bbox 做矩形相交预判断（O(1)），快速排除无关数据，再对候选要素做精确几何计算：
+
+```javascript
+import * as turf from "@turf/turf";
+
+// 判断两个 bbox 是否相交
+function bboxIntersects(a, b) {
+  return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+}
+
+// 从大量要素中筛选与目标区域可能相交的候选要素
+const targetBbox = [116.3, 39.8, 116.5, 40.0];
+const candidates = features.filter((f) =>
+  bboxIntersects(turf.bbox(f), targetBbox),
+);
+```
+
+### 6.6 场景6：地图视口裁剪
+
+前端地图在平移或缩放时，将当前视口转为 bbox 参数请求后端，只加载可见范围内的数据：
+
+```javascript
+// 获取当前视口范围并请求对应数据
+const bounds = map.getBounds();
+const bbox = [
+  bounds.getWest(),
+  bounds.getSouth(),
+  bounds.getEast(),
+  bounds.getNorth(),
+].join(",");
+
+fetch(`/api/features?bbox=${bbox}`)
+  .then((res) => res.json())
+  .then((geojson) => updateMapLayer(geojson));
+```
+
 ## 7. JavaScript 操作 GeoJSON
 
 ### 7.1 常用库
@@ -706,6 +659,10 @@ console.log(`面积: ${area} 平方米`);
 
 // 计算中心点
 const center = turf.center(polygon);
+
+// 计算边界框
+const bbox = turf.bbox(polygon);
+console.log(bbox); // [116.0, 39.0, 117.0, 40.0]
 
 // 合并多个多边形
 const union = turf.union(polygon1, polygon2);
