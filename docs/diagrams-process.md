@@ -622,12 +622,12 @@ stop
 
 泳道图在流程图基础上增加了泳道分区：
 
-| 元素     | 说明                     | Mermaid 实现      |
-| -------- | ------------------------ | ----------------- |
-| 泳道     | 代表一个角色或部门的区域 | `subgraph 泳道名` |
-| 活动     | 泳道内的具体操作         | 标准流程图节点    |
-| 跨泳道流 | 从一个泳道流向另一个泳道 | 跨子图的连接线    |
-| 分割线   | 泳道之间的边界           | 子图边框          |
+| 元素     | 说明                     | PlantUML 实现        |
+| -------- | ------------------------ | -------------------- |
+| 泳道     | 代表一个角色或部门的区域 | `\|泳道名\|`         |
+| 活动     | 泳道内的具体操作         | `:活动名;`           |
+| 跨泳道流 | 从一个泳道流向另一个泳道 | 切换泳道标识即可     |
+| 分割线   | 泳道之间的边界           | 泳道标识自动生成边界 |
 
 #### 泳道布局方向
 
@@ -640,141 +640,108 @@ stop
 
 #### 简单示例：请假审批流程
 
-```mermaid
-flowchart TB
-    subgraph employee[员工]
-        A([开始]) --> B[填写请假申请]
-        B --> C[提交申请]
-    end
+```plantuml
+@startuml
+|员工|
+start
+:填写请假申请;
+:提交申请;
 
-    subgraph manager[直属经理]
-        D{审批}
-        D -->|同意| E[签字确认]
-        D -->|拒绝| F[填写拒绝原因]
-    end
+|直属经理|
+if (审批?) then (同意)
+    :签字确认;
+    |人事部门|
+    :记录考勤;
+    :更新系统;
+else (拒绝)
+    :填写拒绝原因;
+endif
 
-    subgraph hr[人事部门]
-        G[记录考勤]
-        H[更新系统]
-    end
-
-    subgraph employee2[员工]
-        I[收到通知]
-        J([结束])
-    end
-
-    C --> D
-    E --> G
-    G --> H
-    H --> I
-    F --> I
-    I --> J
+|员工|
+:收到通知;
+stop
+@enduml
 ```
 
 #### 实战示例：电商订单处理流程
 
-```mermaid
-flowchart TB
-    subgraph customer[顾客]
-        A([开始]) --> B[浏览商品]
-        B --> C[添加购物车]
-        C --> D[提交订单]
-        D --> E[完成支付]
-    end
+```plantuml
+@startuml
+|顾客|
+start
+:浏览商品;
+:添加购物车;
+:提交订单;
+:完成支付;
 
-    subgraph system[电商系统]
-        F[验证订单]
-        G{库存检查}
-        H[生成订单]
-        I[扣减库存]
-        J[发送通知]
-    end
+|电商系统|
+:验证订单;
+if (库存检查?) then (充足)
+    :生成订单;
+    :扣减库存;
+    :发送通知;
+else (不足)
+    :通知缺货;
+    stop
+endif
 
-    subgraph warehouse[仓库]
-        K[接收拣货单]
-        L[拣货打包]
-        M[交付物流]
-    end
+|仓库|
+:接收拣货单;
+:拣货打包;
+:交付物流;
 
-    subgraph logistics[物流公司]
-        N[揽收包裹]
-        O[运输配送]
-        P[派送上门]
-    end
+|物流公司|
+:揽收包裹;
+:运输配送;
+:派送上门;
 
-    subgraph customer2[顾客]
-        Q[签收商品]
-        R[确认收货]
-        S([结束])
-    end
-
-    E --> F
-    F --> G
-    G -->|充足| H
-    G -->|不足| T[通知缺货]
-    T --> customer
-    H --> I
-    I --> J
-    J --> K
-    K --> L
-    L --> M
-    M --> N
-    N --> O
-    O --> P
-    P --> Q
-    Q --> R
-    R --> S
+|顾客|
+:签收商品;
+:确认收货;
+stop
+@enduml
 ```
 
 #### 带决策的复杂泳道图
 
-```mermaid
-flowchart TB
-    subgraph sales[销售部]
-        A([开始]) --> B[接收客户需求]
-        B --> C[编写报价单]
-        C --> D[提交审批]
-    end
+```plantuml
+@startuml
+|销售部|
+start
+:接收客户需求;
+:编写报价单;
+:提交审批;
 
-    subgraph finance[财务部]
-        E{金额>10万?}
-        F[财务审核]
-        G[财务确认]
-    end
+|财务部|
+if (金额>10万?) then (是)
+    |总监|
+    :总监审批;
+else (否)
+    |销售经理|
+    if (风险评估?) then (高风险)
+        |总监|
+        :总监审批;
+    else (低风险)
+        :经理审批;
+    endif
+endif
 
-    subgraph manager[销售经理]
-        H{风险评估}
-        I[经理审批]
-    end
+|财务部|
+:财务审核;
+:财务确认;
 
-    subgraph director[总监]
-        J[总监审批]
-    end
-
-    subgraph sales2[销售部]
-        K[发送报价]
-        L[跟进客户]
-        M{客户接受?}
-        N[签订合同]
-        O[订单录入]
-        P([结束])
-    end
-
-    D --> E
-    E -->|是| J
-    E -->|否| H
-    H -->|高风险| J
-    H -->|低风险| I
-    I --> F
-    J --> F
-    F --> G
-    G --> K
-    K --> L
-    L --> M
-    M -->|是| N
-    M -->|否| B
-    N --> O
-    O --> P
+|销售部|
+:发送报价;
+:跟进客户;
+if (客户接受?) then (是)
+    :签订合同;
+    :订单录入;
+    stop
+else (否)
+    :重新编写报价;
+endif
+stop
+@enduml
 ```
 
 ### 4.4 绘制工具
@@ -830,34 +797,27 @@ flowchart TB
 
 #### 标注 SLA 和指标
 
-```mermaid
-flowchart TB
-    subgraph customer[客户]
-        A[提交工单]
-    end
+```plantuml
+@startuml
+|客户|
+:提交工单;
 
-    subgraph support[客服]
-        B[接收工单<br/>SLA: 15分钟]
-        C[初步诊断<br/>SLA: 30分钟]
-        D{能否解决?}
-    end
-
-    subgraph tech[技术]
-        E[技术处理<br/>SLA: 4小时]
-        F[解决问题]
-    end
-
-    subgraph customer2[客户]
-        G[确认解决]
-    end
-
-    A --> B
-    B --> C
-    C --> D
-    D -->|是| G
-    D -->|否| E
-    E --> F
-    F --> G
+|客服|
+:接收工单\nSLA: 15分钟;
+:初步诊断\nSLA: 30分钟;
+if (能否解决?) then (是)
+    |客户|
+    :确认解决;
+    stop
+else (否)
+    |技术|
+    :技术处理\nSLA: 4小时;
+    :解决问题;
+    |客户|
+    :确认解决;
+    stop
+endif
+@enduml
 ```
 
 #### 与其他图配合使用
@@ -873,116 +833,88 @@ flowchart TB
 
 #### 基础泳道图模板
 
-```mermaid
-flowchart TB
-    subgraph role1[角色1]
-        A([开始]) --> B[活动1]
-        B --> C[活动2]
-    end
+```plantuml
+@startuml
+|角色1|
+start
+:活动1;
+:活动2;
 
-    subgraph role2[角色2]
-        D[活动3]
-        E{决策}
-        F[活动4a]
-        G[活动4b]
-    end
+|角色2|
+:活动3;
+if (决策?) then (条件1)
+    :活动4a;
+else (条件2)
+    :活动4b;
+endif
 
-    subgraph role3[角色3]
-        H[活动5]
-        I([结束])
-    end
-
-    C --> D
-    D --> E
-    E -->|条件1| F
-    E -->|条件2| G
-    F --> H
-    G --> H
-    H --> I
+|角色3|
+:活动5;
+stop
+@enduml
 ```
 
 #### 审批流程泳道模板
 
-```mermaid
-flowchart TB
-    subgraph applicant[申请人]
-        A([开始]) --> B[填写申请]
-        B --> C[提交申请]
-    end
+```plantuml
+@startuml
+|申请人|
+start
+:填写申请;
+:提交申请;
 
-    subgraph approver1[一级审批人]
-        D{审批}
-        E[通过]
-        F[退回]
-    end
+|一级审批人|
+if (审批?) then (同意)
+    :通过;
+    |二级审批人|
+    if (审批?) then (同意)
+        :最终通过;
+    else (拒绝)
+        :退回;
+    endif
+else (拒绝)
+    :退回;
+endif
 
-    subgraph approver2[二级审批人]
-        G{审批}
-        H[最终通过]
-        I[退回]
-    end
-
-    subgraph applicant2[申请人]
-        J[收到结果]
-        K([结束])
-    end
-
-    C --> D
-    D -->|同意| E
-    D -->|拒绝| F
-    E --> G
-    F --> J
-    G -->|同意| H
-    G -->|拒绝| I
-    H --> J
-    I --> J
-    J --> K
+|申请人|
+:收到结果;
+stop
+@enduml
 ```
 
 #### 客服工单流程模板
 
-```mermaid
-flowchart TB
-    subgraph customer[客户]
-        A([开始]) --> B[提交问题]
-    end
+```plantuml
+@startuml
+|客户|
+start
+:提交问题;
 
-    subgraph l1[一线客服]
-        C[接收工单]
-        D[初步处理]
-        E{解决?}
-    end
+|一线客服|
+:接收工单;
+:初步处理;
+if (解决?) then (是)
+    |客户|
+    :确认结果;
+else (否)
+    |二线技术|
+    :技术分析;
+    :深度处理;
+    if (解决?) then (是)
+        |客户|
+        :确认结果;
+    else (否)
+        |专家组|
+        :专家介入;
+        :最终方案;
+        |客户|
+        :确认结果;
+    endif
+endif
 
-    subgraph l2[二线技术]
-        F[技术分析]
-        G[深度处理]
-        H{解决?}
-    end
-
-    subgraph l3[专家组]
-        I[专家介入]
-        J[最终方案]
-    end
-
-    subgraph customer2[客户]
-        K[确认结果]
-        L[满意度评价]
-        M([结束])
-    end
-
-    B --> C
-    C --> D
-    D --> E
-    E -->|是| K
-    E -->|否| F
-    F --> G
-    G --> H
-    H -->|是| K
-    H -->|否| I
-    I --> J
-    J --> K
-    K --> L
-    L --> M
+:满意度评价;
+stop
+@enduml
 ```
 
 ## 5. 数据流图 (Data Flow Diagram)
