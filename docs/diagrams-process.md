@@ -961,157 +961,172 @@ DFD 采用自顶向下的层次分解：
 | Level 1  | 顶层图   | 分解主要处理过程             |
 | Level 2+ | 详细图   | 继续分解复杂的处理过程       |
 
-#### Mermaid 表示约定
+#### PlantUML 表示约定
 
-由于 Mermaid 没有原生 DFD 支持，使用以下约定：
+由于 PlantUML 没有原生 DFD 支持，使用以下约定：
 
-| 元素     | Mermaid 语法 | 说明       |
-| -------- | ------------ | ---------- | --- | ------------ |
-| 外部实体 | `[实体名]`   | 方形节点   |
-| 处理过程 | `(处理名)`   | 圆角节点   |
-| 数据存储 | `[(存储名)]` | 数据库形状 |
-| 数据流   | `-->         | 数据名     | `   | 带标签的箭头 |
+| 元素     | PlantUML 语法       | 说明         |
+| -------- | ------------------- | ------------ |
+| 外部实体 | `actor 实体名`      | 外部参与者   |
+| 处理过程 | `usecase "处理名"`  | 圆角节点     |
+| 数据存储 | `database "存储名"` | 数据库形状   |
+| 数据流   | `-->` 带标签        | 带标签的箭头 |
 
 ### 5.3 示例
 
 #### 简单示例：图书借阅系统上下文图（Level 0）
 
-```mermaid
-flowchart LR
-    reader[读者] -->|借书请求| system((图书借阅系统))
-    system -->|借书确认| reader
-    system -->|图书信息| reader
+```plantuml
+@startuml
+left to right direction
+skinparam actorStyle awesome
 
-    admin[管理员] -->|图书信息| system
-    admin -->|读者信息| system
-    system -->|统计报表| admin
+actor "读者" as reader
+actor "管理员" as admin
+actor "供应商" as supplier
+usecase "图书借阅系统" as system
 
-    supplier[供应商] -->|新书信息| system
-    system -->|采购订单| supplier
+reader --> system : 借书请求
+system --> reader : 借书确认
+system --> reader : 图书信息
+
+admin --> system : 图书信息
+admin --> system : 读者信息
+system --> admin : 统计报表
+
+supplier --> system : 新书信息
+system --> supplier : 采购订单
+@enduml
 ```
 
 #### Level 1 展开：图书借阅系统顶层图
 
-```mermaid
-flowchart TB
-    reader[读者]
-    admin[管理员]
+```plantuml
+@startuml
+top to bottom direction
 
-    subgraph system[图书借阅系统]
-        p1((1.0<br/>借阅管理))
-        p2((2.0<br/>图书管理))
-        p3((3.0<br/>读者管理))
-        p4((4.0<br/>统计分析))
+actor "读者" as reader
+actor "管理员" as admin
 
-        d1[(D1 图书库)]
-        d2[(D2 读者库)]
-        d3[(D3 借阅记录)]
-    end
+rectangle "图书借阅系统" {
+    usecase "1.0\n借阅管理" as p1
+    usecase "2.0\n图书管理" as p2
+    usecase "3.0\n读者管理" as p3
+    usecase "4.0\n统计分析" as p4
 
-    reader -->|借书请求| p1
-    p1 -->|借书确认| reader
+    database "D1 图书库" as d1
+    database "D2 读者库" as d2
+    database "D3 借阅记录" as d3
+}
 
-    reader -->|还书请求| p1
-    p1 -->|还书确认| reader
+reader --> p1 : 借书请求
+p1 --> reader : 借书确认
+reader --> p1 : 还书请求
+p1 --> reader : 还书确认
 
-    admin -->|图书信息| p2
-    p2 -->|处理结果| admin
+admin --> p2 : 图书信息
+p2 --> admin : 处理结果
+admin --> p3 : 读者信息
+p3 --> admin : 处理结果
+p4 --> admin : 统计报表
 
-    admin -->|读者信息| p3
-    p3 -->|处理结果| admin
+p1 <--> d1 : 图书状态
+p1 <--> d2 : 读者信息
+p1 --> d3 : 借阅记录
 
-    p4 -->|统计报表| admin
-
-    p1 <-->|图书状态| d1
-    p1 <-->|读者信息| d2
-    p1 -->|借阅记录| d3
-
-    p2 <-->|图书数据| d1
-    p3 <-->|读者数据| d2
-    p4 -->|查询| d3
+p2 <--> d1 : 图书数据
+p3 <--> d2 : 读者数据
+p4 --> d3 : 查询
+@enduml
 ```
 
 #### 实战示例：电商订单系统 DFD
 
-```mermaid
-flowchart TB
-    customer[顾客]
-    payment[支付系统]
-    logistics[物流系统]
+```plantuml
+@startuml
+top to bottom direction
 
-    subgraph order_system[订单处理系统]
-        p1((1.0<br/>订单创建))
-        p2((2.0<br/>订单验证))
-        p3((3.0<br/>支付处理))
-        p4((4.0<br/>发货处理))
-        p5((5.0<br/>订单查询))
+actor "顾客" as customer
+actor "支付系统" as payment
+actor "物流系统" as logistics
 
-        d1[(D1 商品库)]
-        d2[(D2 库存库)]
-        d3[(D3 订单库)]
-        d4[(D4 用户库)]
-    end
+rectangle "订单处理系统" {
+    usecase "1.0\n订单创建" as p1
+    usecase "2.0\n订单验证" as p2
+    usecase "3.0\n支付处理" as p3
+    usecase "4.0\n发货处理" as p4
+    usecase "5.0\n订单查询" as p5
 
-    customer -->|订单信息| p1
-    p1 -->|订单确认| customer
+    database "D1 商品库" as d1
+    database "D2 库存库" as d2
+    database "D3 订单库" as d3
+    database "D4 用户库" as d4
+}
 
-    p1 -->|待验证订单| p2
-    d1 -->|商品信息| p2
-    d2 -->|库存信息| p2
-    d4 -->|用户信息| p2
+customer --> p1 : 订单信息
+p1 --> customer : 订单确认
 
-    p2 -->|验证通过订单| p3
-    p2 -->|验证失败| customer
+p1 --> p2 : 待验证订单
+d1 --> p2 : 商品信息
+d2 --> p2 : 库存信息
+d4 --> p2 : 用户信息
 
-    p3 -->|支付请求| payment
-    payment -->|支付结果| p3
-    p3 -->|支付成功订单| d3
+p2 --> p3 : 验证通过订单
+p2 --> customer : 验证失败
 
-    p3 -->|已支付订单| p4
-    p4 -->|发货请求| logistics
-    logistics -->|物流单号| p4
-    p4 -->|更新状态| d3
+p3 --> payment : 支付请求
+payment --> p3 : 支付结果
+p3 --> d3 : 支付成功订单
 
-    customer -->|查询请求| p5
-    d3 -->|订单数据| p5
-    p5 -->|订单状态| customer
+p3 --> p4 : 已支付订单
+p4 --> logistics : 发货请求
+logistics --> p4 : 物流单号
+p4 --> d3 : 更新状态
+
+customer --> p5 : 查询请求
+d3 --> p5 : 订单数据
+p5 --> customer : 订单状态
+@enduml
 ```
 
 #### Level 2 展开：订单创建处理详细 DFD
 
-```mermaid
-flowchart TB
-    customer[顾客]
+```plantuml
+@startuml
+top to bottom direction
 
-    subgraph p1[1.0 订单创建]
-        p1_1((1.1<br/>验证购物车))
-        p1_2((1.2<br/>计算价格))
-        p1_3((1.3<br/>生成订单))
-        p1_4((1.4<br/>锁定库存))
-    end
+actor "顾客" as customer
 
-    d1[(D1 商品库)]
-    d2[(D2 库存库)]
-    d3[(D3 订单库)]
-    d5[(D5 购物车)]
-    d6[(D6 促销规则)]
+rectangle "1.0 订单创建" {
+    usecase "1.1\n验证购物车" as p1_1
+    usecase "1.2\n计算价格" as p1_2
+    usecase "1.3\n生成订单" as p1_3
+    usecase "1.4\n锁定库存" as p1_4
+}
 
-    customer -->|下单请求| p1_1
-    d5 -->|购物车数据| p1_1
-    d1 -->|商品信息| p1_1
+database "D1 商品库" as d1
+database "D2 库存库" as d2
+database "D3 订单库" as d3
+database "D5 购物车" as d5
+database "D6 促销规则" as d6
 
-    p1_1 -->|有效商品列表| p1_2
-    d6 -->|促销规则| p1_2
-    d1 -->|价格信息| p1_2
+customer --> p1_1 : 下单请求
+d5 --> p1_1 : 购物车数据
+d1 --> p1_1 : 商品信息
 
-    p1_2 -->|计算后订单| p1_3
-    p1_3 -->|订单数据| d3
+p1_1 --> p1_2 : 有效商品列表
+d6 --> p1_2 : 促销规则
+d1 --> p1_2 : 价格信息
 
-    p1_3 -->|库存需求| p1_4
-    p1_4 -->|锁定请求| d2
-    d2 -->|锁定结果| p1_4
+p1_2 --> p1_3 : 计算后订单
+p1_3 --> d3 : 订单数据
 
-    p1_4 -->|订单确认| customer
+p1_3 --> p1_4 : 库存需求
+p1_4 --> d2 : 锁定请求
+d2 --> p1_4 : 锁定结果
+
+p1_4 --> customer : 订单确认
+@enduml
 ```
 
 ### 5.4 绘制工具
@@ -1121,7 +1136,7 @@ flowchart TB
 | Draw.io    | 免费工具 | 有 DFD 形状库、免费 | 手动布局         |
 | Lucidchart | 在线工具 | 专业 DFD 模板       | 免费版受限       |
 | Visio      | 桌面软件 | 标准 DFD 模板       | 价格昂贵         |
-| Mermaid    | 文本绘图 | 版本控制友好        | 需要约定表示方式 |
+| PlantUML   | 文本绘图 | 版本控制友好        | 需要约定表示方式 |
 | ProcessOn  | 在线工具 | 中文友好            | 高级功能需付费   |
 | StarUML    | 桌面软件 | 支持 DFD            | 功能相对简单     |
 
@@ -1189,44 +1204,55 @@ flowchart TB
 
 #### 上下文图模板（Level 0）
 
-```mermaid
-flowchart LR
-    ext1[外部实体1] -->|输入数据1| system((系统名称))
-    system -->|输出数据1| ext1
+```plantuml
+@startuml
+left to right direction
 
-    ext2[外部实体2] -->|输入数据2| system
-    system -->|输出数据2| ext2
+actor "外部实体1" as ext1
+actor "外部实体2" as ext2
+actor "外部实体3" as ext3
+usecase "系统名称" as system
 
-    ext3[外部实体3] -->|输入数据3| system
-    system -->|输出数据3| ext3
+ext1 --> system : 输入数据1
+system --> ext1 : 输出数据1
+
+ext2 --> system : 输入数据2
+system --> ext2 : 输出数据2
+
+ext3 --> system : 输入数据3
+system --> ext3 : 输出数据3
+@enduml
 ```
 
 #### 顶层图模板（Level 1）
 
-```mermaid
-flowchart TB
-    ext1[外部实体1]
-    ext2[外部实体2]
+```plantuml
+@startuml
+top to bottom direction
 
-    subgraph system[系统名称]
-        p1((1.0<br/>处理过程1))
-        p2((2.0<br/>处理过程2))
-        p3((3.0<br/>处理过程3))
+actor "外部实体1" as ext1
+actor "外部实体2" as ext2
 
-        d1[(D1 数据存储1)]
-        d2[(D2 数据存储2)]
-    end
+rectangle "系统名称" {
+    usecase "1.0\n处理过程1" as p1
+    usecase "2.0\n处理过程2" as p2
+    usecase "3.0\n处理过程3" as p3
 
-    ext1 -->|输入数据| p1
-    p1 -->|输出数据| ext1
+    database "D1 数据存储1" as d1
+    database "D2 数据存储2" as d2
+}
 
-    p1 -->|内部数据| p2
-    p1 <-->|存取数据| d1
+ext1 --> p1 : 输入数据
+p1 --> ext1 : 输出数据
 
-    p2 -->|内部数据| p3
-    p2 <-->|存取数据| d2
+p1 --> p2 : 内部数据
+p1 <--> d1 : 存取数据
 
-    p3 -->|输出数据| ext2
+p2 --> p3 : 内部数据
+p2 <--> d2 : 存取数据
+
+p3 --> ext2 : 输出数据
+@enduml
 ```
 
 #### CRUD 矩阵

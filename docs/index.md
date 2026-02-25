@@ -2,7 +2,7 @@ A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-g
 
 - 2026-02-13 - [瓦片地图完全指南](./tile-map-guide.md) (L: 2026-02-13)
 - 2026-02-10 - [运维阶段图表指南](./diagrams-operations.md) (L: 2026-02-10)
-- 2026-02-10 - [流程建模阶段图表指南](./diagrams-process.md) (L: 2026-02-10)
+- 2026-02-10 - [流程建模阶段图表指南](./diagrams-process.md) (L: 2026-02-25)
 - 2026-02-10 - [架构设计阶段图表指南](./diagrams-architecture.md) (L: 2026-02-10)
 - 2026-02-10 - [详细设计阶段图表指南](./diagrams-design.md) (L: 2026-02-11)
 - 2026-02-10 - [需求分析阶段图表指南](./diagrams-requirements.md) (L: 2026-02-11)
