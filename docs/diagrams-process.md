@@ -60,12 +60,12 @@
 
 #### 连接线类型
 
-| 类型       | 语法       | 说明           |
-| ---------- | ---------- | -------------- | --- | -------------- |
-| 实线箭头   | `-->`      | 标准流程方向   |
-| 带文字箭头 | `-->       | 文本           | `   | 标注条件或说明 |
-| 虚线箭头   | `-.->    ` | 可选或异步流程 |
-| 粗线箭头   | `==>`      | 强调的主要流程 |
+| 类型       | 语法        | 说明           |
+| ---------- | ----------- | -------------- |
+| 实线箭头   | `-->`       | 标准流程方向   |
+| 带文字箭头 | `- 文本 ->` | 标注条件或说明 |
+| 虚线箭头   | `-.->`      | 可选或异步流程 |
+| 粗线箭头   | `==>`       | 强调的主要流程 |
 
 #### 流程方向
 
@@ -359,31 +359,6 @@ stop
 @enduml
 ```
 
-使用 Mermaid 模拟（Mermaid 原生不完全支持活动图，使用 flowchart 模拟）：
-
-```mermaid
-flowchart TD
-    start(( )) --> browse[浏览商品]
-    browse --> add[添加到购物车]
-    add --> submit[提交订单]
-    submit --> stock{库存充足?}
-
-    stock -->|是| lock[锁定库存]
-    lock --> wait[等待支付]
-    wait --> pay{支付成功?}
-
-    pay -->|是| confirm[确认订单]
-    confirm --> notify[发送通知]
-    notify --> end1((( )))
-
-    pay -->|否| cancel[取消订单]
-    cancel --> release[释放库存]
-    release --> end2((( )))
-
-    stock -->|否| outstock[提示缺货]
-    outstock --> end3((( )))
-```
-
 #### 实战示例：带并发的订单处理
 
 ```plantuml
@@ -418,55 +393,6 @@ endif
 
 stop
 @enduml
-```
-
-Mermaid 模拟并发（使用子图表示并行）：
-
-```mermaid
-flowchart TD
-    start(( )) --> receive[接收订单]
-    receive --> validate[验证订单信息]
-
-    validate --> fork1[/并行开始/]
-
-    subgraph parallel1[并行检查]
-        check_stock[检查库存]
-        check_credit[验证用户信用]
-        calc_shipping[计算配送费用]
-    end
-
-    fork1 --> check_stock
-    fork1 --> check_credit
-    fork1 --> calc_shipping
-
-    check_stock --> join1[\并行结束\]
-    check_credit --> join1
-    calc_shipping --> join1
-
-    join1 --> decision{所有检查通过?}
-
-    decision -->|是| create[创建订单记录]
-    create --> fork2[/并行开始/]
-
-    subgraph parallel2[并行通知]
-        email[发送确认邮件]
-        sms[发送短信通知]
-        push[推送APP通知]
-    end
-
-    fork2 --> email
-    fork2 --> sms
-    fork2 --> push
-
-    email --> join2[\并行结束\]
-    sms --> join2
-    push --> join2
-
-    join2 --> wait[等待支付]
-    wait --> end1((( )))
-
-    decision -->|否| error[返回错误信息]
-    error --> end2((( )))
 ```
 
 #### 带对象流的示例
@@ -696,12 +622,12 @@ stop
 
 泳道图在流程图基础上增加了泳道分区：
 
-| 元素     | 说明                     | Mermaid 实现      |
-| -------- | ------------------------ | ----------------- |
-| 泳道     | 代表一个角色或部门的区域 | `subgraph 泳道名` |
-| 活动     | 泳道内的具体操作         | 标准流程图节点    |
-| 跨泳道流 | 从一个泳道流向另一个泳道 | 跨子图的连接线    |
-| 分割线   | 泳道之间的边界           | 子图边框          |
+| 元素     | 说明                     | PlantUML 实现        |
+| -------- | ------------------------ | -------------------- |
+| 泳道     | 代表一个角色或部门的区域 | `\|泳道名\|`         |
+| 活动     | 泳道内的具体操作         | `:活动名;`           |
+| 跨泳道流 | 从一个泳道流向另一个泳道 | 切换泳道标识即可     |
+| 分割线   | 泳道之间的边界           | 泳道标识自动生成边界 |
 
 #### 泳道布局方向
 
@@ -714,141 +640,108 @@ stop
 
 #### 简单示例：请假审批流程
 
-```mermaid
-flowchart TB
-    subgraph employee[员工]
-        A([开始]) --> B[填写请假申请]
-        B --> C[提交申请]
-    end
+```plantuml
+@startuml
+|员工|
+start
+:填写请假申请;
+:提交申请;
 
-    subgraph manager[直属经理]
-        D{审批}
-        D -->|同意| E[签字确认]
-        D -->|拒绝| F[填写拒绝原因]
-    end
+|直属经理|
+if (审批?) then (同意)
+    :签字确认;
+    |人事部门|
+    :记录考勤;
+    :更新系统;
+else (拒绝)
+    :填写拒绝原因;
+endif
 
-    subgraph hr[人事部门]
-        G[记录考勤]
-        H[更新系统]
-    end
-
-    subgraph employee2[员工]
-        I[收到通知]
-        J([结束])
-    end
-
-    C --> D
-    E --> G
-    G --> H
-    H --> I
-    F --> I
-    I --> J
+|员工|
+:收到通知;
+stop
+@enduml
 ```
 
 #### 实战示例：电商订单处理流程
 
-```mermaid
-flowchart TB
-    subgraph customer[顾客]
-        A([开始]) --> B[浏览商品]
-        B --> C[添加购物车]
-        C --> D[提交订单]
-        D --> E[完成支付]
-    end
+```plantuml
+@startuml
+|顾客|
+start
+:浏览商品;
+:添加购物车;
+:提交订单;
+:完成支付;
 
-    subgraph system[电商系统]
-        F[验证订单]
-        G{库存检查}
-        H[生成订单]
-        I[扣减库存]
-        J[发送通知]
-    end
+|电商系统|
+:验证订单;
+if (库存检查?) then (充足)
+    :生成订单;
+    :扣减库存;
+    :发送通知;
+else (不足)
+    :通知缺货;
+    stop
+endif
 
-    subgraph warehouse[仓库]
-        K[接收拣货单]
-        L[拣货打包]
-        M[交付物流]
-    end
+|仓库|
+:接收拣货单;
+:拣货打包;
+:交付物流;
 
-    subgraph logistics[物流公司]
-        N[揽收包裹]
-        O[运输配送]
-        P[派送上门]
-    end
+|物流公司|
+:揽收包裹;
+:运输配送;
+:派送上门;
 
-    subgraph customer2[顾客]
-        Q[签收商品]
-        R[确认收货]
-        S([结束])
-    end
-
-    E --> F
-    F --> G
-    G -->|充足| H
-    G -->|不足| T[通知缺货]
-    T --> customer
-    H --> I
-    I --> J
-    J --> K
-    K --> L
-    L --> M
-    M --> N
-    N --> O
-    O --> P
-    P --> Q
-    Q --> R
-    R --> S
+|顾客|
+:签收商品;
+:确认收货;
+stop
+@enduml
 ```
 
 #### 带决策的复杂泳道图
 
-```mermaid
-flowchart TB
-    subgraph sales[销售部]
-        A([开始]) --> B[接收客户需求]
-        B --> C[编写报价单]
-        C --> D[提交审批]
-    end
+```plantuml
+@startuml
+|销售部|
+start
+:接收客户需求;
+:编写报价单;
+:提交审批;
 
-    subgraph finance[财务部]
-        E{金额>10万?}
-        F[财务审核]
-        G[财务确认]
-    end
+|财务部|
+if (金额>10万?) then (是)
+    |总监|
+    :总监审批;
+else (否)
+    |销售经理|
+    if (风险评估?) then (高风险)
+        |总监|
+        :总监审批;
+    else (低风险)
+        :经理审批;
+    endif
+endif
 
-    subgraph manager[销售经理]
-        H{风险评估}
-        I[经理审批]
-    end
+|财务部|
+:财务审核;
+:财务确认;
 
-    subgraph director[总监]
-        J[总监审批]
-    end
-
-    subgraph sales2[销售部]
-        K[发送报价]
-        L[跟进客户]
-        M{客户接受?}
-        N[签订合同]
-        O[订单录入]
-        P([结束])
-    end
-
-    D --> E
-    E -->|是| J
-    E -->|否| H
-    H -->|高风险| J
-    H -->|低风险| I
-    I --> F
-    J --> F
-    F --> G
-    G --> K
-    K --> L
-    L --> M
-    M -->|是| N
-    M -->|否| B
-    N --> O
-    O --> P
+|销售部|
+:发送报价;
+:跟进客户;
+if (客户接受?) then (是)
+    :签订合同;
+    :订单录入;
+    stop
+else (否)
+    :重新编写报价;
+endif
+stop
+@enduml
 ```
 
 ### 4.4 绘制工具
@@ -904,34 +797,27 @@ flowchart TB
 
 #### 标注 SLA 和指标
 
-```mermaid
-flowchart TB
-    subgraph customer[客户]
-        A[提交工单]
-    end
+```plantuml
+@startuml
+|客户|
+:提交工单;
 
-    subgraph support[客服]
-        B[接收工单<br/>SLA: 15分钟]
-        C[初步诊断<br/>SLA: 30分钟]
-        D{能否解决?}
-    end
-
-    subgraph tech[技术]
-        E[技术处理<br/>SLA: 4小时]
-        F[解决问题]
-    end
-
-    subgraph customer2[客户]
-        G[确认解决]
-    end
-
-    A --> B
-    B --> C
-    C --> D
-    D -->|是| G
-    D -->|否| E
-    E --> F
-    F --> G
+|客服|
+:接收工单\nSLA: 15分钟;
+:初步诊断\nSLA: 30分钟;
+if (能否解决?) then (是)
+    |客户|
+    :确认解决;
+    stop
+else (否)
+    |技术|
+    :技术处理\nSLA: 4小时;
+    :解决问题;
+    |客户|
+    :确认解决;
+    stop
+endif
+@enduml
 ```
 
 #### 与其他图配合使用
@@ -947,116 +833,88 @@ flowchart TB
 
 #### 基础泳道图模板
 
-```mermaid
-flowchart TB
-    subgraph role1[角色1]
-        A([开始]) --> B[活动1]
-        B --> C[活动2]
-    end
+```plantuml
+@startuml
+|角色1|
+start
+:活动1;
+:活动2;
 
-    subgraph role2[角色2]
-        D[活动3]
-        E{决策}
-        F[活动4a]
-        G[活动4b]
-    end
+|角色2|
+:活动3;
+if (决策?) then (条件1)
+    :活动4a;
+else (条件2)
+    :活动4b;
+endif
 
-    subgraph role3[角色3]
-        H[活动5]
-        I([结束])
-    end
-
-    C --> D
-    D --> E
-    E -->|条件1| F
-    E -->|条件2| G
-    F --> H
-    G --> H
-    H --> I
+|角色3|
+:活动5;
+stop
+@enduml
 ```
 
 #### 审批流程泳道模板
 
-```mermaid
-flowchart TB
-    subgraph applicant[申请人]
-        A([开始]) --> B[填写申请]
-        B --> C[提交申请]
-    end
+```plantuml
+@startuml
+|申请人|
+start
+:填写申请;
+:提交申请;
 
-    subgraph approver1[一级审批人]
-        D{审批}
-        E[通过]
-        F[退回]
-    end
+|一级审批人|
+if (审批?) then (同意)
+    :通过;
+    |二级审批人|
+    if (审批?) then (同意)
+        :最终通过;
+    else (拒绝)
+        :退回;
+    endif
+else (拒绝)
+    :退回;
+endif
 
-    subgraph approver2[二级审批人]
-        G{审批}
-        H[最终通过]
-        I[退回]
-    end
-
-    subgraph applicant2[申请人]
-        J[收到结果]
-        K([结束])
-    end
-
-    C --> D
-    D -->|同意| E
-    D -->|拒绝| F
-    E --> G
-    F --> J
-    G -->|同意| H
-    G -->|拒绝| I
-    H --> J
-    I --> J
-    J --> K
+|申请人|
+:收到结果;
+stop
+@enduml
 ```
 
 #### 客服工单流程模板
 
-```mermaid
-flowchart TB
-    subgraph customer[客户]
-        A([开始]) --> B[提交问题]
-    end
+```plantuml
+@startuml
+|客户|
+start
+:提交问题;
 
-    subgraph l1[一线客服]
-        C[接收工单]
-        D[初步处理]
-        E{解决?}
-    end
+|一线客服|
+:接收工单;
+:初步处理;
+if (解决?) then (是)
+    |客户|
+    :确认结果;
+else (否)
+    |二线技术|
+    :技术分析;
+    :深度处理;
+    if (解决?) then (是)
+        |客户|
+        :确认结果;
+    else (否)
+        |专家组|
+        :专家介入;
+        :最终方案;
+        |客户|
+        :确认结果;
+    endif
+endif
 
-    subgraph l2[二线技术]
-        F[技术分析]
-        G[深度处理]
-        H{解决?}
-    end
-
-    subgraph l3[专家组]
-        I[专家介入]
-        J[最终方案]
-    end
-
-    subgraph customer2[客户]
-        K[确认结果]
-        L[满意度评价]
-        M([结束])
-    end
-
-    B --> C
-    C --> D
-    D --> E
-    E -->|是| K
-    E -->|否| F
-    F --> G
-    G --> H
-    H -->|是| K
-    H -->|否| I
-    I --> J
-    J --> K
-    K --> L
-    L --> M
+:满意度评价;
+stop
+@enduml
 ```
 
 ## 5. 数据流图 (Data Flow Diagram)
@@ -1103,157 +961,172 @@ DFD 采用自顶向下的层次分解：
 | Level 1  | 顶层图   | 分解主要处理过程             |
 | Level 2+ | 详细图   | 继续分解复杂的处理过程       |
 
-#### Mermaid 表示约定
+#### PlantUML 表示约定
 
-由于 Mermaid 没有原生 DFD 支持，使用以下约定：
+由于 PlantUML 没有原生 DFD 支持，使用以下约定：
 
-| 元素     | Mermaid 语法 | 说明       |
-| -------- | ------------ | ---------- | --- | ------------ |
-| 外部实体 | `[实体名]`   | 方形节点   |
-| 处理过程 | `(处理名)`   | 圆角节点   |
-| 数据存储 | `[(存储名)]` | 数据库形状 |
-| 数据流   | `-->         | 数据名     | `   | 带标签的箭头 |
+| 元素     | PlantUML 语法       | 说明         |
+| -------- | ------------------- | ------------ |
+| 外部实体 | `actor 实体名`      | 外部参与者   |
+| 处理过程 | `usecase "处理名"`  | 圆角节点     |
+| 数据存储 | `database "存储名"` | 数据库形状   |
+| 数据流   | `-->` 带标签        | 带标签的箭头 |
 
 ### 5.3 示例
 
 #### 简单示例：图书借阅系统上下文图（Level 0）
 
-```mermaid
-flowchart LR
-    reader[读者] -->|借书请求| system((图书借阅系统))
-    system -->|借书确认| reader
-    system -->|图书信息| reader
+```plantuml
+@startuml
+left to right direction
+skinparam actorStyle awesome
 
-    admin[管理员] -->|图书信息| system
-    admin -->|读者信息| system
-    system -->|统计报表| admin
+actor "读者" as reader
+actor "管理员" as admin
+actor "供应商" as supplier
+usecase "图书借阅系统" as system
 
-    supplier[供应商] -->|新书信息| system
-    system -->|采购订单| supplier
+reader --> system : 借书请求
+system --> reader : 借书确认
+system --> reader : 图书信息
+
+admin --> system : 图书信息
+admin --> system : 读者信息
+system --> admin : 统计报表
+
+supplier --> system : 新书信息
+system --> supplier : 采购订单
+@enduml
 ```
 
 #### Level 1 展开：图书借阅系统顶层图
 
-```mermaid
-flowchart TB
-    reader[读者]
-    admin[管理员]
+```plantuml
+@startuml
+top to bottom direction
 
-    subgraph system[图书借阅系统]
-        p1((1.0<br/>借阅管理))
-        p2((2.0<br/>图书管理))
-        p3((3.0<br/>读者管理))
-        p4((4.0<br/>统计分析))
+actor "读者" as reader
+actor "管理员" as admin
 
-        d1[(D1 图书库)]
-        d2[(D2 读者库)]
-        d3[(D3 借阅记录)]
-    end
+rectangle "图书借阅系统" {
+    usecase "1.0\n借阅管理" as p1
+    usecase "2.0\n图书管理" as p2
+    usecase "3.0\n读者管理" as p3
+    usecase "4.0\n统计分析" as p4
 
-    reader -->|借书请求| p1
-    p1 -->|借书确认| reader
+    database "D1 图书库" as d1
+    database "D2 读者库" as d2
+    database "D3 借阅记录" as d3
+}
 
-    reader -->|还书请求| p1
-    p1 -->|还书确认| reader
+reader --> p1 : 借书请求
+p1 --> reader : 借书确认
+reader --> p1 : 还书请求
+p1 --> reader : 还书确认
 
-    admin -->|图书信息| p2
-    p2 -->|处理结果| admin
+admin --> p2 : 图书信息
+p2 --> admin : 处理结果
+admin --> p3 : 读者信息
+p3 --> admin : 处理结果
+p4 --> admin : 统计报表
 
-    admin -->|读者信息| p3
-    p3 -->|处理结果| admin
+p1 <--> d1 : 图书状态
+p1 <--> d2 : 读者信息
+p1 --> d3 : 借阅记录
 
-    p4 -->|统计报表| admin
-
-    p1 <-->|图书状态| d1
-    p1 <-->|读者信息| d2
-    p1 -->|借阅记录| d3
-
-    p2 <-->|图书数据| d1
-    p3 <-->|读者数据| d2
-    p4 -->|查询| d3
+p2 <--> d1 : 图书数据
+p3 <--> d2 : 读者数据
+p4 --> d3 : 查询
+@enduml
 ```
 
 #### 实战示例：电商订单系统 DFD
 
-```mermaid
-flowchart TB
-    customer[顾客]
-    payment[支付系统]
-    logistics[物流系统]
+```plantuml
+@startuml
+top to bottom direction
 
-    subgraph order_system[订单处理系统]
-        p1((1.0<br/>订单创建))
-        p2((2.0<br/>订单验证))
-        p3((3.0<br/>支付处理))
-        p4((4.0<br/>发货处理))
-        p5((5.0<br/>订单查询))
+actor "顾客" as customer
+actor "支付系统" as payment
+actor "物流系统" as logistics
 
-        d1[(D1 商品库)]
-        d2[(D2 库存库)]
-        d3[(D3 订单库)]
-        d4[(D4 用户库)]
-    end
+rectangle "订单处理系统" {
+    usecase "1.0\n订单创建" as p1
+    usecase "2.0\n订单验证" as p2
+    usecase "3.0\n支付处理" as p3
+    usecase "4.0\n发货处理" as p4
+    usecase "5.0\n订单查询" as p5
 
-    customer -->|订单信息| p1
-    p1 -->|订单确认| customer
+    database "D1 商品库" as d1
+    database "D2 库存库" as d2
+    database "D3 订单库" as d3
+    database "D4 用户库" as d4
+}
 
-    p1 -->|待验证订单| p2
-    d1 -->|商品信息| p2
-    d2 -->|库存信息| p2
-    d4 -->|用户信息| p2
+customer --> p1 : 订单信息
+p1 --> customer : 订单确认
 
-    p2 -->|验证通过订单| p3
-    p2 -->|验证失败| customer
+p1 --> p2 : 待验证订单
+d1 --> p2 : 商品信息
+d2 --> p2 : 库存信息
+d4 --> p2 : 用户信息
 
-    p3 -->|支付请求| payment
-    payment -->|支付结果| p3
-    p3 -->|支付成功订单| d3
+p2 --> p3 : 验证通过订单
+p2 --> customer : 验证失败
 
-    p3 -->|已支付订单| p4
-    p4 -->|发货请求| logistics
-    logistics -->|物流单号| p4
-    p4 -->|更新状态| d3
+p3 --> payment : 支付请求
+payment --> p3 : 支付结果
+p3 --> d3 : 支付成功订单
 
-    customer -->|查询请求| p5
-    d3 -->|订单数据| p5
-    p5 -->|订单状态| customer
+p3 --> p4 : 已支付订单
+p4 --> logistics : 发货请求
+logistics --> p4 : 物流单号
+p4 --> d3 : 更新状态
+
+customer --> p5 : 查询请求
+d3 --> p5 : 订单数据
+p5 --> customer : 订单状态
+@enduml
 ```
 
 #### Level 2 展开：订单创建处理详细 DFD
 
-```mermaid
-flowchart TB
-    customer[顾客]
+```plantuml
+@startuml
+top to bottom direction
 
-    subgraph p1[1.0 订单创建]
-        p1_1((1.1<br/>验证购物车))
-        p1_2((1.2<br/>计算价格))
-        p1_3((1.3<br/>生成订单))
-        p1_4((1.4<br/>锁定库存))
-    end
+actor "顾客" as customer
 
-    d1[(D1 商品库)]
-    d2[(D2 库存库)]
-    d3[(D3 订单库)]
-    d5[(D5 购物车)]
-    d6[(D6 促销规则)]
+rectangle "1.0 订单创建" {
+    usecase "1.1\n验证购物车" as p1_1
+    usecase "1.2\n计算价格" as p1_2
+    usecase "1.3\n生成订单" as p1_3
+    usecase "1.4\n锁定库存" as p1_4
+}
 
-    customer -->|下单请求| p1_1
-    d5 -->|购物车数据| p1_1
-    d1 -->|商品信息| p1_1
+database "D1 商品库" as d1
+database "D2 库存库" as d2
+database "D3 订单库" as d3
+database "D5 购物车" as d5
+database "D6 促销规则" as d6
 
-    p1_1 -->|有效商品列表| p1_2
-    d6 -->|促销规则| p1_2
-    d1 -->|价格信息| p1_2
+customer --> p1_1 : 下单请求
+d5 --> p1_1 : 购物车数据
+d1 --> p1_1 : 商品信息
 
-    p1_2 -->|计算后订单| p1_3
-    p1_3 -->|订单数据| d3
+p1_1 --> p1_2 : 有效商品列表
+d6 --> p1_2 : 促销规则
+d1 --> p1_2 : 价格信息
 
-    p1_3 -->|库存需求| p1_4
-    p1_4 -->|锁定请求| d2
-    d2 -->|锁定结果| p1_4
+p1_2 --> p1_3 : 计算后订单
+p1_3 --> d3 : 订单数据
 
-    p1_4 -->|订单确认| customer
+p1_3 --> p1_4 : 库存需求
+p1_4 --> d2 : 锁定请求
+d2 --> p1_4 : 锁定结果
+
+p1_4 --> customer : 订单确认
+@enduml
 ```
 
 ### 5.4 绘制工具
@@ -1263,7 +1136,7 @@ flowchart TB
 | Draw.io    | 免费工具 | 有 DFD 形状库、免费 | 手动布局         |
 | Lucidchart | 在线工具 | 专业 DFD 模板       | 免费版受限       |
 | Visio      | 桌面软件 | 标准 DFD 模板       | 价格昂贵         |
-| Mermaid    | 文本绘图 | 版本控制友好        | 需要约定表示方式 |
+| PlantUML   | 文本绘图 | 版本控制友好        | 需要约定表示方式 |
 | ProcessOn  | 在线工具 | 中文友好            | 高级功能需付费   |
 | StarUML    | 桌面软件 | 支持 DFD            | 功能相对简单     |
 
@@ -1331,44 +1204,55 @@ flowchart TB
 
 #### 上下文图模板（Level 0）
 
-```mermaid
-flowchart LR
-    ext1[外部实体1] -->|输入数据1| system((系统名称))
-    system -->|输出数据1| ext1
+```plantuml
+@startuml
+left to right direction
 
-    ext2[外部实体2] -->|输入数据2| system
-    system -->|输出数据2| ext2
+actor "外部实体1" as ext1
+actor "外部实体2" as ext2
+actor "外部实体3" as ext3
+usecase "系统名称" as system
 
-    ext3[外部实体3] -->|输入数据3| system
-    system -->|输出数据3| ext3
+ext1 --> system : 输入数据1
+system --> ext1 : 输出数据1
+
+ext2 --> system : 输入数据2
+system --> ext2 : 输出数据2
+
+ext3 --> system : 输入数据3
+system --> ext3 : 输出数据3
+@enduml
 ```
 
 #### 顶层图模板（Level 1）
 
-```mermaid
-flowchart TB
-    ext1[外部实体1]
-    ext2[外部实体2]
+```plantuml
+@startuml
+top to bottom direction
 
-    subgraph system[系统名称]
-        p1((1.0<br/>处理过程1))
-        p2((2.0<br/>处理过程2))
-        p3((3.0<br/>处理过程3))
+actor "外部实体1" as ext1
+actor "外部实体2" as ext2
 
-        d1[(D1 数据存储1)]
-        d2[(D2 数据存储2)]
-    end
+rectangle "系统名称" {
+    usecase "1.0\n处理过程1" as p1
+    usecase "2.0\n处理过程2" as p2
+    usecase "3.0\n处理过程3" as p3
 
-    ext1 -->|输入数据| p1
-    p1 -->|输出数据| ext1
+    database "D1 数据存储1" as d1
+    database "D2 数据存储2" as d2
+}
 
-    p1 -->|内部数据| p2
-    p1 <-->|存取数据| d1
+ext1 --> p1 : 输入数据
+p1 --> ext1 : 输出数据
 
-    p2 -->|内部数据| p3
-    p2 <-->|存取数据| d2
+p1 --> p2 : 内部数据
+p1 <--> d1 : 存取数据
 
-    p3 -->|输出数据| ext2
+p2 --> p3 : 内部数据
+p2 <--> d2 : 存取数据
+
+p3 --> ext2 : 输出数据
+@enduml
 ```
 
 #### CRUD 矩阵

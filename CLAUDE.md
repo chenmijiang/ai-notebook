@@ -21,5 +21,5 @@
 
 ## 注意事项
 
-- 当使用 braninstorming skill 生成计划/规划时，内容放到本项目 plans 目录下
+- 当使用 braninstorming skill 生成计划/规划时，内容放到本项目工作目录的 plans 目录下，而不是 docs/plans 目录
 - 当需要提交代码变更时，先把变更暂存，然后调用 commit skill 进行提交
