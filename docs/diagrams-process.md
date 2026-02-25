@@ -359,31 +359,6 @@ stop
 @enduml
 ```
 
-使用 Mermaid 模拟（Mermaid 原生不完全支持活动图，使用 flowchart 模拟）：
-
-```mermaid
-flowchart TD
-    start(( )) --> browse[浏览商品]
-    browse --> add[添加到购物车]
-    add --> submit[提交订单]
-    submit --> stock{库存充足?}
-
-    stock -->|是| lock[锁定库存]
-    lock --> wait[等待支付]
-    wait --> pay{支付成功?}
-
-    pay -->|是| confirm[确认订单]
-    confirm --> notify[发送通知]
-    notify --> end1((( )))
-
-    pay -->|否| cancel[取消订单]
-    cancel --> release[释放库存]
-    release --> end2((( )))
-
-    stock -->|否| outstock[提示缺货]
-    outstock --> end3((( )))
-```
-
 #### 实战示例：带并发的订单处理
 
 ```plantuml
@@ -418,55 +393,6 @@ endif
 
 stop
 @enduml
-```
-
-Mermaid 模拟并发（使用子图表示并行）：
-
-```mermaid
-flowchart TD
-    start(( )) --> receive[接收订单]
-    receive --> validate[验证订单信息]
-
-    validate --> fork1[/并行开始/]
-
-    subgraph parallel1[并行检查]
-        check_stock[检查库存]
-        check_credit[验证用户信用]
-        calc_shipping[计算配送费用]
-    end
-
-    fork1 --> check_stock
-    fork1 --> check_credit
-    fork1 --> calc_shipping
-
-    check_stock --> join1[\并行结束\]
-    check_credit --> join1
-    calc_shipping --> join1
-
-    join1 --> decision{所有检查通过?}
-
-    decision -->|是| create[创建订单记录]
-    create --> fork2[/并行开始/]
-
-    subgraph parallel2[并行通知]
-        email[发送确认邮件]
-        sms[发送短信通知]
-        push[推送APP通知]
-    end
-
-    fork2 --> email
-    fork2 --> sms
-    fork2 --> push
-
-    email --> join2[\并行结束\]
-    sms --> join2
-    push --> join2
-
-    join2 --> wait[等待支付]
-    wait --> end1((( )))
-
-    decision -->|否| error[返回错误信息]
-    error --> end2((( )))
 ```
 
 #### 带对象流的示例
