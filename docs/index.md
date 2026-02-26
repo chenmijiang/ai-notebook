@@ -1,5 +1,6 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
+- 2026-02-26 - [个人项目图表选择 SOP](./diagrams-selection-guide.md) (L: 2026-02-26)
 - 2026-02-13 - [瓦片地图完全指南](./tile-map-guide.md) (L: 2026-02-13)
 - 2026-02-10 - [运维阶段图表指南](./diagrams-operations.md) (L: 2026-02-10)
 - 2026-02-10 - [流程建模阶段图表指南](./diagrams-process.md) (L: 2026-02-25)
