@@ -276,3 +276,313 @@ sequenceDiagram
 有了三次握手，服务器回复 SYN-ACK 后需要等待客户端的 ACK 确认。客户端收到这个 SYN-ACK 后，发现不是自己发起的连接请求，会回复 RST（重置）报文，服务器随即释放资源。
 
 > **面试提示**：三次握手的本质是**确认双方的发送和接收能力**。第一次握手确认客户端能发送，第二次确认服务器能接收和发送，第三次确认客户端能接收。这是建立可靠双向通信的最小次数。
+
+## 5. TLS 握手
+
+### 5.1 curl 中的 TLS 握手
+
+TCP 连接建立后，由于我们访问的是 `https://` 协议，客户端和服务器需要通过 TLS 握手建立加密通道。`curl -v` 输出中 TLS 握手的完整过程如下：
+
+```text
+* ALPN: curl offers h2,http/1.1
+* (304) (OUT), TLS handshake, Client hello (1):
+*  CAfile: /etc/ssl/cert.pem
+*  CApath: none
+* (304) (IN), TLS handshake, Server hello (2):
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+* TLSv1.2 (OUT), TLS change cipher, Change cipher spec (1):
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+* TLSv1.2 (IN), TLS change cipher, Change cipher spec (1):
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256 / [blank] / UNDEF
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=httpbin.org
+*  start date: Jul 20 00:00:00 2025 GMT
+*  expire date: Aug 17 23:59:59 2026 GMT
+*  subjectAltName: host "httpbin.org" matched cert's "httpbin.org"
+*  issuer: C=US; O=Amazon; CN=Amazon RSA 2048 M03
+*  SSL certificate verify ok.
+```
+
+这段输出信息量很大，包含了 TLS 握手的每一个步骤。其中 `(OUT)` 表示客户端发出的消息，`(IN)` 表示从服务器收到的消息，括号中的数字是 TLS 握手消息类型编号。接下来逐步拆解。
+
+### 5.2 TLS 握手流程详解
+
+TLS 1.2 的握手过程需要 2 个 RTT（往返时间）才能完成，比 TCP 的 1 个 RTT 多了一倍。这也是为什么 HTTPS 比 HTTP 建立连接更慢的原因之一。
+
+**第一步：Client Hello（客户端问候）**
+
+```text
+* (304) (OUT), TLS handshake, Client hello (1):
+*  CAfile: /etc/ssl/cert.pem
+*  CApath: none
+```
+
+客户端向服务器发送 Client Hello 消息，包含以下关键信息：
+
+- **支持的 TLS 版本**：客户端告知自己支持的最高 TLS 版本（如 TLS 1.2）
+- **支持的加密套件列表**：按优先级排列的加密算法组合，供服务器选择
+- **客户端随机数（Client Random）**：一个 32 字节的随机数，用于后续生成会话密钥
+- **SNI（Server Name Indication）**：携带目标域名 `httpbin.org`，让服务器知道客户端要访问哪个站点（一台服务器可能托管多个域名）
+
+`CAfile` 指向本地的证书信任库 `/etc/ssl/cert.pem`，客户端稍后会用它来验证服务器证书。
+
+**第二步：Server Hello（服务器问候）**
+
+```text
+* (304) (IN), TLS handshake, Server hello (2):
+```
+
+服务器从客户端提供的选项中做出选择，回复 Server Hello 消息：
+
+- **选定的 TLS 版本**：TLS 1.2
+- **选定的加密套件**：`ECDHE-RSA-AES128-GCM-SHA256`（从客户端列表中选择的最优方案）
+- **服务器随机数（Server Random）**：另一个 32 字节的随机数
+
+**第三步：Certificate（服务器证书）**
+
+```text
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+```
+
+服务器将自己的数字证书发送给客户端。证书中包含服务器的公钥和身份信息（如 `CN=httpbin.org`），由受信任的 CA（证书颁发机构）签名。客户端会验证证书的合法性，这一步是防止中间人攻击的关键。
+
+**第四步：Server Key Exchange（服务器密钥交换）**
+
+```text
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+```
+
+由于使用的是 ECDHE 密钥交换算法，服务器需要发送额外的参数——ECDHE 的公钥参数（椭圆曲线参数和服务器的临时公钥）。服务器用自己的 RSA 私钥对这些参数进行签名，确保参数在传输过程中不被篡改。
+
+**为什么需要 ECDHE？** 因为 ECDHE 提供了**前向安全性（Forward Secrecy）**：每次握手都会生成新的临时密钥对，即使服务器的长期私钥将来被泄露，之前的通信内容也无法被解密。
+
+**第五步：Server Finished**
+
+```text
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+```
+
+服务器告知客户端：我这边的握手消息发送完毕了。
+
+**第六步：Client Key Exchange + Change Cipher Spec + Finished**
+
+```text
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+* TLSv1.2 (OUT), TLS change cipher, Change cipher spec (1):
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+```
+
+这三条消息是客户端连续发出的：
+
+- **Client Key Exchange**：客户端发送自己的 ECDHE 临时公钥。此时双方都有了对方的 ECDHE 公钥和自己的私钥，可以独立计算出相同的**预主密钥（Pre-Master Secret）**。结合之前交换的两个随机数（Client Random + Server Random），双方生成相同的**会话密钥**
+- **Change Cipher Spec**：通知服务器"从现在开始，我发送的所有数据都将使用协商好的加密算法和密钥进行加密"
+- **Finished**：客户端发送的第一条加密消息，包含之前所有握手消息的摘要。服务器用它来验证握手过程没有被篡改
+
+**第七步：服务器确认**
+
+```text
+* TLSv1.2 (IN), TLS change cipher, Change cipher spec (1):
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+```
+
+服务器也发送 Change Cipher Spec 和 Finished 消息，确认双方进入加密通信状态。至此，TLS 握手完成，安全通道建立成功。
+
+完整的 TLS 1.2 握手流程如下：
+
+```mermaid
+sequenceDiagram
+    participant C as 客户端
+    participant S as 服务器
+
+    Note over C,S: 第 1 个 RTT
+    C->>S: Client Hello（TLS版本、加密套件列表、客户端随机数、SNI）
+    S->>C: Server Hello（选定加密套件、服务器随机数）
+    S->>C: Certificate（服务器证书 + 公钥）
+    S->>C: Server Key Exchange（ECDHE 参数）
+    S->>C: Server Hello Done
+
+    Note over C,S: 第 2 个 RTT
+    C->>C: 验证服务器证书
+    C->>S: Client Key Exchange（客户端 ECDHE 公钥）
+    C->>S: Change Cipher Spec
+    C->>S: Finished（加密的握手摘要）
+    S->>C: Change Cipher Spec
+    S->>C: Finished（加密的握手摘要）
+
+    Note over C,S: 加密通道建立完成
+```
+
+> **面试提示**：TLS 1.3 将握手从 2-RTT 优化到了 1-RTT，甚至支持 0-RTT 恢复。核心改进是在 Client Hello 中就附带密钥交换参数，减少了一次往返。面试时提到 TLS 1.2 和 1.3 的区别是加分项。
+
+### 5.3 证书验证
+
+TLS 握手完成后，curl 输出了服务器证书的详细信息：
+
+```text
+* Server certificate:
+*  subject: CN=httpbin.org
+*  start date: Jul 20 00:00:00 2025 GMT
+*  expire date: Aug 17 23:59:59 2026 GMT
+*  subjectAltName: host "httpbin.org" matched cert's "httpbin.org"
+*  issuer: C=US; O=Amazon; CN=Amazon RSA 2048 M03
+*  SSL certificate verify ok.
+```
+
+客户端（浏览器或 curl）验证证书时会检查以下几项：
+
+1. **证书链验证**：`httpbin.org` 的证书由 `Amazon RSA 2048 M03` 签发，而 Amazon 的中间 CA 证书又由 Amazon 的根 CA 签发。客户端沿着证书链向上追溯，直到找到本地信任库（`/etc/ssl/cert.pem`）中预装的根证书，形成完整的信任链
+2. **域名匹配**：检查证书的 `subject`（`CN=httpbin.org`）和 `subjectAltName` 是否与实际访问的域名一致。输出中的 `host "httpbin.org" matched cert's "httpbin.org"` 确认了匹配成功
+3. **有效期检查**：证书的 `start date` 到 `expire date` 范围内才有效。当前日期必须在 `2025-07-20` 到 `2026-08-17` 之间
+4. **吊销状态检查**：通过 OCSP（在线证书状态协议）或 CRL（证书吊销列表）检查证书是否已被吊销
+
+最终 `SSL certificate verify ok.` 表示所有验证均通过。
+
+> **面试提示**：面试中常问"HTTPS 如何防止中间人攻击？"核心就是证书验证机制。中间人无法伪造受信任 CA 签名的证书，因此即使截获通信也无法冒充服务器。如果证书验证失败，浏览器会显示安全警告，阻止用户访问。
+
+### 5.4 ALPN 协商
+
+在 TLS 握手过程中，还嵌套了一个 **ALPN（Application-Layer Protocol Negotiation，应用层协议协商）** 过程：
+
+```text
+* ALPN: curl offers h2,http/1.1
+* ALPN: server accepted h2
+```
+
+第一行表示客户端在 Client Hello 中告知服务器："我支持 HTTP/2（`h2`）和 HTTP/1.1，优先使用 HTTP/2。"第二行表示服务器在 Server Hello 中回复："我选择 HTTP/2。"
+
+ALPN 的作用是在 TLS 握手阶段就确定应用层协议，避免建立连接后再协商导致的额外往返。这也是为什么 HTTP/2 在实践中几乎总是与 HTTPS 一起使用——ALPN 需要 TLS 扩展来承载。
+
+> **面试提示**：HTTP/2 规范本身并不强制要求 TLS，但所有主流浏览器都只在 HTTPS 连接上支持 HTTP/2。原因之一就是 ALPN 提供了一种优雅的协议升级方式，不需要像 HTTP/1.1 的 `Upgrade` 头那样多一次往返。
+
+### 5.5 加密套件解读
+
+握手完成后，curl 输出了最终选定的加密套件：
+
+```text
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256 / [blank] / UNDEF
+```
+
+`ECDHE-RSA-AES128-GCM-SHA256` 这一长串名称实际上由四个组件组成，每个组件在加密通信中承担不同角色：
+
+| 组件     | 值         | 作用                                                                                                                         |
+| -------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 密钥交换 | ECDHE      | 椭圆曲线 Diffie-Hellman 临时密钥交换，让双方在不安全的信道上协商出共享密钥，"临时"意味着每次连接使用新密钥对，提供前向安全性 |
+| 认证     | RSA        | 使用 RSA 算法验证服务器身份，即用服务器的 RSA 私钥签名握手参数，客户端用证书中的公钥验证签名                                 |
+| 加密     | AES128-GCM | 使用 128 位密钥的 AES 对称加密算法，GCM 模式同时提供加密和数据完整性校验（AEAD），无需额外的 MAC 计算                        |
+| 摘要     | SHA256     | 用于 PRF（伪随机函数）生成密钥材料和握手过程中的消息验证                                                                     |
+
+这四个组件协同工作：ECDHE 负责安全地交换密钥，RSA 确保通信对象的身份可信，AES128-GCM 负责对实际数据进行高速加密和完整性保护，SHA256 保障握手过程和密钥派生的安全性。
+
+> **面试提示**：面试官可能会问"对称加密和非对称加密在 HTTPS 中分别用在哪里？"答案是：**非对称加密（RSA/ECDHE）用于握手阶段的身份验证和密钥交换**，**对称加密（AES）用于后续的数据传输**。原因是非对称加密计算成本高，不适合大量数据传输；对称加密速度快但需要双方共享密钥，而密钥交换正是靠非对称加密来安全完成的。
+
+## 6. HTTP 请求与响应
+
+### 6.1 curl 中的 HTTP/2 请求
+
+TLS 握手完成并通过 ALPN 协商确定使用 HTTP/2 后，客户端开始发送 HTTP 请求。`curl -v` 输出中对应的部分：
+
+```text
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://httpbin.org/get
+* [HTTP/2] [1] [:method: GET]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: httpbin.org]
+* [HTTP/2] [1] [:path: /get]
+* [HTTP/2] [1] [user-agent: curl/8.7.1]
+* [HTTP/2] [1] [accept: */*]
+> GET /get HTTP/2
+> Host: httpbin.org
+> User-Agent: curl/8.7.1
+> Accept: */*
+```
+
+这段输出包含两层信息。以 `*` 开头的行展示了 HTTP/2 的底层细节：stream 编号为 `[1]`，以及 HTTP/2 特有的**伪头部（pseudo-headers）**，它们以冒号 `:` 开头。以 `>` 开头的行是 curl 对请求的可读化展示。
+
+HTTP/2 的四个伪头部各有其作用：
+
+- **`:method: GET`**：请求方法，对应 HTTP/1.1 请求行中的方法
+- **`:scheme: https`**：协议方案，HTTP/1.1 中隐含在连接类型中
+- **`:authority: httpbin.org`**：目标主机，替代 HTTP/1.1 中的 `Host` 头
+- **`:path: /get`**：请求路径，对应 HTTP/1.1 请求行中的 URI
+
+### 6.2 HTTP/2 vs HTTP/1.1
+
+HTTP/2 相较于 HTTP/1.1 做了多项重大改进，这些改进直接影响页面加载性能：
+
+| 特性       | HTTP/1.1                                                    | HTTP/2                                                                |
+| ---------- | ----------------------------------------------------------- | --------------------------------------------------------------------- |
+| 传输格式   | 纯文本协议，请求和响应都是可读文本                          | 二进制分帧，将数据拆分为更小的帧进行传输                              |
+| 多路复用   | 每个请求需要独占一个 TCP 连接，或使用管线化（实际很少使用） | 多个请求/响应可在同一个 TCP 连接上并行传输，互不阻塞                  |
+| 头部处理   | 每次请求都完整发送所有头部，存在大量重复                    | 使用 HPACK 算法压缩头部，维护动态表记录已发送的头部，只传输变化的部分 |
+| 服务器推送 | 不支持，客户端必须主动请求每个资源                          | 服务器可以在客户端请求之前主动推送相关资源（如 CSS、JS）              |
+| 请求头格式 | 请求行 + Host 头（`GET /get HTTP/1.1`）                     | 伪头部（`:method`、`:scheme`、`:authority`、`:path`）                 |
+
+**为什么多路复用如此重要？** 在 HTTP/1.1 时代，浏览器为了并行加载资源，需要对同一域名开启 6-8 个 TCP 连接。每个连接都需要独立的三次握手和 TLS 握手，开销很大。HTTP/2 在单个连接上使用 stream（流）来并行传输多个请求和响应，每个 stream 有独立的编号（如 `[1]`），大幅减少了连接建立的开销。
+
+> **面试提示**：面试中常问"HTTP/2 解决了 HTTP/1.1 的哪些问题？"重点回答：队头阻塞（通过多路复用解决连接级别的队头阻塞，但 TCP 层仍存在）、头部冗余（HPACK 压缩）、文本效率低（二进制分帧）。进一步提到 HTTP/3 使用 QUIC 协议彻底解决 TCP 层队头阻塞，是加分项。
+
+### 6.3 响应分析
+
+服务器处理请求后返回的响应如下：
+
+```text
+< HTTP/2 200
+< date: Sun, 01 Mar 2026 14:54:46 GMT
+< content-type: application/json
+< content-length: 256
+< server: gunicorn/19.9.0
+< access-control-allow-origin: *
+< access-control-allow-credentials: true
+```
+
+以 `<` 开头的行表示从服务器接收到的响应，逐行分析各响应头：
+
+- **`HTTP/2 200`**：状态行，`HTTP/2` 是协议版本，`200` 是状态码，表示请求成功
+- **`date`**：服务器生成响应的时间，用于缓存计算和调试
+- **`content-type: application/json`**：响应体的 MIME 类型，告诉客户端返回的是 JSON 格式数据，浏览器据此决定如何解析和渲染
+- **`content-length: 256`**：响应体的字节长度，客户端据此判断数据是否接收完整
+- **`server: gunicorn/19.9.0`**：服务器软件标识，httpbin.org 使用 Python 的 Gunicorn WSGI 服务器
+- **`access-control-allow-origin: *`**：CORS 头，允许任何域名的网页通过 JavaScript 访问该接口
+- **`access-control-allow-credentials: true`**：CORS 头，允许请求携带凭证（如 Cookie）
+
+响应体是一个 JSON 对象：
+
+```json
+{
+  "args": {},
+  "headers": {
+    "Accept": "*/*",
+    "Host": "httpbin.org",
+    "User-Agent": "curl/8.7.1",
+    "X-Amzn-Trace-Id": "Root=1-69a45336-01c9a5360d78dba746e05f2d"
+  },
+  "origin": "140.235.140.187",
+  "url": "https://httpbin.org/get"
+}
+```
+
+httpbin.org 的 `/get` 端点会将收到的请求信息"回显"给客户端，方便调试。可以看到服务器收到了我们发送的 `Accept`、`Host`、`User-Agent` 头，`origin` 是客户端的公网 IP 地址，`X-Amzn-Trace-Id` 是 AWS 负载均衡器自动添加的请求追踪标识。
+
+下面的时序图展示了 HTTP/2 请求与响应在 stream 中的完整交互：
+
+```mermaid
+sequenceDiagram
+    participant C as 客户端
+    participant S as 服务器
+
+    Note over C,S: TLS 加密通道已建立（HTTP/2）
+
+    C->>S: HEADERS 帧（stream 1）<br/>:method: GET<br/>:path: /get<br/>:authority: httpbin.org
+    Note right of S: 服务器处理请求
+
+    S->>C: HEADERS 帧（stream 1）<br/>:status: 200<br/>content-type: application/json
+    S->>C: DATA 帧（stream 1）<br/>JSON 响应体
+    Note left of C: 接收完成，解析响应
+```
+
+> **面试提示**：面试官问到 HTTP 状态码时，不要只背 200、404、500。重点理解分类：**2xx 成功**、**3xx 重定向**（301 永久 / 302 临时 / 304 缓存未变）、**4xx 客户端错误**（401 未认证 / 403 无权限 / 404 不存在）、**5xx 服务器错误**。能结合实际场景解释何时出现这些状态码，远比死记硬背更有说服力。
