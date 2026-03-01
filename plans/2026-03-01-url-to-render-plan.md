@@ -13,11 +13,13 @@
 ### Task 1: 创建文件，编写第 1 章概述 + 全局流程图
 
 **Files:**
+
 - Create: `docs/url-to-render-guide.md`
 
 **Step 1: 编写文档骨架和第 1 章**
 
 内容要点：
+
 - 标题：`# 从输入 URL 到页面渲染完全指南`
 - 一句话概括全流程
 - 全局 mermaid flowchart（URL 解析 → DNS → TCP → TLS → HTTP → 服务器处理 → 响应 → 浏览器渲染）
@@ -41,11 +43,13 @@ Message: `docs(url-to-render): add overview and global flow diagram`
 ### Task 2: 编写第 2 章 URL 解析
 
 **Files:**
+
 - Modify: `docs/url-to-render-guide.md`
 
 **Step 1: 编写第 2 章**
 
 内容要点：
+
 - `## 2. URL 解析`
 - 拆解 `https://httpbin.org/get` 各部分，用表格说明各组成部分（协议、域名、端口、路径）
 - 浏览器判断输入是搜索词还是 URL 的逻辑
@@ -59,11 +63,13 @@ Message: `docs(url-to-render): add URL parsing chapter`
 ### Task 3: 编写第 3 章 DNS 解析 + sequence diagram
 
 **Files:**
+
 - Modify: `docs/url-to-render-guide.md`
 
 **Step 1: 编写第 3 章**
 
 内容要点：
+
 - `## 3. DNS 解析`
 - 先展示 curl 输出片段：`Host httpbin.org:443 was resolved. IPv4: 198.18.0.40`
 - DNS 缓存层级（浏览器缓存 → OS 缓存 → 路由器缓存 → ISP DNS → 递归查询）
@@ -78,11 +84,13 @@ Message: `docs(url-to-render): add DNS resolution chapter`
 ### Task 4: 编写第 4 章 TCP 连接 + sequence diagram
 
 **Files:**
+
 - Modify: `docs/url-to-render-guide.md`
 
 **Step 1: 编写第 4 章**
 
 内容要点：
+
 - `## 4. TCP 连接`
 - 先展示 curl 输出片段：`Trying 198.18.0.40:443... Connected to httpbin.org (198.18.0.40) port 443`
 - 三次握手 SYN / SYN-ACK / ACK 详解
@@ -97,6 +105,7 @@ Message: `docs(url-to-render): add TCP connection chapter`
 ### Task 5: 编写第 5 章 TLS 握手 + sequence diagram
 
 **Files:**
+
 - Modify: `docs/url-to-render-guide.md`
 
 **Step 1: 编写第 5 章**
@@ -104,6 +113,7 @@ Message: `docs(url-to-render): add TCP connection chapter`
 这是最详细的章节，逐条对照 curl TLS 输出。
 
 内容要点：
+
 - `## 5. TLS 握手`
 - 展示 curl 完整的 TLS 握手输出
 - 分步讲解每条输出的含义：
@@ -125,11 +135,13 @@ Message: `docs(url-to-render): add TLS handshake chapter`
 ### Task 6: 编写第 6 章 HTTP 请求与响应 + sequence diagram
 
 **Files:**
+
 - Modify: `docs/url-to-render-guide.md`
 
 **Step 1: 编写第 6 章**
 
 内容要点：
+
 - `## 6. HTTP 请求与响应`
 - 展示 curl 的 HTTP/2 请求头输出（伪头部 `:method`, `:scheme`, `:authority`, `:path`）
 - HTTP/2 vs HTTP/1.1 对比表格
@@ -145,11 +157,13 @@ Message: `docs(url-to-render): add HTTP request and response chapter`
 ### Task 7: 编写第 7 章 服务器处理
 
 **Files:**
+
 - Modify: `docs/url-to-render-guide.md`
 
 **Step 1: 编写第 7 章**
 
 内容要点：
+
 - `## 7. 服务器处理`
 - 对照 curl：`server: gunicorn/19.9.0`
 - 请求在服务器端的处理链路：反向代理(Nginx) → WSGI 服务器(gunicorn) → Web 应用(Flask)
@@ -163,6 +177,7 @@ Message: `docs(url-to-render): add server processing chapter`
 ### Task 8: 编写第 8 章 浏览器解析与渲染 + flowchart
 
 **Files:**
+
 - Modify: `docs/url-to-render-guide.md`
 
 **Step 1: 编写第 8 章**
@@ -170,6 +185,7 @@ Message: `docs(url-to-render): add server processing chapter`
 这是前端重点章节。
 
 内容要点：
+
 - `## 8. 浏览器解析与渲染`
 - 说明此阶段超出 curl 观测范围，进入浏览器内部
 - HTML 解析 → DOM 树构建
@@ -190,12 +206,14 @@ Message: `docs(url-to-render): add browser parsing and rendering chapter`
 ### Task 9: 编写第 9 章 总结 + 更新 index.md
 
 **Files:**
+
 - Modify: `docs/url-to-render-guide.md`
 - Modify: `docs/index.md`
 
 **Step 1: 编写第 9 章总结**
 
 内容要点：
+
 - `## 9. 总结`
 - 全流程速查表（表格形式）
 - 30 秒面试回答模板（引用块）
@@ -214,11 +232,13 @@ Message: `docs(url-to-render): add summary and update index`
 ### Task 10: 全文审校
 
 **Files:**
+
 - Modify: `docs/url-to-render-guide.md`
 
 **Step 1: 自我审校**
 
 检查项：
+
 - 章节编号连续性
 - mermaid 图语法正确性（6 张图齐全）
 - curl 输出片段与讲解对应
@@ -228,6 +248,7 @@ Message: `docs(url-to-render): add summary and update index`
 **Step 2: 验证信息准确性**
 
 通过 web fetch 验证：
+
 - TLS 1.2 握手流程准确性
 - HTTP/2 伪头部规范
 - 浏览器渲染管线流程
