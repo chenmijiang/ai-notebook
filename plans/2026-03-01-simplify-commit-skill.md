@@ -1,3 +1,29 @@
+# Simplify Commit Skill Implementation Plan
+
+> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+
+**Goal:** Rewrite the commit skill SKILL.md to produce faster, higher-quality commit messages.
+
+**Architecture:** Single file replacement. Reduce workflow from 5 serial steps to 3. Add explicit rules to prevent verbose body and vague subject.
+
+**Tech Stack:** Markdown (Claude Code skill)
+
+---
+
+### Task 1: Rewrite commit skill
+
+**Files:**
+- Modify: `~/.claude/skills/commit/SKILL.md` (full replacement)
+
+**Step 1: Read current file**
+
+Read `~/.claude/skills/commit/SKILL.md` to confirm current content.
+
+**Step 2: Write new SKILL.md**
+
+Replace with the following content:
+
+```markdown
 ---
 name: commit
 description: Generate git commit messages from staged changes following Conventional Commits. Use when user wants to commit, asks for help writing commit messages, or invokes /commit command.
@@ -25,27 +51,25 @@ Generate commit messages from staged changes following Conventional Commits.
 
 ## Message Format
 
-```
 <type>(<scope>): <subject>
 
 <body>
 
 <footer>
-```
 
 ## Type Reference
 
 | Type | Use Case |
 |------|----------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `style` | Code style (formatting, no logic change) |
-| `refactor` | Code refactor (no feature/fix) |
-| `perf` | Performance improvement |
-| `test` | Add/modify tests |
-| `ci` | CI/CD changes |
-| `chore` | Build, deps, tooling |
+| feat | New feature |
+| fix | Bug fix |
+| docs | Documentation only |
+| style | Code style (formatting, no logic change) |
+| refactor | Code refactor (no feature/fix) |
+| perf | Performance improvement |
+| test | Add/modify tests |
+| ci | CI/CD changes |
+| chore | Build, deps, tooling |
 
 ## Rules
 
@@ -78,22 +102,36 @@ Generate commit messages from staged changes following Conventional Commits.
 ## Examples
 
 **Subject only (most commits):**
-```
+
 docs(guide): add Python async programming guide
-```
 
 **With body (multi-file, needs context):**
-```
+
 refactor(auth): extract token validation into middleware
 
 Move validation logic from individual route handlers to shared
 middleware. Reduces duplication across 5 endpoint files.
-```
 
 **Breaking change:**
-```
+
 feat(api)!: switch response envelope to JSON:API format
 
 BREAKING CHANGE: response shape changed from {data, status} to {data, meta}.
 Update all API clients to use new structure.
+```
+
+**Step 3: Verify the file**
+
+Read the file back to confirm it was written correctly.
+
+**Step 4: Commit**
+
+```bash
+git add ~/.claude/skills/commit/SKILL.md
+```
+
+No git commit needed here — this file is outside the current repo. If the skill directory is in a git repo, commit with:
+
+```
+chore(skill): simplify commit message generation rules
 ```
