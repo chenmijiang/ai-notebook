@@ -1,5 +1,6 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
+- 2026-03-01 - [curl 使用指南](./curl-guide.md) (L: 2026-03-01)
 - 2026-02-27 - [RPC 与 HTTP 完全指南](./rpc-vs-http-guide.md) (L: 2026-03-01)
 - 2026-02-26 - [个人项目图表选择 SOP](./diagrams-selection-guide.md) (L: 2026-02-26)
 - 2026-02-13 - [瓦片地图完全指南](./tile-map-guide.md) (L: 2026-02-13)
