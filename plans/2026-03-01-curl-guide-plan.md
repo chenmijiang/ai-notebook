@@ -13,11 +13,13 @@
 ### Task 1: 编写概述章节
 
 **Files:**
+
 - Create: `docs/curl-guide.md`
 
 **Step 1: 创建文件并编写概述**
 
 编写以下内容：
+
 - 标题：`# curl 使用指南`
 - `## 1. 概述`
   - `### 1.1 什么是 curl`：一句话介绍 curl
@@ -39,6 +41,7 @@ git commit -m "docs(curl): add overview section"
 ### Task 2: 编写基础请求章节
 
 **Files:**
+
 - Modify: `docs/curl-guide.md`
 
 **Step 1: 编写基础请求内容**
@@ -64,6 +67,7 @@ git commit -m "docs(curl): add basic request section"
 ### Task 3: 编写发送数据章节
 
 **Files:**
+
 - Modify: `docs/curl-guide.md`
 
 **Step 1: 编写发送数据内容**
@@ -89,6 +93,7 @@ git commit -m "docs(curl): add sending data section"
 ### Task 4: 编写请求头与认证章节
 
 **Files:**
+
 - Modify: `docs/curl-guide.md`
 
 **Step 1: 编写请求头与认证内容**
@@ -114,6 +119,7 @@ git commit -m "docs(curl): add headers and auth section"
 ### Task 5: 编写文件上传与下载章节
 
 **Files:**
+
 - Modify: `docs/curl-guide.md`
 
 **Step 1: 编写文件上传与下载内容**
@@ -138,6 +144,7 @@ git commit -m "docs(curl): add file upload and download section"
 ### Task 6: 编写调试技巧章节
 
 **Files:**
+
 - Modify: `docs/curl-guide.md`
 
 **Step 1: 编写调试技巧内容**
@@ -164,6 +171,7 @@ git commit -m "docs(curl): add debugging tips section"
 ### Task 7: 编写实用技巧与总结章节
 
 **Files:**
+
 - Modify: `docs/curl-guide.md`
 
 **Step 1: 编写实用技巧内容**
@@ -196,6 +204,7 @@ git commit -m "docs(curl): add tips and summary section"
 ### Task 8: 最终审校与验证
 
 **Files:**
+
 - Modify: `docs/curl-guide.md`
 
 **Step 1: 通过 web fetch 验证 curl 选项准确性**

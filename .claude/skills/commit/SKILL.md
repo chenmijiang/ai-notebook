@@ -35,17 +35,17 @@ Generate commit messages from staged changes following Conventional Commits.
 
 ## Type Reference
 
-| Type | Use Case |
-|------|----------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `style` | Code style (formatting, no logic change) |
-| `refactor` | Code refactor (no feature/fix) |
-| `perf` | Performance improvement |
-| `test` | Add/modify tests |
-| `ci` | CI/CD changes |
-| `chore` | Build, deps, tooling |
+| Type       | Use Case                                 |
+| ---------- | ---------------------------------------- |
+| `feat`     | New feature                              |
+| `fix`      | Bug fix                                  |
+| `docs`     | Documentation only                       |
+| `style`    | Code style (formatting, no logic change) |
+| `refactor` | Code refactor (no feature/fix)           |
+| `perf`     | Performance improvement                  |
+| `test`     | Add/modify tests                         |
+| `ci`       | CI/CD changes                            |
+| `chore`    | Build, deps, tooling                     |
 
 ## Rules
 
@@ -78,11 +78,13 @@ Generate commit messages from staged changes following Conventional Commits.
 ## Examples
 
 **Subject only (most commits):**
+
 ```
 docs(guide): add Python async programming guide
 ```
 
 **With body (multi-file, needs context):**
+
 ```
 refactor(auth): extract token validation into middleware
 
@@ -91,6 +93,7 @@ middleware. Reduces duplication across 5 endpoint files.
 ```
 
 **Breaking change:**
+
 ```
 feat(api)!: switch response envelope to JSON:API format
 

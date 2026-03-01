@@ -13,6 +13,7 @@
 ### Task 1: Rewrite commit skill
 
 **Files:**
+
 - Modify: `~/.claude/skills/commit/SKILL.md` (full replacement)
 
 **Step 1: Read current file**
