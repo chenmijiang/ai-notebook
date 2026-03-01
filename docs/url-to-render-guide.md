@@ -361,13 +361,13 @@ TLS 1.2 的握手过程需要 2 个 RTT（往返时间）才能完成，比 TCP 
 
 **为什么需要 ECDHE？** 因为 ECDHE 提供了**前向安全性（Forward Secrecy）**：每次握手都会生成新的临时密钥对，即使服务器的长期私钥将来被泄露，之前的通信内容也无法被解密。
 
-**第五步：Server Finished**
+**第五步：Server Hello Done**
 
 ```text
 * TLSv1.2 (IN), TLS handshake, Server finished (14):
 ```
 
-服务器告知客户端：我这边的握手消息发送完毕了。
+服务器发送 Server Hello Done 消息，告知客户端：我这边的握手消息发送完毕了。curl 将此消息显示为 `Server finished (14)`，其中 14 是 TLS 握手消息类型 `ServerHelloDone` 的编号。
 
 **第六步：Client Key Exchange + Change Cipher Spec + Finished**
 
