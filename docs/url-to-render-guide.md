@@ -749,3 +749,53 @@ flowchart LR
 - **合成是最轻量的操作**，现代浏览器优化动画性能的核心策略就是将动画限制在合成阶段
 
 > **面试提示**：面试中被问到"从输入 URL 到页面渲染经历了什么"时，能从网络层讲到渲染层，最后以渲染管线收尾，展现出对浏览器工作原理的完整理解。重点是理解每个阶段的输入和输出，以及它们之间的依赖关系。
+
+## 9. 总结
+
+### 9.1 全流程速查表
+
+| 阶段       | 核心任务                   | 关键协议/技术        |
+| ---------- | -------------------------- | -------------------- |
+| URL 解析   | 解析协议、域名、端口、路径 | HSTS                 |
+| DNS 解析   | 域名 → IP 地址             | DNS, DoH             |
+| TCP 连接   | 建立可靠连接               | TCP 三次握手         |
+| TLS 握手   | 建立加密通道               | TLS 1.2, ECDHE       |
+| HTTP 请求  | 发送/接收数据              | HTTP/2               |
+| 服务器处理 | 生成响应                   | Nginx, gunicorn      |
+| 浏览器渲染 | 解析并绘制页面             | DOM, CSSOM, GPU 合成 |
+
+### 9.2 30 秒面试回答模板
+
+> 浏览器首先对 URL 进行解析，提取协议、域名和路径等信息，随后通过 DNS 将域名解析为 IP 地址。接着与服务器建立 TCP 连接（三次握手），如果是 HTTPS 还需要进行 TLS 握手以建立加密通道。连接建立后，浏览器发送 HTTP 请求，服务器处理请求并返回 HTML 响应。最后，浏览器解析 HTML 构建 DOM 树，解析 CSS 构建 CSSOM 树，两者合并为渲染树，经过布局计算和绘制，最终通过 GPU 合成将页面显示在屏幕上。
+
+### 9.3 常见追问
+
+**Q1：为什么 HTTPS 比 HTTP 慢？如何优化？**
+
+HTTPS 多了 TLS 握手环节（1-2 个 RTT），增加了连接建立时间。优化手段包括：开启 TLS 1.3（1-RTT 甚至 0-RTT）、使用 Session Resumption 复用会话、部署 OCSP Stapling 减少证书验证延迟、启用 HTTP/2 多路复用减少连接数。
+
+**Q2：什么是回流和重绘？如何减少？**
+
+回流（Reflow）是指元素的几何属性（尺寸、位置）发生变化，浏览器需要重新计算布局；重绘（Repaint）是指元素外观改变但不影响布局。回流必然触发重绘，代价更高。减少方法：批量修改 DOM、使用 `transform` 代替 `top/left` 动画、避免频繁读取布局属性、使用 `will-change` 提升合成层。
+
+**Q3：HTTP/2 相比 HTTP/1.1 有哪些改进？**
+
+核心改进包括：多路复用（一个连接并行传输多个请求）、头部压缩（HPACK 算法）、服务器推送（Server Push）、二进制分帧（替代文本协议）、流优先级控制。这些特性解决了 HTTP/1.1 的队头阻塞问题，大幅提升了页面加载性能。
+
+**Q4：DNS 解析慢怎么办？**
+
+优化策略包括：使用 `dns-prefetch` 预解析关键域名、减少页面中的域名数量、选择快速的公共 DNS 服务器（如 1.1.1.1 或 8.8.8.8）、启用 DNS over HTTPS（DoH）提升安全性和稳定性、利用本地 DNS 缓存和 CDN 就近解析。
+
+**Q5：首屏优化有哪些手段？**
+
+首屏优化是一个综合工程：网络层面使用 CDN、开启 Gzip/Brotli 压缩、利用 HTTP 缓存；资源层面进行代码分割（Code Splitting）、懒加载非关键资源、内联关键 CSS；渲染层面采用 SSR/SSG 减少客户端渲染时间、使用骨架屏提升感知速度、预加载关键字体和图片。
+
+## 10. 参考资源
+
+- [How Browsers Work - web.dev](https://web.dev/articles/howbrowserswork) — 浏览器工作原理经典文章
+- [Navigation Timing API - MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Performance_API/Navigation_timing) — 导航计时 API 详解
+- [HTTP/2 - MDN](https://developer.mozilla.org/zh-CN/docs/Glossary/HTTP_2) — HTTP/2 协议概述
+- [TLS 1.3 - RFC 8446](https://datatracker.ietf.org/doc/html/rfc8446) — TLS 1.3 官方规范
+- [DNS 解析过程 - Cloudflare](https://www.cloudflare.com/zh-cn/learning/dns/what-is-dns/) — DNS 工作原理图解
+- [渲染性能 - web.dev](https://web.dev/articles/rendering-performance) — 渲染性能优化指南
+- [Critical Rendering Path - web.dev](https://web.dev/articles/critical-rendering-path) — 关键渲染路径详解
