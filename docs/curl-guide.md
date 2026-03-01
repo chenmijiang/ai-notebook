@@ -102,8 +102,10 @@ curl -d "username=admin&password=123456" https://httpbin.org/post
 你想对特殊字符自动编码：
 
 ```bash
-# --data-urlencode 自动 URL 编码
-curl --data-urlencode "query=hello world&foo=bar" https://httpbin.org/post
+# --data-urlencode 自动 URL 编码，每个参数单独一个 flag
+curl --data-urlencode "query=hello world" \
+     --data-urlencode "foo=bar" \
+     https://httpbin.org/post
 ```
 
 你想上传文件（`multipart/form-data`）：
