@@ -1,12 +1,12 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
 - 2026-03-03 - [ESLint 问题排查完全指南](./eslint-7-troubleshooting.md) (L: 2026-03-03)
-- 2026-03-03 - [ESLint 团队工作流完全指南](./eslint-4-workflow.md) (L: 2026-03-03)
-- 2026-03-03 - [ESLint 实战完全指南](./eslint-6-practice.md) (L: 2026-03-03)
-- 2026-03-03 - [ESLint 框架集成完全指南](./eslint-3-integration.md) (L: 2026-03-03)
 - 2026-03-03 - [ESLint 进阶完全指南](./eslint-5-advanced.md) (L: 2026-03-03)
-- 2026-03-03 - [ESLint 基础完全指南](./eslint-1-basics.md) (L: 2026-03-03)
 - 2026-03-03 - [ESLint 规则完全指南](./eslint-2-rules.md) (L: 2026-03-03)
+- 2026-03-03 - [ESLint 框架集成完全指南](./eslint-3-integration.md) (L: 2026-03-03)
+- 2026-03-03 - [ESLint 实战完全指南](./eslint-6-practice.md) (L: 2026-03-03)
+- 2026-03-03 - [ESLint 基础完全指南](./eslint-1-basics.md) (L: 2026-03-03)
+- 2026-03-03 - [ESLint 团队工作流完全指南](./eslint-4-workflow.md) (L: 2026-03-03)
 - 2026-03-01 - [从输入 URL 到页面渲染完全指南](./url-to-render-guide.md) (L: 2026-03-01)
 - 2026-03-01 - [curl 使用指南](./curl-guide.md) (L: 2026-03-01)
 - 2026-02-27 - [RPC 与 HTTP 完全指南](./rpc-vs-http-guide.md) (L: 2026-03-01)
