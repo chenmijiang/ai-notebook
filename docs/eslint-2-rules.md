@@ -1,5 +1,7 @@
 # ESLint 规则完全指南
 
+规则是 ESLint 的核心组成部分，每条规则定义了一种代码检查逻辑。本指南详细介绍 ESLint 规则的严重程度、查找方式、配置选项，以及如何通过 Extends 和 Plugins 扩展规则体系。
+
 ## 1. 规则严重程度
 
 ESLint 每条规则都有三个严重级别，用于控制规则的检查行为。
@@ -113,8 +115,6 @@ export default [js.configs.recommended];
 | `no-shadow`      | 禁止变量遮蔽         | 否       |
 | `prefer-const`   | 优先使用 const       | 是       |
 
-**示例：**
-
 ```javascript
 // ❌ no-undef - 使用未声明的变量
 console.log(myVar);
@@ -145,8 +145,6 @@ function foo() {
 | `no-unreachable`     | 禁止不可达代码     | 否       |
 | `no-unsafe-negation` | 禁止不安全的否定   | 否       |
 
-**示例：**
-
 ```javascript
 // ❌ no-debugger - 调试语句残留
 function debug() {
@@ -168,8 +166,6 @@ if (!(key in object)) {}
 | `no-var`       | 禁止使用 var           | 是       |
 | `default-case` | 要求 switch 有 default | 否       |
 
-**示例：**
-
 ```javascript
 // ❌ eqeqeq - 使用 == 而非 ===
 if (a == b) {}
@@ -184,9 +180,9 @@ var count = 1;
 const count = 1;
 ```
 
-### 3.4 Node.js
+### 3.4 代码风格
 
-### 3.5 代码风格（建议用 Prettier）
+> **提示**：stylistic 规则与 Prettier 功能重叠，建议使用 `eslint-config-prettier` 关闭这些规则，让 Prettier 统一处理。
 
 | 规则           | 说明     | 自动修复 |
 | -------------- | -------- | -------- |
@@ -194,8 +190,6 @@ const count = 1;
 | `quotes`       | 引号风格 | 是       |
 | `indent`       | 缩进     | 是       |
 | `comma-dangle` | 拖尾逗号 | 是       |
-
-> **提示**：stylistic 规则与 Prettier 功能重叠，建议使用 `eslint-config-prettier` 关闭这些规则，让 Prettier 统一处理。
 
 ## 4. 规则选项配置
 
@@ -220,15 +214,13 @@ rules: {
 
 每条规则都有 JSON Schema 定义其选项结构。
 
-**查看规则 Schema：**
-
 ```bash
 # 查看规则的文档和配置选项
 npx eslint --rule-details "semi"
 # 或访问 https://eslint.org/docs/rules/semi
 ```
 
-**常见选项模式：**
+**常见选项模式**：
 
 ```javascript
 // 布尔选项
@@ -288,6 +280,8 @@ export default [
 
 ## 5. Extends 继承
 
+Extends（继承）允许复用已有的配置，减少重复配置的工作量。在 Flat Config 中，继承通过数组配置实现。
+
 ### 5.1 eslint:recommended
 
 ESLint 内置的推荐配置，包含最常用的规则。
@@ -301,7 +295,7 @@ export default [
 ];
 ```
 
-**eslint:recommended 包含的规则示例：**
+**eslint:recommended 包含的规则示例**：
 
 | 规则              | 严重程度 |
 | ----------------- | -------- |
@@ -359,8 +353,6 @@ npm 上有大量共享配置可供使用。
 | `eslint-config-prettier` | 关闭与 Prettier 冲突的规则 |
 | `typescript-eslint`      | TypeScript 官方推荐配置    |
 
-**使用共享配置：**
-
 ```javascript
 // eslint.config.js
 import js from '@eslint/js';
@@ -376,21 +368,7 @@ export default [
 
 ### 5.4 继承优先级
 
-ESLint 配置数组中，后面的配置会覆盖前面的规则。以下是优先级示意图：
-
-```mermaid
-flowchart TD
-    A[eslint:recommended<br/>基础规则] --> B[插件配置<br/>如 react, vue]
-    B --> C[共享配置<br/>如 prettier]
-    C --> D[项目自定义配置<br/>优先级最高]
-
-    style A fill:#e1f5fe
-    style B fill:#e8f5e8
-    style C fill:#fff3e0
-    style D fill:#fce4ec
-```
-
-**配置顺序原则**：
+ESLint 配置数组中，后面的配置会覆盖前面的规则。
 
 ```javascript
 export default [
@@ -414,6 +392,8 @@ export default [
 ```
 
 ## 6. Plugins 扩展
+
+Plugins（插件）扩展了 ESLint 的功能，可以添加自定义规则、环境配置和处理特定文件类型的能力。
 
 ### 6.1 常用插件
 
@@ -498,7 +478,7 @@ rules: {
 
 ### 6.4 常用插件规则示例
 
-**eslint-plugin-import：**
+**eslint-plugin-import**：
 
 ```javascript
 // import 排序
@@ -524,7 +504,7 @@ rules: {
 'import/no-default-export': 'warn',
 ```
 
-**eslint-plugin-react-hooks：**
+**eslint-plugin-react-hooks**：
 
 ```javascript
 // Hooks 调用规则
@@ -534,7 +514,7 @@ rules: {
 'react-hooks/exhaustive-deps': 'warn',
 ```
 
-**eslint-plugin-unicorn：**
+**eslint-plugin-unicorn**：
 
 ```javascript
 // 更好的正则表达式
@@ -628,36 +608,28 @@ export default [
 
 ## 8. 总结
 
-### 8.1 核心要点回顾
+### 8.1 核心要点
 
-| 要点     | 说明                                               |
-| -------- | -------------------------------------------------- |
-| 严重程度 | off/warn/error 三个级别，控制规则检查行为          |
-| 规则查找 | 从错误信息获取规则名，或通过 ESLint 官网按场景搜索 |
-| 常见规则 | 按变量、错误、最佳实践、Node.js 分类               |
-| 规则选项 | 大部分规则支持配置选项，使用数组形式传递           |
-| 配置继承 | 通过 extends 复用预设配置，后面的优先级高          |
-| 插件扩展 | 社区插件提供大量特定框架/场景的规则                |
+规则是 ESLint 的核心，通过合理配置规则、Extends 和 Plugins，可以构建完整的代码质量检查体系。关键要点如下：
 
-### 8.2 建议配置流程
+- **严重程度控制**：`off`/`warn`/`error` 三个级别，控制规则检查行为
+- **规则查找**：从错误信息获取规则名，或通过 ESLint 官网按场景搜索
+- **规则选项**：大部分规则支持配置选项，使用数组形式传递
+- **配置继承**：通过 extends 复用预设配置，后面的优先级高
+- **插件扩展**：社区插件提供大量特定框架/场景的规则
 
-1. **选择基础配置**：从 `eslint:recommended` 开始
-2. **添加框架支持**：引入 React、Vue、TypeScript 等插件
-3. **配置代码风格**：使用 Prettier 处理格式，ESLint 专注质量
-4. **调整规则级别**：根据项目需求开启/关闭/调整具体规则
-
-### 8.3 速查表
+### 8.2 速查表
 
 | 分类     | 常用规则                                                             |
 | -------- | -------------------------------------------------------------------- |
-| 潜在错误 | `no-debugger`, `no-empty`, `no-unreachable`, `no-unsafe-negation`    |
-| 最佳实践 | `eqeqeq`, `no-var`, `prefer-const`, `no-unused-vars`, `default-case` |
+| 潜在错误 | `no-debugger`、`no-empty`、`no-unreachable`、`no-unsafe-negation`    |
+| 最佳实践 | `eqeqeq`、`no-var`、`prefer-const`、`no-unused-vars`、`default-case` |
 | 严格模式 | `strict`                                                             |
-| 变量     | `no-undef`, `no-unused-vars`, `no-shadow`                            |
-| Node.js  | `no-process-exit`, `no-path-concat`, `handle-callback-err`           |
-| 风格     | `semi`, `quotes`, `indent`, `comma-dangle`                           |
+| 变量     | `no-undef`、`no-unused-vars`、`no-shadow`                            |
+| Node.js  | `no-process-exit`、`no-path-concat`、`handle-callback-err`           |
+| 风格     | `semi`、`quotes`、`indent`、`comma-dangle`                           |
 
-### 8.4 最佳实践
+### 8.3 最佳实践
 
 - 使用 Prettier 处理代码风格，ESLint 专注代码质量
 - 在 CI 中将关键规则设为 error 级别
