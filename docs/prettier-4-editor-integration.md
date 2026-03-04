@@ -418,24 +418,23 @@ Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/Type
 | 项目级   | `.zed/settings.json`      | 团队共享（推荐）           |
 | 语言级   | `languages.<语言名>` 节点 | 为不同语言设置不同格式化器 |
 
-**JavaScript/TypeScript 使用 Prettier（推荐）：**
+**先理解 external 的执行规则：**
+
+| 规则                               | 说明                                                        |
+| ---------------------------------- | ----------------------------------------------------------- |
+| `command` 必须是可执行文件名或路径 | 例如 `prettier`、`node_modules/.bin/prettier`、`yarn`       |
+| `command` 不是 shell 命令行        | 不能写 `"yarn prettier"` 这种带空格的整串命令               |
+| 子命令放到 `arguments`             | 例如 `"command": "yarn"` + `"arguments": ["prettier", ...]` |
+
+**方案 A（推荐）：使用项目本地二进制 `node_modules/.bin/prettier`**
 
 ```json
 {
   "languages": {
-    "JavaScript": {
-      "formatter": {
-        "external": {
-          "command": "prettier",
-          "arguments": ["--stdin-filepath", "{buffer_path}"]
-        }
-      },
-      "format_on_save": "on"
-    },
     "TypeScript": {
       "formatter": {
         "external": {
-          "command": "prettier",
+          "command": "node_modules/.bin/prettier",
           "arguments": ["--stdin-filepath", "{buffer_path}"]
         }
       },
@@ -445,13 +444,35 @@ Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/Type
 }
 ```
 
-> **提示**：`--stdin-filepath` 可让 Prettier 根据当前文件路径正确选择 parser，并读取项目内 `.prettierrc` 与 `.prettierignore`。
+**方案 B：通过包管理器调用 Prettier（适合统一 Node 工具链）**
+
+```json
+{
+  "languages": {
+    "TypeScript": {
+      "formatter": {
+        "external": {
+          "command": "pnpm",
+          "arguments": ["exec", "prettier", "--stdin-filepath", "{buffer_path}"]
+        }
+      },
+      "format_on_save": "on"
+    }
+  }
+}
+```
+
+> **说明**：`npm`、`yarn` 也可用同样思路。关键点是 `command` 写包管理器可执行文件，`prettier` 放在 `arguments`。
+
+---
+
+> **提示**：`--stdin-filepath` 可让 Prettier 根据当前文件路径正确选择 parser，并读取项目内 `.prettierrc` 与 `.prettierignore`。若项目尚未安装依赖（没有 `node_modules`），请先执行 `npm install` / `pnpm install` / `yarn`。
 
 ### 4.2 项目级共享配置
 
 将 Zed 配置写入仓库内的 `.zed/settings.json`，可确保团队成员获得一致的保存时格式化行为。
 
-**推荐的 `.zed/settings.json`：**
+**推荐的 `.zed/settings.json`（项目本地 Prettier）：**
 
 ```json
 {
@@ -459,7 +480,7 @@ Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/Type
     "JavaScript": {
       "formatter": {
         "external": {
-          "command": "prettier",
+          "command": "node_modules/.bin/prettier",
           "arguments": ["--stdin-filepath", "{buffer_path}"]
         }
       },
@@ -468,7 +489,7 @@ Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/Type
     "TypeScript": {
       "formatter": {
         "external": {
-          "command": "prettier",
+          "command": "node_modules/.bin/prettier",
           "arguments": ["--stdin-filepath", "{buffer_path}"]
         }
       },
@@ -477,7 +498,7 @@ Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/Type
     "JSON": {
       "formatter": {
         "external": {
-          "command": "prettier",
+          "command": "node_modules/.bin/prettier",
           "arguments": ["--stdin-filepath", "{buffer_path}"]
         }
       },
@@ -486,7 +507,7 @@ Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/Type
     "Markdown": {
       "formatter": {
         "external": {
-          "command": "prettier",
+          "command": "node_modules/.bin/prettier",
           "arguments": ["--stdin-filepath", "{buffer_path}"]
         }
       },
@@ -498,12 +519,11 @@ Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/Type
 
 **关键配置项说明：**
 
-| 配置项               | 说明                               |
-| -------------------- | ---------------------------------- |
-| `formatter`          | 指定当前语言使用的格式化器         |
-| `external.command`   | 外部命令（此处为 `prettier`）      |
-| `external.arguments` | 传递给 Prettier 的参数             |
-| `format_on_save`     | 保存时自动格式化（`"on"`/`"off"`） |
+| 配置项               | 说明                                    |
+| -------------------- | --------------------------------------- |
+| `external.command`   | 外部可执行文件（如本地 bin 或包管理器） |
+| `external.arguments` | 传递给 Prettier 的参数                  |
+| `format_on_save`     | 保存时自动格式化（`"on"`/`"off"`）      |
 
 ### 4.3 与 ESLint 组合
 
@@ -519,7 +539,7 @@ Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/Type
         },
         {
           "external": {
-            "command": "prettier",
+            "command": "node_modules/.bin/prettier",
             "arguments": ["--stdin-filepath", "{buffer_path}"]
           }
         }
@@ -532,24 +552,27 @@ Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/Type
 
 ### 4.4 常见问题
 
-**问题一：保存时没有格式化**
+**问题一：报错 `No such file or directory (os error 2)`**
 
-| 排查步骤 | 操作方法                                             |
-| -------- | ---------------------------------------------------- |
-| 1        | 检查 `languages.<语言>.format_on_save` 是否为 `"on"` |
-| 2        | 确认 `formatter.external.command` 可执行             |
-| 3        | 在项目根目录运行 `npx prettier --check src/index.ts` |
-| 4        | 在 Zed 命令面板执行 `zed: open log` 查看报错         |
+这通常表示 Zed 找不到 `external.command` 指定的可执行文件，而不是 Prettier 规则配置错误。
 
-**问题二：未读取项目配置**
+| 常见写法                                            | 结果     | 说明                                 |
+| --------------------------------------------------- | -------- | ------------------------------------ |
+| `"command": "yarn prettier"`                        | ❌ 失败  | Zed 不按 shell 拆分命令              |
+| `"command": "prettier"`                             | 可能失败 | 依赖 Zed 进程的 PATH 能找到 prettier |
+| `"command": "node_modules/.bin/prettier"`           | ✅ 推荐  | 明确使用项目本地二进制               |
+| `"command": "yarn", "arguments": ["prettier", ...]` | ✅ 可用  | 子命令写在 `arguments`               |
 
-```bash
-# 在项目目录确认使用的是本地 prettier
-npx prettier --find-config-path src/index.ts
+**问题二：保存时未格式化或配置未生效**
 
-# 检查格式化结果
-npx prettier --check src/index.ts
-```
+| 排查步骤 | 操作方法                                                         |
+| -------- | ---------------------------------------------------------------- |
+| 1        | 检查 `languages.<语言>.format_on_save` 是否为 `"on"`             |
+| 2        | 检查 `formatter.external.command` 是否存在且可执行               |
+| 3        | 若使用本地路径，确认 `node_modules/.bin/prettier` 已生成         |
+| 4        | 运行 `npx prettier --find-config-path src/index.ts` 确认配置来源 |
+| 5        | 运行 `npx prettier --check src/index.ts` 验证格式化结果          |
+| 6        | 在 Zed 命令面板执行 `zed: open log` 查看完整错误                 |
 
 > **注意**：如果 `prettier` 命令不可用，请先在项目中安装依赖：`npm install --save-dev prettier`。
 
@@ -581,11 +604,11 @@ yarn add -D prettier
 
 **各编辑器使用本地 Prettier 的配置：**
 
-| 编辑器   | 配置方式                                       |
-| -------- | ---------------------------------------------- |
-| VS Code  | 默认自动使用 `node_modules/prettier`           |
-| WebStorm | 自动配置模式或手动指定 `node_modules/prettier` |
-| Zed      | `languages.<语言>.formatter.external`          |
+| 编辑器   | 配置方式                                                                 |
+| -------- | ------------------------------------------------------------------------ |
+| VS Code  | 默认自动使用 `node_modules/prettier`                                     |
+| WebStorm | 自动配置模式或手动指定 `node_modules/prettier`                           |
+| Zed      | `node_modules/.bin/prettier`（推荐）/ `pnpm 或 yarn 或 npm exec`（备选） |
 
 **VS Code 配置：**
 
@@ -710,7 +733,7 @@ project/
 ### Zed
 
 1. 在项目中创建 `.zed/settings.json`
-2. 为 JavaScript/TypeScript 配置 `formatter.external` 为 `prettier`
+2. 参考 4.2 模板配置 `formatter.external`（推荐本地 `node_modules/.bin/prettier`）
 3. 设置 `format_on_save` 为 `"on"`
 ```
 
