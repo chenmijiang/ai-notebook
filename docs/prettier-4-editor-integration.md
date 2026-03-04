@@ -406,7 +406,7 @@ WebStorm 在状态栏显示 Prettier 图标，提供快速访问：
 
 ## 4. Zed
 
-Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/TypeScript 项目，推荐把 Prettier 配置为外部 formatter，并开启保存时格式化。
+Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/TypeScript 项目，Zed 默认使用语言服务器（TypeScript 内置）进行格式化，如果项目需要与 Prettier CLI 及其插件生态保持一致（例如与 CI、lint-staged 输出一致），就需要把 Prettier 配置为外部 formatter，并开启保存时格式化。
 
 ### 4.1 基础配置
 
