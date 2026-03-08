@@ -353,7 +353,7 @@ services:
 | `service_healthy`                | 服务健康检查通过           |
 | `service_completed_successfully` | 服务成功退出（一次性任务） |
 
-> **提示**：对于数据库这类需要初始化时间的服务，始终使用 `condition: service_healthy` 搭配 `healthcheck`。Dockerfile 中的 HEALTHCHECK 配置详见[第 4 篇](docker-4-dockerfile.md)第 2.8 节。
+> **提示**：对于数据库这类需要初始化时间的服务，始终使用 `condition: service_healthy` 搭配 `healthcheck`。Redis 启动几乎瞬间完成且无需初始化，使用 `service_started` 即可；如果你的服务对 Redis 可用性要求严格，也可以为 Redis 配置 healthcheck 并使用 `service_healthy`。Dockerfile 中的 HEALTHCHECK 配置详见[第 4 篇](docker-4-dockerfile.md)第 2.8 节。
 
 ## 4. 生命周期管理
 
@@ -552,22 +552,38 @@ docker compose -f compose.yml -f compose.prod.yml up -d
 
 ### 5.3 变量优先级
 
-当同一变量在多处定义时，优先级从高到低：
+变量优先级需要分两个层面理解：Compose 文件中的 `${VAR}` 替换，和容器最终拿到的环境变量。
 
-| 优先级  | 来源                                 |
-| ------- | ------------------------------------ |
-| 1（高） | `docker compose run -e VAR=value`    |
-| 2       | Shell 环境变量（`export VAR=value`） |
-| 3       | `.env` 文件                          |
-| 4       | `compose.yml` 中的 `environment`     |
-| 5（低） | `compose.yml` 中的 `env_file`        |
+**层面一：Compose 文件变量替换（`${VAR}` 从哪取值）**
+
+compose.yml 中写的 `${POSTGRES_PASSWORD}` 从以下来源取值（优先级从高到低）：
+
+| 优先级  | 来源                                      |
+| ------- | ----------------------------------------- |
+| 1（高） | Shell 环境变量（`export VAR=value`）      |
+| 2       | `.env` 文件                               |
+| 3（低） | compose.yml 中 `${VAR:-default}` 的默认值 |
 
 ```bash
-# Shell 中设置的环境变量优先于 .env 文件
+# .env 中：POSTGRES_PASSWORD=secret
+# Shell 中：
 export POSTGRES_PASSWORD=override
-docker compose up -d
-# POSTGRES_PASSWORD 的值是 override，而非 .env 中的值
+docker compose config | grep POSTGRES_PASSWORD
+# 输出：POSTGRES_PASSWORD: override（Shell 优先于 .env）
 ```
+
+**层面二：容器最终环境变量（容器内 `echo $VAR` 的值）**
+
+容器运行时的环境变量来源（优先级从高到低）：
+
+| 优先级  | 来源                                  |
+| ------- | ------------------------------------- |
+| 1（高） | `docker compose run -e VAR=value`     |
+| 2       | `compose.yml` 中的 `environment` 字段 |
+| 3       | `compose.yml` 中的 `env_file` 引用    |
+| 4（低） | 镜像 Dockerfile 中的 `ENV` 指令       |
+
+> **注意**：`.env` 文件不会直接成为容器的环境变量。它只用于 compose.yml 中的 `${VAR}` 替换。如果需要将 `.env` 中的变量注入容器，需要通过 `env_file` 字段引用，或者在 `environment` 中用 `${VAR}` 引用。
 
 ## 6. 综合实战
 
@@ -641,8 +657,7 @@ FROM nginx:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 EXPOSE 80
-HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
-  CMD curl -f http://localhost:80/ || exit 1
+# 健康检查由 compose.yml 统一管理，此处不重复声明
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
@@ -698,9 +713,7 @@ COPY . .
 ENV NODE_ENV=production
 EXPOSE 3000
 
-HEALTHCHECK --interval=10s --timeout=3s --retries=3 --start-period=5s \
-  CMD curl -f http://localhost:3000/health || exit 1
-
+# 健康检查由 compose.yml 统一管理，此处不重复声明
 CMD ["node", "server.js"]
 ```
 
@@ -735,7 +748,7 @@ services:
       - app-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:80/ || exit 1"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -758,7 +771,7 @@ services:
       - app-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/health').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))\""]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -820,6 +833,10 @@ NODE_ENV=production
 | 环境变量   | `environment` + `.env` 变量替换              |
 | 健康检查   | `healthcheck` + `depends_on.condition`       |
 | 端口映射   | `ports: "3000:80"`、`"8080:3000"`            |
+
+> **提示**：本示例将 healthcheck 统一放在 compose.yml 中，Dockerfile 中不重复声明。这是推荐做法——Dockerfile 中的 `HEALTHCHECK` 是镜像级默认值，Compose 中的 `healthcheck` 会覆盖它。将健康检查集中在 compose.yml 中管理，便于按环境调整检查参数。
+
+> **注意**：健康检查命令依赖镜像内已有的工具。本示例中 web 服务基于 Alpine 镜像（自带 `wget`），API 服务基于 Node.js 镜像（可用 `node` 内置的 `fetch`）。如果镜像不含 `curl`/`wget`，需要换用镜像内已有的探测方式。
 
 ### 6.7 启动与验证
 

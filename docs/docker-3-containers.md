@@ -403,6 +403,20 @@ docker inspect --format='{{json .Config.Env}}' web
 
 > **提示**：`docker inspect` 的输出是 JSON 格式，可以配合 `jq` 工具进行更灵活的查询：`docker inspect web | jq '.[0].State'`。
 
+### 3.5 其他实用命令
+
+```bash
+# 在容器和宿主机之间复制文件
+docker cp web:/etc/nginx/nginx.conf ./nginx.conf   # 容器 → 宿主机
+docker cp ./app.conf web:/etc/app/app.conf          # 宿主机 → 容器
+
+# 查看容器文件系统相对于镜像的变更（A=添加, C=修改, D=删除）
+docker diff web
+
+# 实时监听 Docker 事件（容器启动、停止、销毁等）
+docker events --filter type=container
+```
+
 ## 4. 退出码
 
 ### 4.1 常见退出码含义
@@ -753,6 +767,8 @@ docker run -d --name redis \
 
 > **提示**：`--health-start-period` 给应用一个启动缓冲期（如数据库初始化、应用预热）。在此期间健康检查失败不会被计入重试次数，但如果检查成功则立即标记为 healthy。Dockerfile 中 `HEALTHCHECK` 指令的声明方式将在[第 4 篇](docker-4-dockerfile.md)介绍。
 
+> **注意**：健康检查命令依赖镜像内已有的工具。上面的 `curl` 示例适用于包含 curl 的镜像（如 `node:22-slim`），但 Alpine 等精简镜像通常不内置 curl。此时可改用镜像内已有的工具：Alpine 镜像自带 `wget`（`wget -qO /dev/null http://...`），Node.js 镜像可用 `node -e "fetch(...)"`，数据库和 Redis 镜像自带专用命令（如 `pg_isready`、`redis-cli ping`）。
+
 ## 9. 常见故障排查
 
 ### 9.1 容器启动失败
@@ -840,34 +856,36 @@ flowchart TD
 
 ### 10.2 速查表
 
-| 命令                                                   | 说明                |
-| ------------------------------------------------------ | ------------------- |
-| `docker run -d --name <名称> <镜像>`                   | 后台启动容器        |
-| `docker run -it <镜像> bash`                           | 交互式启动容器      |
-| `docker ps`                                            | 查看运行中容器      |
-| `docker ps -a`                                         | 查看所有容器        |
-| `docker stop <容器>`                                   | 优雅停止容器        |
-| `docker kill <容器>`                                   | 强制停止容器        |
-| `docker rm <容器>`                                     | 删除容器            |
-| `docker rm -f <容器>`                                  | 强制删除运行中容器  |
-| `docker container prune`                               | 清理所有停止的容器  |
-| `docker logs -f <容器>`                                | 实时跟踪日志        |
-| `docker logs --tail 100 <容器>`                        | 查看最后 100 行日志 |
-| `docker exec -it <容器> bash`                          | 进入容器 Shell      |
-| `docker exec <容器> <命令>`                            | 在容器内执行命令    |
-| `docker stats`                                         | 查看资源使用情况    |
-| `docker top <容器>`                                    | 查看容器内进程      |
-| `docker inspect <容器>`                                | 查看容器详细信息    |
-| `docker inspect --format='{{.State.ExitCode}}' <容器>` | 查看退出码          |
-| `docker restart <容器>`                                | 重启容器            |
-| `docker pause <容器>`                                  | 暂停容器            |
-| `docker unpause <容器>`                                | 恢复暂停的容器      |
+| 命令                                                   | 说明                 |
+| ------------------------------------------------------ | -------------------- |
+| `docker run -d --name <名称> <镜像>`                   | 后台启动容器         |
+| `docker run -it <镜像> bash`                           | 交互式启动容器       |
+| `docker ps`                                            | 查看运行中容器       |
+| `docker ps -a`                                         | 查看所有容器         |
+| `docker stop <容器>`                                   | 优雅停止容器         |
+| `docker kill <容器>`                                   | 强制停止容器         |
+| `docker rm <容器>`                                     | 删除容器             |
+| `docker rm -f <容器>`                                  | 强制删除运行中容器   |
+| `docker container prune`                               | 清理所有停止的容器   |
+| `docker logs -f <容器>`                                | 实时跟踪日志         |
+| `docker logs --tail 100 <容器>`                        | 查看最后 100 行日志  |
+| `docker exec -it <容器> bash`                          | 进入容器 Shell       |
+| `docker exec <容器> <命令>`                            | 在容器内执行命令     |
+| `docker stats`                                         | 查看资源使用情况     |
+| `docker top <容器>`                                    | 查看容器内进程       |
+| `docker inspect <容器>`                                | 查看容器详细信息     |
+| `docker inspect --format='{{.State.ExitCode}}' <容器>` | 查看退出码           |
+| `docker restart <容器>`                                | 重启容器             |
+| `docker pause <容器>`                                  | 暂停容器             |
+| `docker unpause <容器>`                                | 恢复暂停的容器       |
+| `docker cp <容器>:<路径> <宿主机路径>`                 | 从容器复制文件       |
+| `docker diff <容器>`                                   | 查看容器文件系统变更 |
 
 ## 参考资源
 
 - [Docker 容器操作文档](https://docs.docker.com/reference/cli/docker/container/)
 - [docker run 参考](https://docs.docker.com/reference/cli/docker/container/run/)
 - [资源限制文档](https://docs.docker.com/config/containers/resource_constraints/)
-- [容器健康检查](https://docs.docker.com/engine/containers/start-containers-automatically/)
+- [容器健康检查](https://docs.docker.com/reference/dockerfile/#healthcheck)
 - [Docker inspect 文档](https://docs.docker.com/reference/cli/docker/container/inspect/)
 - [Docker 日志文档](https://docs.docker.com/reference/cli/docker/container/logs/)

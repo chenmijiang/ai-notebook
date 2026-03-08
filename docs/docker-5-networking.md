@@ -10,7 +10,7 @@ Docker 容器默认运行在隔离的网络环境中——它们有自己的 IP 
 
 每个 Docker 容器都拥有独立的网络栈（Network Namespace），包括独立的网络接口、IP 地址、路由表和端口空间。容器通过虚拟网桥（Bridge）与宿主机和外部网络通信。
 
-数据从容器流向外部网络的路径：
+数据从容器流向外部网络的路径（Linux 宿主机原理示意，macOS / Windows 通过 Docker Desktop VM 间接实现）：
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -101,6 +101,8 @@ docker run -d --name db -p 127.0.0.1:5432:5432 postgres:16
 docker port web
 # 输出：80/tcp -> 0.0.0.0:3000
 ```
+
+> **注意**：数据库、缓存、管理后台等内部服务的端口，应优先绑定到 `127.0.0.1`（如 `-p 127.0.0.1:5432:5432`），避免暴露到 `0.0.0.0`。不指定 IP 时默认绑定到所有网卡，这意味着同一网络中的其他机器也可以访问。
 
 ### 2.3 为什么是 -p 宿主机:容器
 
@@ -271,11 +273,13 @@ docker exec db ping -c 1 api         # 网络别名
 ```bash
 # 默认 bridge 中的 DNS 配置
 docker run --rm alpine cat /etc/resolv.conf
-# nameserver 192.168.65.254  （指向宿主机 DNS）
+# nameserver 的值取决于宿主机平台：
+# macOS Docker Desktop 可能显示 192.168.65.254
+# Linux 宿主机可能显示 8.8.8.8 等公共 DNS
 
 # 自定义网络中的 DNS 配置
 docker run --rm --network app-net alpine cat /etc/resolv.conf
-# nameserver 127.0.0.11  （指向 Docker 内嵌 DNS）
+# nameserver 127.0.0.11  （指向 Docker 内嵌 DNS，所有平台一致）
 ```
 
 这就是为什么默认 bridge 中容器名无法互相解析——根本没有负责容器名解析的 DNS 服务器。
@@ -599,6 +603,7 @@ overlay 网络用于**跨主机**容器通信，主要在 Docker Swarm 或集群
 - **端口映射**：`-p 宿主机端口:容器端口` 让外部能访问容器服务
 - **使用自定义 bridge**：始终创建自定义 bridge 网络，不要使用默认 bridge
 - **容器 DNS**：自定义网络中容器名自动解析为 IP，应用代码直接用容器名
+- **Compose 预告**：到 Docker Compose（[第 7 篇](docker-7-compose.md)）中，服务名通信和默认网络会变成更自然的默认行为——Compose 自动创建自定义网络，服务名即可互访
 - **容器间通信**：同一网络中用容器名 + 内部端口通信，无需端口映射
 - **访问宿主机**：macOS/Windows 用 `host.docker.internal`，Linux 需 `--add-host`
 

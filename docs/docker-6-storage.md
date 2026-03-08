@@ -329,6 +329,8 @@ docker system prune --volumes
 
 ## 5. Bind Mount 详解
 
+> **性能提示**：macOS 和 Windows 上，Docker Desktop 通过虚拟机文件共享（VirtioFS / gRPC FUSE）同步 Bind Mount 文件，性能低于 Linux 原生挂载。对于 `node_modules` 等包含大量小文件的目录，建议使用 Volume 代替 Bind Mount（参见 [§8.2 node_modules 处理](#82-node_modules-处理)）。
+
 ### 5.1 基本用法
 
 ```bash
@@ -381,17 +383,17 @@ docker run --rm -v ./my-app:/app node:22-slim sh -c "touch /app/test.txt"
 **Linux 权限问题的解决方法**：
 
 ```bash
-# 方法 1：指定容器用户与宿主机用户一致
+# ✅ 方法 1：指定容器用户与宿主机用户一致（推荐，无需改镜像）
 docker run --rm -u $(id -u):$(id -g) -v ./my-app:/app node:22-slim \
   sh -c "touch /app/test.txt"
 
-# 方法 2：修改宿主机目录权限
-chmod -R 777 ./my-app  # 简单但不安全
-
-# 方法 3：在 Dockerfile 中创建匹配 UID 的用户（推荐）
+# ✅ 方法 2：在 Dockerfile 中创建匹配 UID 的用户（推荐，可固化到镜像）
 # Dockerfile 中：
 # RUN groupadd -g 1000 appuser && useradd -u 1000 -g appuser appuser
+# USER appuser
 ```
+
+> **⚠️ `chmod -R 777` 不建议作为长期方案**：网上常见 `chmod -R 777 ./my-app` 的写法，虽然能快速解决权限报错，但它让所有用户都能读写执行该目录，存在安全隐患。仅在临时排障时使用，排查完毕后应恢复为上述方法 1 或方法 2。
 
 | 平台  | 权限表现                 | 常见问题                   |
 | ----- | ------------------------ | -------------------------- |
@@ -491,6 +493,13 @@ docker run --rm \
 │                  │
 └──────────────────┘
 ```
+
+> **注意**：上述 tar 备份是文件级别的直接复制，适用于静态文件和已停止的服务。对于**正在运行的数据库**，直接复制数据目录可能得到不一致的快照。应优先使用数据库自带的备份工具（如 `pg_dump`、`mysqldump`），确保数据一致性：
+>
+> ```bash
+> # PostgreSQL 推荐备份方式
+> docker exec db pg_dump -U postgres mydb > backup.sql
+> ```
 
 ### 7.2 Volume 恢复
 
@@ -599,7 +608,16 @@ docker run -d --name web \
 
 - 每次用 `docker rm` 删除容器后，匿名 Volume 中的 `node_modules` 也会丢失（除非用 `docker run --rm` 以外的方式管理）
 - 宿主机上添加新依赖后，需要在容器内重新 `npm install`
-- 如果想持久化容器内的 `node_modules`，可以用命名 Volume 替代匿名 Volume
+- 如果想持久化容器内的 `node_modules`，可以用命名 Volume 替代匿名 Volume：
+
+```bash
+# 命名 Volume 替代匿名 Volume，容器重建后 node_modules 仍在
+docker run -d --name web \
+  -v ./my-app:/app \
+  -v web-node-modules:/app/node_modules \
+  -p 3000:3000 \
+  node:22-slim sh -c "cd /app && npm install && npm start"
+```
 
 ### 8.3 构建产物持久化
 
