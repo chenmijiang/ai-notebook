@@ -209,13 +209,14 @@ docker rm my-nginx
 
 **容器生命周期**：
 
-| 状态    | 说明                             | 触发命令           |
-| ------- | -------------------------------- | ------------------ |
-| Created | 已创建但未启动                   | `docker create`    |
-| Running | 正在运行                         | `docker start/run` |
-| Paused  | 暂停运行                         | `docker pause`     |
-| Exited  | 主进程已退出，容器停止           | `docker stop`      |
-| Removed | 已删除（用户常说"已停止"的容器） | `docker rm`        |
+| 状态    | 说明                   | 触发命令           |
+| ------- | ---------------------- | ------------------ |
+| Created | 已创建但未启动         | `docker create`    |
+| Running | 正在运行               | `docker start/run` |
+| Paused  | 暂停运行               | `docker pause`     |
+| Exited  | 主进程已退出，容器停止 | `docker stop`      |
+
+> **提示**：`Exited` 是 Docker 命令输出中的正式状态名，中文语境里常口语化说"已停止"。`docker rm` 删除容器后，容器不再存在于任何状态中——Removed 不是运行状态，而是删除后的结果。
 
 ### 4.3 仓库（Registry）
 

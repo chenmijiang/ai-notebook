@@ -719,7 +719,7 @@ docker ps -f "health=unhealthy"
 ```bash
 # 完整示例：配置 HTTP 健康检查
 docker run -d --name api \
-  --health-cmd="curl -f http://localhost:3000/health || exit 1" \
+  --health-cmd="node -e \"fetch('http://localhost:3000/health').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))\"" \
   --health-interval=30s \
   --health-timeout=5s \
   --health-retries=3 \
@@ -746,7 +746,7 @@ docker run -d --name web --no-healthcheck nginx:1.27
 
 # 适合 Node.js API 的健康检查
 docker run -d --name api \
-  --health-cmd="curl -f http://localhost:3000/health || exit 1" \
+  --health-cmd="node -e \"fetch('http://localhost:3000/health').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))\"" \
   --health-interval=15s \
   --health-start-period=30s \
   node:22-slim
@@ -767,7 +767,7 @@ docker run -d --name redis \
 
 > **提示**：`--health-start-period` 给应用一个启动缓冲期（如数据库初始化、应用预热）。在此期间健康检查失败不会被计入重试次数，但如果检查成功则立即标记为 healthy。Dockerfile 中 `HEALTHCHECK` 指令的声明方式将在[第 4 篇](docker-4-dockerfile.md)介绍。
 
-> **注意**：健康检查命令依赖镜像内已有的工具。上面的 `curl` 示例适用于包含 curl 的镜像（如 `node:22-slim`），但 Alpine 等精简镜像通常不内置 curl。此时可改用镜像内已有的工具：Alpine 镜像自带 `wget`（`wget -qO /dev/null http://...`），Node.js 镜像可用 `node -e "fetch(...)"`，数据库和 Redis 镜像自带专用命令（如 `pg_isready`、`redis-cli ping`）。
+> **注意**：健康检查命令依赖镜像内已有的工具。`node:22-slim` 等精简镜像不含 curl 和 wget，应使用 Node.js 内置的 `fetch`（如上例）。Alpine 镜像自带 `wget`（`wget -qO /dev/null http://...`），数据库和 Redis 镜像自带专用命令（如 `pg_isready`、`redis-cli ping`）。
 
 ## 9. 常见故障排查
 

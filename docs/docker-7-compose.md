@@ -284,18 +284,18 @@ services:
       DATABASE_URL: postgresql://postgres:secret@db:5432/myapp
       REDIS_URL: redis://redis:6379
 
-    # 方式二：引用 .env 文件
+    # 方式二：从文件加载环境变量
     env_file:
-      - .env
+      - api.env
 
     # 方式三：两者结合（environment 覆盖 env_file 中的同名变量）
     env_file:
-      - .env
+      - api.env
     environment:
-      NODE_ENV: production   # 覆盖 .env 中的 NODE_ENV
+      NODE_ENV: production   # 覆盖 api.env 中的 NODE_ENV
 ```
 
-> **注意**：`environment` 中的值会覆盖 `env_file` 中的同名变量。另外，包含特殊字符的值建议加引号。
+> **注意**：`environment` 中的值会覆盖 `env_file` 中的同名变量。注意区分：这里的 `env_file` 引用的是自定义文件名（如 `api.env`），与项目根目录下用于 Compose 变量替换的 `.env` 文件是不同的概念（详见 [§5.1](#51-env-文件)）。
 
 ### 3.5 depends_on 与服务就绪
 
@@ -834,7 +834,7 @@ NODE_ENV=production
 | 健康检查   | `healthcheck` + `depends_on.condition`       |
 | 端口映射   | `ports: "3000:80"`、`"8080:3000"`            |
 
-> **提示**：本示例将 healthcheck 统一放在 compose.yml 中，Dockerfile 中不重复声明。这是推荐做法——Dockerfile 中的 `HEALTHCHECK` 是镜像级默认值，Compose 中的 `healthcheck` 会覆盖它。将健康检查集中在 compose.yml 中管理，便于按环境调整检查参数。
+> **提示**：本示例将 healthcheck 统一放在 compose.yml 中，Dockerfile 中不重复声明。在多环境项目中，这是更常见、也更便于集中管理的做法——Dockerfile 中的 `HEALTHCHECK` 是镜像级默认值，Compose 中的 `healthcheck` 会覆盖它。也有些团队选择在 Dockerfile 中声明默认健康检查，Compose 中按需覆盖，两种方式都可以。
 
 > **注意**：健康检查命令依赖镜像内已有的工具。本示例中 web 服务基于 Alpine 镜像（自带 `wget`），API 服务基于 Node.js 镜像（可用 `node` 内置的 `fetch`）。如果镜像不含 `curl`/`wget`，需要换用镜像内已有的探测方式。
 

@@ -308,11 +308,11 @@ HEALTHCHECK NONE
 **完整示例**：
 
 ```dockerfile
-# Node.js API 健康检查
+# Node.js API 健康检查（node:22-slim 不含 curl，使用内置 fetch）
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:3000/health || exit 1
+  CMD node -e "fetch('http://localhost:3000/health').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))"
 
-# Nginx 健康检查
+# Nginx 健康检查（nginx:1.27-alpine 自带 curl 和 wget）
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
   CMD curl -f http://localhost:80/ || exit 1
 ```
@@ -337,7 +337,7 @@ HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
 
 > **提示**：Dockerfile 中的 `HEALTHCHECK` 是声明式的默认配置，运行时可通过 `docker run --health-cmd` 等参数覆盖。关于运行时如何查看和排障健康状态，详见[第 3 篇](docker-3-containers.md)第 8 节。
 
-> **注意**：健康检查命令必须使用镜像内已有的工具。上面的 `curl` 示例适用于包含 curl 的镜像，但 Alpine 等精简镜像通常不内置 curl。替代方案：Alpine 镜像可用 `wget -qO /dev/null http://...`，Node.js 镜像可用 `node -e "fetch('http://localhost:3000/health').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))"`。
+> **注意**：健康检查命令必须使用镜像内已有的工具。`node:22-slim` 不含 curl 和 wget，应使用 Node.js 内置的 `fetch`（如上例）。Alpine 镜像可用 `wget -qO /dev/null http://...`。选择精简基础镜像时，注意确认可用的探测工具。
 
 ## 3. 指令对比
 
