@@ -1,5 +1,12 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
+- 2026-03-08 - [Docker Compose 完全指南](./docker-7-compose.md) (L: 2026-03-08)
+- 2026-03-08 - [Docker 数据管理完全指南](./docker-6-storage.md) (L: 2026-03-08)
+- 2026-03-08 - [Docker 网络完全指南](./docker-5-networking.md) (L: 2026-03-08)
+- 2026-03-08 - [Dockerfile 与镜像构建完全指南](./docker-4-dockerfile.md) (L: 2026-03-08)
+- 2026-03-08 - [Docker 容器管理完全指南](./docker-3-containers.md) (L: 2026-03-08)
+- 2026-03-08 - [Docker 镜像与仓库完全指南](./docker-2-images.md) (L: 2026-03-08)
+- 2026-03-08 - [Docker 基础完全指南](./docker-1-fundamentals.md) (L: 2026-03-08)
 - 2026-03-03 - [ESLint 问题排查完全指南](./eslint-7-troubleshooting.md) (L: 2026-03-03)
 - 2026-03-03 - [ESLint 进阶完全指南](./eslint-5-advanced.md) (L: 2026-03-03)
 - 2026-03-03 - [ESLint 规则完全指南](./eslint-2-rules.md) (L: 2026-03-03)
@@ -22,7 +29,7 @@ A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-g
 - 2026-01-26 - [Prettier 高级用法与疑难解决](./prettier-7-advanced.md) (L: 2026-01-31)
 - 2026-01-26 - [Prettier 团队协作实践](./prettier-6-team-practices.md) (L: 2026-01-31)
 - 2026-01-26 - [Prettier 工具链整合指南](./prettier-5-toolchain.md) (L: 2026-01-31)
-- 2026-01-26 - [Prettier 编辑器集成指南](./prettier-4-editor-integration.md) (L: 2026-01-31)
+- 2026-01-26 - [Prettier 编辑器集成指南](./prettier-4-editor-integration.md) (L: 2026-03-04)
 - 2026-01-26 - [Prettier 多语言支持指南](./prettier-3-multi-language.md) (L: 2026-01-31)
 - 2026-01-26 - [Prettier 配置文件指南](./prettier-2-configuration.md) (L: 2026-01-27)
 - 2026-01-26 - [Prettier 基础概念与原理](./prettier-1-fundamentals.md) (L: 2026-01-27)

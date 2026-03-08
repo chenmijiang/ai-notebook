@@ -20,7 +20,7 @@
 ❌ 编辑器全局设置
 ├── 开发者 A 的 VS Code：printWidth: 80
 ├── 开发者 B 的 WebStorm：printWidth: 100
-└── 开发者 C 的 Neovim：printWidth: 120
+└── 开发者 C 的 Zed：printWidth: 120
 → 每次提交都产生格式差异
 
 ✅ 项目级配置
@@ -404,230 +404,177 @@ WebStorm 在状态栏显示 Prettier 图标，提供快速访问：
 | Edit Config     | 打开 Prettier 配置文件 |
 | Settings        | 打开 Prettier 设置页面 |
 
-## 4. Vim/Neovim
+## 4. Zed
 
-Vim 和 Neovim 有多种方式集成 Prettier，从专用插件到通用格式化框架都有。
+Zed 支持通过语言级设置调用外部格式化器。对于 JavaScript/TypeScript 项目，Zed 默认使用语言服务器（TypeScript 内置）进行格式化，如果项目需要与 Prettier CLI 及其插件生态保持一致（例如与 CI、lint-staged 输出一致），就需要把 Prettier 配置为外部 formatter，并开启保存时格式化。
 
-### 4.1 插件方案对比
+### 4.1 基础配置
 
-| 插件         | 类型               | 特点                                | 推荐场景           |
-| ------------ | ------------------ | ----------------------------------- | ------------------ |
-| conform.nvim | 格式化框架         | Neovim 专用，异步，支持多格式化工具 | Neovim 现代配置    |
-| null-ls.nvim | LSP 桥接（已归档） | 集成 linter 和 formatter 到 LSP     | 遗留项目           |
-| vim-prettier | Prettier 专用      | 简单直接，功能完整                  | Vim/简单配置       |
-| Neoformat    | 格式化框架         | 支持多种格式化工具                  | Vim/Neovim 通用    |
-| ALE          | Linter + Fixer     | 异步检查和修复                      | 需要 lint + format |
-| coc-prettier | coc.nvim 扩展      | VS Code 式体验                      | 使用 coc.nvim 用户 |
+**配置入口：**
 
-> **注意**：null-ls.nvim 已停止维护，推荐迁移到 conform.nvim 或其他活跃维护的方案。
+| 配置范围 | 文件位置                  | 适用场景                   |
+| -------- | ------------------------- | -------------------------- |
+| 用户级   | Zed Settings Editor       | 个人默认配置               |
+| 项目级   | `.zed/settings.json`      | 团队共享（推荐）           |
+| 语言级   | `languages.<语言名>` 节点 | 为不同语言设置不同格式化器 |
 
-**选择建议：**
+**先理解 external 的执行规则：**
 
-| 使用场景               | 推荐方案                  |
-| ---------------------- | ------------------------- |
-| Neovim + Lazy.nvim     | conform.nvim              |
-| Neovim + coc.nvim      | coc-prettier              |
-| Vim 简单配置           | vim-prettier 或 Neoformat |
-| 需要 ESLint + Prettier | ALE 或 conform.nvim       |
+| 规则                               | 说明                                                        |
+| ---------------------------------- | ----------------------------------------------------------- |
+| `command` 必须是可执行文件名或路径 | 例如 `prettier`、`node_modules/.bin/prettier`、`yarn`       |
+| `command` 不是 shell 命令行        | 不能写 `"yarn prettier"` 这种带空格的整串命令               |
+| 子命令放到 `arguments`             | 例如 `"command": "yarn"` + `"arguments": ["prettier", ...]` |
 
-### 4.2 conform.nvim 配置
+**方案 A（推荐）：使用项目本地二进制 `node_modules/.bin/prettier`**
 
-conform.nvim 是 Neovim 现代配置的首选格式化方案，支持异步格式化和多种格式化工具。
-
-**安装（使用 lazy.nvim）：**
-
-```lua
--- lua/plugins/formatting.lua
-return {
-  "stevearc/conform.nvim",
-  event = { "BufWritePre" },
-  cmd = { "ConformInfo" },
-  keys = {
-    {
-      "<leader>f",
-      function()
-        require("conform").format({ async = true, lsp_fallback = true })
-      end,
-      mode = "",
-      desc = "Format buffer",
-    },
-  },
-  opts = {
-    -- 按文件类型配置格式化工具
-    formatters_by_ft = {
-      javascript = { "prettierd", "prettier", stop_after_first = true },
-      javascriptreact = { "prettierd", "prettier", stop_after_first = true },
-      typescript = { "prettierd", "prettier", stop_after_first = true },
-      typescriptreact = { "prettierd", "prettier", stop_after_first = true },
-      vue = { "prettierd", "prettier", stop_after_first = true },
-      css = { "prettierd", "prettier", stop_after_first = true },
-      scss = { "prettierd", "prettier", stop_after_first = true },
-      html = { "prettierd", "prettier", stop_after_first = true },
-      json = { "prettierd", "prettier", stop_after_first = true },
-      jsonc = { "prettierd", "prettier", stop_after_first = true },
-      yaml = { "prettierd", "prettier", stop_after_first = true },
-      markdown = { "prettierd", "prettier", stop_after_first = true },
-      graphql = { "prettierd", "prettier", stop_after_first = true },
-    },
-
-    -- 保存时格式化
-    format_on_save = {
-      timeout_ms = 500,
-      lsp_fallback = true,
-    },
-  },
-}
-```
-
-**配置说明：**
-
-| 配置项                    | 说明                                                |
-| ------------------------- | --------------------------------------------------- |
-| `formatters_by_ft`        | 按文件类型指定格式化工具                            |
-| `stop_after_first = true` | 使用第一个可用的格式化工具（prettierd 或 prettier） |
-| `format_on_save`          | 保存时自动格式化                                    |
-| `timeout_ms`              | 格式化超时时间（毫秒）                              |
-| `lsp_fallback`            | 无格式化工具时回退到 LSP                            |
-
-**prettierd vs prettier：**
-
-| 工具        | 说明                                                |
-| ----------- | --------------------------------------------------- |
-| `prettierd` | Prettier 的守护进程版本，启动后常驻内存，格式化更快 |
-| `prettier`  | 标准 Prettier，每次格式化都启动新进程               |
-
-```bash
-# 安装 prettierd（推荐）
-npm install -g @fsouza/prettierd
-```
-
-**手动格式化命令：**
-
-```lua
--- 在 Neovim 中运行
-:lua require("conform").format()
-
--- 查看当前缓冲区可用的格式化工具
-:ConformInfo
-```
-
-### 4.3 格式化触发方式
-
-**方式一：保存时自动格式化**
-
-```lua
--- conform.nvim 配置
-opts = {
-  format_on_save = {
-    timeout_ms = 500,
-    lsp_fallback = true,
-  },
-}
-```
-
-**方式二：使用 autocmd**
-
-```lua
--- init.lua
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = { "*.js", "*.jsx", "*.ts", "*.tsx", "*.vue", "*.json", "*.css", "*.scss", "*.html", "*.md" },
-  callback = function(args)
-    require("conform").format({ bufnr = args.buf })
-  end,
-})
-```
-
-**方式三：手动触发**
-
-```lua
--- 设置快捷键
-vim.keymap.set("n", "<leader>f", function()
-  require("conform").format({ async = true })
-end, { desc = "Format buffer" })
-
-vim.keymap.set("v", "<leader>f", function()
-  require("conform").format({ async = true })
-end, { desc = "Format selection" })
-```
-
-**方式四：使用项目本地 Prettier**
-
-```lua
--- 确保使用项目本地的 prettier
-opts = {
-  formatters = {
-    prettier = {
-      -- 优先使用项目本地的 prettier
-      command = function()
-        local util = require("conform.util")
-        return util.find_executable({ "node_modules/.bin/prettier" }, "prettier")
-      end,
-    },
-  },
-}
-```
-
-**其他插件配置示例：**
-
-**Neoformat：**
-
-```vim
-" .vimrc 或 init.vim
-Plug 'sbdchd/neoformat'
-
-" 使用项目本地的 prettier
-let g:neoformat_try_node_exe = 1
-
-" 保存时自动格式化
-autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx,*.vue,*.json,*.css,*.html,*.md Neoformat
-
-" 手动格式化命令
-" :Neoformat
-" :Neoformat prettier
-```
-
-**ALE：**
-
-```vim
-" .vimrc 或 init.vim
-Plug 'dense-analysis/ale'
-
-" 配置 Prettier 作为 fixer
-let g:ale_fixers = {
-\   'javascript': ['prettier'],
-\   'typescript': ['prettier'],
-\   'javascriptreact': ['prettier'],
-\   'typescriptreact': ['prettier'],
-\   'vue': ['prettier'],
-\   'css': ['prettier'],
-\   'scss': ['prettier'],
-\   'html': ['prettier'],
-\   'json': ['prettier'],
-\   'markdown': ['prettier'],
-\}
-
-" 只使用显式配置的 linter
-let g:ale_linters_explicit = 1
-
-" 保存时自动修复
-let g:ale_fix_on_save = 1
-```
-
-**coc-prettier：**
-
-```vim
-" 安装 coc.nvim 后
-:CocInstall coc-prettier
-
-" coc-settings.json
+```json
 {
-  "prettier.formatOnSaveMode": "file",
-  "prettier.onlyUseLocalVersion": true
+  "languages": {
+    "TypeScript": {
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"]
+        }
+      },
+      "format_on_save": "on"
+    }
+  }
 }
-
-" 设置快捷键
-nmap <leader>f :CocCommand prettier.formatFile<CR>
 ```
+
+**方案 B：通过包管理器调用 Prettier（适合统一 Node 工具链）**
+
+```json
+{
+  "languages": {
+    "TypeScript": {
+      "formatter": {
+        "external": {
+          "command": "pnpm",
+          "arguments": ["exec", "prettier", "--stdin-filepath", "{buffer_path}"]
+        }
+      },
+      "format_on_save": "on"
+    }
+  }
+}
+```
+
+> **说明**：`npm`、`yarn` 也可用同样思路。关键点是 `command` 写包管理器可执行文件，`prettier` 放在 `arguments`。
+
+---
+
+> **提示**：`--stdin-filepath` 可让 Prettier 根据当前文件路径正确选择 parser，并读取项目内 `.prettierrc` 与 `.prettierignore`。若项目尚未安装依赖（没有 `node_modules`），请先执行 `npm install` / `pnpm install` / `yarn`。
+
+### 4.2 项目级共享配置
+
+将 Zed 配置写入仓库内的 `.zed/settings.json`，可确保团队成员获得一致的保存时格式化行为。
+
+**推荐的 `.zed/settings.json`（项目本地 Prettier）：**
+
+```json
+{
+  "languages": {
+    "JavaScript": {
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"]
+        }
+      },
+      "format_on_save": "on"
+    },
+    "TypeScript": {
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"]
+        }
+      },
+      "format_on_save": "on"
+    },
+    "JSON": {
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"]
+        }
+      },
+      "format_on_save": "on"
+    },
+    "Markdown": {
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"]
+        }
+      },
+      "format_on_save": "on"
+    }
+  }
+}
+```
+
+**关键配置项说明：**
+
+| 配置项               | 说明                                    |
+| -------------------- | --------------------------------------- |
+| `external.command`   | 外部可执行文件（如本地 bin 或包管理器） |
+| `external.arguments` | 传递给 Prettier 的参数                  |
+| `format_on_save`     | 保存时自动格式化（`"on"`/`"off"`）      |
+
+### 4.3 与 ESLint 组合
+
+在 Zed 中可以把「ESLint 修复」和「Prettier 格式化」串联执行：先运行 `source.fixAll.eslint`，再执行 Prettier。
+
+```json
+{
+  "languages": {
+    "JavaScript": {
+      "formatter": [
+        {
+          "code_action": "source.fixAll.eslint"
+        },
+        {
+          "external": {
+            "command": "node_modules/.bin/prettier",
+            "arguments": ["--stdin-filepath", "{buffer_path}"]
+          }
+        }
+      ],
+      "format_on_save": "on"
+    }
+  }
+}
+```
+
+### 4.4 常见问题
+
+**问题一：报错 `No such file or directory (os error 2)`**
+
+这通常表示 Zed 找不到 `external.command` 指定的可执行文件，而不是 Prettier 规则配置错误。
+
+| 常见写法                                            | 结果     | 说明                                 |
+| --------------------------------------------------- | -------- | ------------------------------------ |
+| `"command": "yarn prettier"`                        | ❌ 失败  | Zed 不按 shell 拆分命令              |
+| `"command": "prettier"`                             | 可能失败 | 依赖 Zed 进程的 PATH 能找到 prettier |
+| `"command": "node_modules/.bin/prettier"`           | ✅ 推荐  | 明确使用项目本地二进制               |
+| `"command": "yarn", "arguments": ["prettier", ...]` | ✅ 可用  | 子命令写在 `arguments`               |
+
+**问题二：保存时未格式化或配置未生效**
+
+| 排查步骤 | 操作方法                                                         |
+| -------- | ---------------------------------------------------------------- |
+| 1        | 检查 `languages.<语言>.format_on_save` 是否为 `"on"`             |
+| 2        | 检查 `formatter.external.command` 是否存在且可执行               |
+| 3        | 若使用本地路径，确认 `node_modules/.bin/prettier` 已生成         |
+| 4        | 运行 `npx prettier --find-config-path src/index.ts` 确认配置来源 |
+| 5        | 运行 `npx prettier --check src/index.ts` 验证格式化结果          |
+| 6        | 在 Zed 命令面板执行 `zed: open log` 查看完整错误                 |
+
+> **注意**：如果 `prettier` 命令不可用，请先在项目中安装依赖：`npm install --save-dev prettier`。
 
 ## 5. 跨编辑器一致性
 
@@ -657,12 +604,11 @@ yarn add -D prettier
 
 **各编辑器使用本地 Prettier 的配置：**
 
-| 编辑器   | 配置方式                                       |
-| -------- | ---------------------------------------------- |
-| VS Code  | 默认自动使用 `node_modules/prettier`           |
-| WebStorm | 自动配置模式或手动指定 `node_modules/prettier` |
-| Neovim   | conform.nvim 配置 `find_executable`            |
-| Vim      | Neoformat 设置 `g:neoformat_try_node_exe = 1`  |
+| 编辑器   | 配置方式                                                                 |
+| -------- | ------------------------------------------------------------------------ |
+| VS Code  | 默认自动使用 `node_modules/prettier`                                     |
+| WebStorm | 自动配置模式或手动指定 `node_modules/prettier`                           |
+| Zed      | `node_modules/.bin/prettier`（推荐）/ `pnpm 或 yarn 或 npm exec`（备选） |
 
 **VS Code 配置：**
 
@@ -784,9 +730,11 @@ project/
 2. 选择 "Automatic Prettier configuration"
 3. 勾选 "Run on save"
 
-### Vim/Neovim
+### Zed
 
-参考项目中的示例配置文件
+1. 在项目中创建 `.zed/settings.json`
+2. 参考 4.2 模板配置 `formatter.external`（推荐本地 `node_modules/.bin/prettier`）
+3. 设置 `format_on_save` 为 `"on"`
 ```
 
 **策略三：使用 Git Hooks 作为保障**
@@ -831,12 +779,11 @@ npm install --save-dev husky lint-staged
 
 ### 6.2 编辑器配置速查表
 
-| 编辑器   | 插件/扩展              | 格式化快捷键             | 配置位置                         |
-| -------- | ---------------------- | ------------------------ | -------------------------------- |
-| VS Code  | esbenp.prettier-vscode | `Shift+Alt+F`            | Settings / .vscode/settings.json |
-| WebStorm | 内置                   | `Ctrl+Alt+Shift+P`       | Settings → JavaScript → Prettier |
-| Neovim   | conform.nvim           | 自定义（如 `<leader>f`） | init.lua / lua/plugins/          |
-| Vim      | Neoformat / ALE        | 自定义                   | .vimrc / init.vim                |
+| 编辑器   | 插件/扩展                 | 格式化快捷键             | 配置位置                             |
+| -------- | ------------------------- | ------------------------ | ------------------------------------ |
+| VS Code  | esbenp.prettier-vscode    | `Shift+Alt+F`            | Settings / .vscode/settings.json     |
+| WebStorm | 内置                      | `Ctrl+Alt+Shift+P`       | Settings → JavaScript → Prettier     |
+| Zed      | 内置 + external formatter | `Cmd/Ctrl+S`（保存触发） | Settings Editor / .zed/settings.json |
 
 ### 6.3 推荐的项目配置文件结构
 
@@ -859,7 +806,8 @@ project/
 - [Prettier Editor Integration](https://prettier.io/docs/editors.html)
 - [Prettier VS Code Extension](https://github.com/prettier/prettier-vscode)
 - [Prettier WebStorm Setup](https://prettier.io/docs/webstorm)
-- [Prettier Vim Setup](https://prettier.io/docs/vim)
-- [conform.nvim](https://github.com/stevearc/conform.nvim)
+- [Zed Docs - Getting Started](https://zed.dev/docs/getting-started)
+- [Zed Docs - Configuring Languages](https://zed.dev/docs/configuring-languages)
+- [Zed Docs - All Settings](https://zed.dev/docs/reference/all-settings)
 - [EditorConfig](https://editorconfig.org/)
 - [Prettier 配置文件指南](./prettier-2-configuration.md)
