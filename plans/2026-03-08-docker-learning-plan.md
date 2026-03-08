@@ -45,6 +45,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 ```
 
 **禁止使用**：
+
 - 目录（TOC）
 - 章节分隔线 `---`
 
@@ -52,45 +53,45 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 
 参考 `.claude/skills/tech-docs-guide/SKILL.md`，核心要点：
 
-| 要求 | 说明 |
-|------|------|
-| 语言 | 简体中文 |
-| 章节编号 | `## 1.` → `### 1.1` → `#### 1.1.1` |
-| 代码块 | 标注语言类型、中文注释、`// ✅` / `// ❌` 标记 |
-| 表格 | 大量使用，用于对比、参数说明、速查 |
-| 图解 | 简单用 ASCII，复杂用 Mermaid |
-| 提示 | `> **注意**：` / `> **提示**：` |
+| 要求     | 说明                                           |
+| -------- | ---------------------------------------------- |
+| 语言     | 简体中文                                       |
+| 章节编号 | `## 1.` → `### 1.1` → `#### 1.1.1`             |
+| 代码块   | 标注语言类型、中文注释、`// ✅` / `// ❌` 标记 |
+| 表格     | 大量使用，用于对比、参数说明、速查             |
+| 图解     | 简单用 ASCII，复杂用 Mermaid                   |
+| 提示     | `> **注意**：` / `> **提示**：`                |
 
 ## 四、共享示例项目约定
 
 全系列涉及前端场景的示例，统一使用以下约定：
 
-| 约定项 | 统一值 |
-|--------|--------|
-| 前端框架 | React（Vite 构建） |
-| API 服务 | Node.js + Express |
-| 数据库 | PostgreSQL |
-| 缓存 | Redis |
-| Web 服务器 | Nginx |
-| 服务名 | `web`（Nginx）、`api`（Node.js）、`db`（PostgreSQL）、`redis`（Redis） |
-| 前端端口 | 宿主机 3000 → 容器 80 |
-| API 端口 | 宿主机 8080 → 容器 3000 |
-| 数据库端口 | 宿主机 5432 → 容器 5432 |
-| Redis 端口 | 宿主机 6379 → 容器 6379 |
-| 项目目录 | `my-app/`（前端）、`my-api/`（API） |
-| 环境变量风格 | `UPPER_SNAKE_CASE`，如 `DATABASE_URL`、`REDIS_URL`、`NODE_ENV` |
+| 约定项       | 统一值                                                                 |
+| ------------ | ---------------------------------------------------------------------- |
+| 前端框架     | React（Vite 构建）                                                     |
+| API 服务     | Node.js + Express                                                      |
+| 数据库       | PostgreSQL                                                             |
+| 缓存         | Redis                                                                  |
+| Web 服务器   | Nginx                                                                  |
+| 服务名       | `web`（Nginx）、`api`（Node.js）、`db`（PostgreSQL）、`redis`（Redis） |
+| 前端端口     | 宿主机 3000 → 容器 80                                                  |
+| API 端口     | 宿主机 8080 → 容器 3000                                                |
+| 数据库端口   | 宿主机 5432 → 容器 5432                                                |
+| Redis 端口   | 宿主机 6379 → 容器 6379                                                |
+| 项目目录     | `my-app/`（前端）、`my-api/`（API）                                    |
+| 环境变量风格 | `UPPER_SNAKE_CASE`，如 `DATABASE_URL`、`REDIS_URL`、`NODE_ENV`         |
 
 > **注意**：各篇示例按需使用其中一部分，不要求每篇都出现全部服务。第 7 篇 Compose 综合实战将全部串联。
 
 ## 五、篇幅控制规则
 
-| 规则 | 说明 |
-|------|------|
-| 聚焦核心问题 | 每篇围绕一个核心问题展开，不发散 |
-| 不重复展开 | 前文已讲过的概念，用"回扣 + 链接"处理，不重新解释 |
-| 表格替代叙述 | 能用表格、速查表说明的，不写长段文字 |
-| 代码简洁 | 示例只包含说明问题的最少代码，不写完整项目 |
-| 参考目标 | 每篇 400～800 行（与 ESLint/Prettier 系列一致） |
+| 规则         | 说明                                              |
+| ------------ | ------------------------------------------------- |
+| 聚焦核心问题 | 每篇围绕一个核心问题展开，不发散                  |
+| 不重复展开   | 前文已讲过的概念，用"回扣 + 链接"处理，不重新解释 |
+| 表格替代叙述 | 能用表格、速查表说明的，不写长段文字              |
+| 代码简洁     | 示例只包含说明问题的最少代码，不写完整项目        |
+| 参考目标     | 每篇 400～800 行（与 ESLint/Prettier 系列一致）   |
 
 ## 六、每篇文档详细规范
 
@@ -145,6 +146,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 ```
 
 **内容要点**：
+
 - 容器 vs 虚拟机用架构图（ASCII 或 Mermaid）直观对比
 - Docker 架构用流程图展示 Client → Daemon → Registry 交互
 - 底层原理只建立心智模型，不做内核级展开，用类比帮助理解（如 Namespace ≈ 独立房间，Cgroup ≈ 房间电表）
@@ -152,6 +154,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 - 镜像加速等网络环境配置不放主线，如需提及以 `> **提示**：` 形式放在安装章节末尾
 
 **执行步骤**：
+
 1. 创建文件 `docs/docker-1-fundamentals.md`，按上述结构编写完整内容
 2. 通过 web fetch 验证 Docker 官方文档中的关键概念准确性
 3. 自查：章节编号、代码注释、表格、提示格式是否符合规范
@@ -209,12 +212,14 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 ```
 
 **内容要点**：
+
 - 分层结构用 ASCII 图示展示 layer 堆叠
 - 每个 docker 命令都配完整示例和输出
 - latest 陷阱用 ✅/❌ 对比展示
 - 前端场景：node / nginx / alpine 基础镜像的选择对比表
 
 **执行步骤**：
+
 1. 创建文件 `docs/docker-2-images.md`，按上述结构编写完整内容
 2. 通过 web fetch 验证镜像相关命令的最新语法
 3. 自查规范合规性
@@ -286,6 +291,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 ```
 
 **内容要点**：
+
 - 生命周期状态转换用 Mermaid 状态图
 - 退出码表格：码值 → 含义 → 常见原因 → 排查方法
 - 重启策略四种模式用表格对比，附选择决策流程
@@ -294,6 +300,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 - 健康检查重点讲"运行时观察"：健康状态是什么、怎么看、怎么用于排障；HEALTHCHECK 指令的声明方式留给第 4 篇 Dockerfile
 
 **执行步骤**：
+
 1. 创建文件 `docs/docker-3-containers.md`，按上述结构编写完整内容
 2. 通过 web fetch 验证退出码、资源限制等参数的准确性
 3. 自查规范合规性
@@ -361,6 +368,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 ```
 
 **内容要点**：
+
 - 每个指令配简洁示例 + 注意事项
 - HEALTHCHECK 在此讲声明语法（第 3 篇已讲运行时如何观察健康状态，此处回扣链接）
 - 三组指令对比（COPY/ADD、CMD/ENTRYPOINT、ARG/ENV）用表格 + 示例双重说明
@@ -370,6 +378,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 - BuildKit 作为"构建优化"的扩展补充，介绍 `--mount=type=cache` 等现代特性，标注为进阶内容
 
 **执行步骤**：
+
 1. 创建文件 `docs/docker-4-dockerfile.md`，按上述结构编写完整内容
 2. 通过 web fetch 验证 Dockerfile 指令的最新行为和最佳实践
 3. 自查规范合规性
@@ -434,6 +443,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 ```
 
 **内容要点**：
+
 - 网络模型用 ASCII 图展示容器 → bridge → 宿主机 → 外部的数据流
 - 端口映射多种写法用表格对比，使用共享约定中的端口号
 - 默认 bridge vs 自定义 bridge 差异用表格 + 示例说明
@@ -442,6 +452,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 - overlay 等进阶内容标注"了解即可"，不做深入展开
 
 **执行步骤**：
+
 1. 创建文件 `docs/docker-5-networking.md`，按上述结构编写完整内容
 2. 通过 web fetch 验证网络相关行为（特别是 host.docker.internal 等 macOS 特性）
 3. 自查规范合规性
@@ -507,6 +518,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 ```
 
 **内容要点**：
+
 - 新增 `-v` vs `--mount` 对比章节：语法差异、适用场景、官方推荐的 `--mount` 场景
 - 数据丢失用"容器删除前后"的实验演示
 - 三种方式对比用表格：适用场景、持久化、性能、可移植性
@@ -515,6 +527,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 - Bind Mount 权限问题给出 macOS 和 Linux 的差异说明
 
 **执行步骤**：
+
 1. 创建文件 `docs/docker-6-storage.md`，按上述结构编写完整内容
 2. 通过 web fetch 验证存储相关的最新最佳实践
 3. 自查规范合规性
@@ -580,6 +593,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 ```
 
 **内容要点**：
+
 - 开篇回扣前 6 篇：之前手动管理的容器、网络、存储，Compose 用一个文件搞定
 - `depends_on` 重点说明"依赖 ≠ 就绪"：depends_on 只控制启动顺序，不保证服务已准备好接受连接；配合 healthcheck 的 `condition: service_healthy` 才能真正等待就绪
 - `docker compose config` 作为调试利器：展开变量替换、验证配置语法、排查 .env 问题
@@ -589,6 +603,7 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 - 突出 Compose 作为"胶水层"的角色，不重复讲已有知识，用"回扣 + 链接"方式引用前文
 
 **执行步骤**：
+
 1. 创建文件 `docs/docker-7-compose.md`，按上述结构编写完整内容
 2. 通过 web fetch 验证 Compose V2 的最新配置语法
 3. 自查规范合规性
@@ -632,11 +647,11 @@ docs/docker-7-compose.md       → # Docker Compose 完全指南
 
 提交时机不绑定在每个 Task 内，而是按以下策略灵活决定：
 
-| 策略 | 说明 |
-|------|------|
-| 默认 | 每篇完成并通过自查后，暂存并提交 |
-| 阶段检查点 | 阶段完成检查点发现问题并修正后，可合并为一次提交 |
-| Task 8 | 全系列审校完成后单独提交 |
+| 策略           | 说明                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------ |
+| 默认           | 每篇完成并通过自查后，暂存并提交                                                                 |
+| 阶段检查点     | 阶段完成检查点发现问题并修正后，可合并为一次提交                                                 |
+| Task 8         | 全系列审校完成后单独提交                                                                         |
 | commit message | 格式：`docs: add Docker <主题> guide`，Task 8 用 `docs: finalize Docker series and update index` |
 
 ## 八、执行检查清单

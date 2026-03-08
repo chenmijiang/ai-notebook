@@ -9,6 +9,7 @@
 ## 方案选择
 
 采用**按概念分层**方案，从底层概念逐层递进。理由：
+
 - 学习者已有基础，适合系统化梳理
 - 分层结构适合作为长期参考文档
 - 与仓库已有系列（ESLint 7 篇、Prettier 7 篇）风格一致
@@ -21,15 +22,15 @@
 
 ## 系列结构（7 篇）
 
-| 篇号 | 文件名 | 主题 | 核心问题 |
-|------|--------|------|---------|
-| 1 | `docker-1-fundamentals.md` | 基础与核心概念 | Docker 是什么，为什么需要它 |
-| 2 | `docker-2-images.md` | 镜像与仓库 | 镜像是什么，怎么选，怎么管 |
-| 3 | `docker-3-containers.md` | 容器运行与管理 | 容器怎么跑，怎么查，怎么控 |
-| 4 | `docker-4-dockerfile.md` | Dockerfile 与镜像构建 | 镜像怎么造，怎么优化 |
-| 5 | `docker-5-networking.md` | 网络 | 容器怎么通信，怎么暴露服务 |
-| 6 | `docker-6-storage.md` | 数据管理 | 数据怎么持久化，该选哪种方式 |
-| 7 | `docker-7-compose.md` | Docker Compose 与多容器编排 | 怎么把前 6 篇组织成完整项目 |
+| 篇号 | 文件名                     | 主题                        | 核心问题                     |
+| ---- | -------------------------- | --------------------------- | ---------------------------- |
+| 1    | `docker-1-fundamentals.md` | 基础与核心概念              | Docker 是什么，为什么需要它  |
+| 2    | `docker-2-images.md`       | 镜像与仓库                  | 镜像是什么，怎么选，怎么管   |
+| 3    | `docker-3-containers.md`   | 容器运行与管理              | 容器怎么跑，怎么查，怎么控   |
+| 4    | `docker-4-dockerfile.md`   | Dockerfile 与镜像构建       | 镜像怎么造，怎么优化         |
+| 5    | `docker-5-networking.md`   | 网络                        | 容器怎么通信，怎么暴露服务   |
+| 6    | `docker-6-storage.md`      | 数据管理                    | 数据怎么持久化，该选哪种方式 |
+| 7    | `docker-7-compose.md`      | Docker Compose 与多容器编排 | 怎么把前 6 篇组织成完整项目  |
 
 ## 各篇详细内容
 
