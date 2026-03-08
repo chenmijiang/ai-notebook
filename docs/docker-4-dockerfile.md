@@ -999,6 +999,8 @@ docker build --secret id=npmrc,src=.npmrc -t my-app .
 
 ## 参考资源
 
+镜像构建完成后，下一步要解决的问题是：容器之间如何通信、外部如何访问容器服务。见[Docker 网络完全指南](docker-5-networking.md)。
+
 - [Dockerfile 参考文档](https://docs.docker.com/reference/dockerfile/)
 - [docker build 命令参考](https://docs.docker.com/reference/cli/docker/image/build/)
 - [多阶段构建](https://docs.docker.com/build/building/multi-stage/)

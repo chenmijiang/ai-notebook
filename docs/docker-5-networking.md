@@ -6,6 +6,13 @@ Docker 容器默认运行在隔离的网络环境中——它们有自己的 IP 
 
 ## 1. Docker 网络模型
 
+上一篇学习了 Dockerfile 中的 `EXPOSE` 指令——它声明了容器打算监听的端口，但 `EXPOSE` 只是文档标注，并不会让外部真正访问到容器。要实现外部访问，需要 `-p` 端口映射；要实现容器之间的互相访问，需要理解 Docker 的网络模型。先记住两件事：
+
+- **外部访问容器**：看 `-p` 端口映射（[第 2 节](#2-端口映射)）
+- **容器之间互访**：看自定义 bridge 网络 + 容器名（[第 3 节](#3-bridge-网络) + [第 4 节](#4-容器-dns)）
+
+下面从底层原理开始理解这些机制。
+
 ### 1.1 容器网络基础
 
 每个 Docker 容器都拥有独立的网络栈（Network Namespace），包括独立的网络接口、IP 地址、路由表和端口空间。容器通过虚拟网桥（Bridge）与宿主机和外部网络通信。
@@ -625,6 +632,8 @@ overlay 网络用于**跨主机**容器通信，主要在 Docker Swarm 或集群
 | `host.docker.internal`                    | 容器内访问宿主机的域名  |
 
 ## 参考资源
+
+容器之间可以通信了，下一个问题是：容器删除后数据怎么办？下一篇讲解 Volume、Bind Mount 和 tmpfs 三种数据持久化方案。见[Docker 数据管理完全指南](docker-6-storage.md)。
 
 - [Docker 网络概述](https://docs.docker.com/engine/network/)
 - [Bridge 网络驱动](https://docs.docker.com/engine/network/drivers/bridge/)

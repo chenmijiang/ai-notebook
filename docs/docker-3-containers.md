@@ -883,6 +883,8 @@ flowchart TD
 
 ## 参考资源
 
+掌握了容器的运行和排障后，下一步是学习如何用 Dockerfile 构建自己的镜像——把应用打包成可分发的标准化产物。见[Dockerfile 与镜像构建完全指南](docker-4-dockerfile.md)。
+
 - [Docker 容器操作文档](https://docs.docker.com/reference/cli/docker/container/)
 - [docker run 参考](https://docs.docker.com/reference/cli/docker/container/run/)
 - [资源限制文档](https://docs.docker.com/config/containers/resource_constraints/)

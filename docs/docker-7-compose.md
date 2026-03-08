@@ -123,7 +123,7 @@ volumes:    # 定义命名 Volume（可选）
   pgdata:
 ```
 
-> **提示**：如果不显式定义 `networks`，Compose 会自动创建一个名为 `<项目名>_default` 的 bridge 网络，所有服务默认加入。多数项目用自动创建的网络就够了。
+> **提示**：如果不显式定义 `networks`，Compose 会自动创建一个名为 `<项目名>_default` 的 bridge 网络，所有服务默认加入。多数项目用自动创建的网络就够了。注意：这个 `<项目名>_default` 是 Compose 为当前项目创建的**自定义 bridge 网络**（支持 DNS 解析、服务名互访），不是[第 5 篇](docker-5-networking.md)中不推荐直接使用的 Docker 全局默认 `bridge` 网络。
 
 ### 2.2 services
 
@@ -274,6 +274,8 @@ services:
 Volume 类型选择和 node_modules 隔离技巧详见[第 6 篇](docker-6-storage.md)第 6 节和第 8.2 节。
 
 ### 3.4 environment 与 env_file
+
+本节只讲**服务内如何声明环境变量**。关于 `.env` 文件的变量替换机制和多来源优先级，见 [第 5 节](#5-环境变量管理)。
 
 ```yaml
 services:
@@ -471,6 +473,8 @@ docker compose config | grep POSTGRES_PASSWORD
 | `docker compose config`        | 验证并展开配置           |
 
 ## 5. 环境管理
+
+[第 3.4 节](#34-environment-与-env_file)讲了服务内如何声明环境变量。本节从全局视角讲 `.env` 文件、多环境配置和变量优先级。
 
 ### 5.1 .env 文件
 

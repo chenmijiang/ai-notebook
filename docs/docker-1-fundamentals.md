@@ -448,6 +448,8 @@ docker rm $(docker ps -aq --filter "ancestor=hello-world")
 
 ## 参考资源
 
+现在你已经理解了镜像、容器、仓库这三个核心概念和 Docker 的基本架构。下一篇将深入镜像的选择、拉取、标签管理和安全实践——[Docker 镜像与仓库完全指南](docker-2-images.md)。
+
 - [Docker 官方文档](https://docs.docker.com/)
 - [Docker 概述](https://docs.docker.com/get-started/docker-overview/)
 - [Docker Desktop 安装指南](https://docs.docker.com/desktop/)

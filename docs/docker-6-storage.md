@@ -680,6 +680,8 @@ docker run -d --name web \
 
 ## 参考资源
 
+到这里，镜像、容器、网络、存储都已经学完。但每次手敲一长串 `docker run` 命令既繁琐又不可重复。下一篇用 Docker Compose 把所有配置收拢到一个 YAML 文件中——一条命令启动整个项目。见[Docker Compose 完全指南](docker-7-compose.md)。
+
 - [Docker 存储概述](https://docs.docker.com/engine/storage/)
 - [Docker Volume 文档](https://docs.docker.com/engine/storage/volumes/)
 - [Docker Bind Mount 文档](https://docs.docker.com/engine/storage/bind-mounts/)

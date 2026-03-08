@@ -722,6 +722,8 @@ docker scout recommendations nginx:1.27
 
 ## 参考资源
 
+知道了如何选择和管理镜像，下一步是把镜像运行起来——学习容器的创建、监控和故障排查。见[Docker 容器管理完全指南](docker-3-containers.md)。
+
 - [Docker 镜像官方文档](https://docs.docker.com/engine/reference/commandline/image/)
 - [Docker Hub](https://hub.docker.com/)
 - [Docker Official Images](https://hub.docker.com/search?image_filter=official)
