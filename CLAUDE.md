@@ -21,5 +21,7 @@
 
 ## 注意事项
 
-- 当使用 brainstorming skill 生成计划/规划时，内容放到本项目工作目录的 plans 目录下，而不是 docs/plans 目录
-- 当需要提交代码变更时，先把变更暂存，然后调用 commit skill 进行提交
+- **需求与方案设计**：使用 brainstorming skill 产出 design/spec，统一存放到本项目工作目录 `specs/`
+- **实施计划编写**：在设计确认后使用 writing-plans skill 产出 implementation plan，统一存放到本项目工作目录 `plans/`
+- **执行与交付记录**：部署指南、实施记录、执行补充文档继续放到本项目工作目录 `plans/`
+- **执行代码改动变更**：当需要提交代码变更时，先把变更暂存，然后调用 commit skill 进行提交
