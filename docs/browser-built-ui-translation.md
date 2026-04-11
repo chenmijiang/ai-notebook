@@ -2,21 +2,21 @@
 
 > 译文说明：本文为英文文章 _What if your browser built the UI for you?_ 的中文翻译，尽量保留原文的技术语境与论述风格。
 >
-> 来源：Jonno White，<https://jonno.nz/posts/what-if-your-browser-built-the-ui-for-you/>
+> 来源：Jonno White，[https://jonno.nz/posts/what-if-your-browser-built-the-ui-for-you/](https://jonno.nz/posts/what-if-your-browser-built-the-ui-for-you/)
 >
 > 原文发布日期：2026-04-05
 
 我们正处在前端开发一个颇为特殊的转折点上。AI 已经能够生成完整界面，LLM 也能够理解数据与布局；但即便如此，大多数 SaaS 产品交付的，依然是由人编写的 React 应用。每个产品都在重复实现自己的 UI、无障碍能力、主题系统和响应式断点。虽非全部如此，但绝大多数确实如此。
 
-这背后其实投入了大量重复劳动，而大家做的，本质上都是同一件事：把数据呈现给用户，再让用户完成操作。
+这背后其实投入了大量重复工作，而大家做的，本质上都是同一件事：把数据呈现给用户，再让用户完成操作。
 
-我最近一直在思考这件事，也做了一个 PoC（概念验证）来验证一个想法：如果 UI 不是由服务端或前端应用生成，而是由浏览器自己生成，会怎样？
+我最近一直在思考这件事，也做了一个 PoC 来验证一个想法：如果 UI 不是由服务端或前端应用生成，而是由浏览器自己生成，会怎样？
 
 ## 现状
 
 整个行业都在从不同方向逼近这个想法，但还没有谁真正把它完整落地。
 
-[服务端驱动 UI](https://www.apollographql.com/docs/graphos/schema-design/guides/sdui/basics) 已经存在一段时间了。Airbnb 等公司最早在移动端推动这套方案，原因也很现实：应用商店审核周期太长，UI 变更难以及时发布。在这种模式下，服务端下发一棵描述渲染内容的 JSON 树，客户端只负责按指令渲染。这种方式当然很高效，但最终的控制权仍然掌握在服务端。
+[服务端驱动 UI](https://www.apollographql.com/docs/graphos/schema-design/guides/sdui/basics) 已经存在一段时间了。Airbnb 等公司最早在移动端推动这套方案，原因也很现实：应用商店审核周期太长，UI 变更难以及时发布。在这种模式下，服务端下发一棵描述渲染内容的 JSON 树，客户端只负责按指令渲染。这种方式确实很高效，但最终的控制权仍然掌握在服务端。
 
 Google 最近推出了 [Natively Adaptive Interfaces](https://developers.google.com/natively-adaptive-interfaces)，这是一个借助 AI agent 将无障碍从“事后补充”转变为“默认能力”的框架。这个方向是对的，也很值得关注。但它仍然局限于单个应用内部。你的无障碍偏好，并不会在 Google 的产品和某个项目管理工具之间自然延续。
 
@@ -26,9 +26,9 @@ Google 最近推出了 [Natively Adaptive Interfaces](https://developers.google.
 
 ## 反过来想
 
-这正是 [adaptive browser](https://github.com/jonnonz1/adaptive-browser) 背后的核心想法：如果 UI 的生成发生在浏览器端，而不是服务端，会怎样？
+如果 UI 的生成发生在浏览器端，而不是服务端，会怎样？
 
-服务不再向你交付一个完整的前端应用，而是发布一份 manifest，也就是一份结构化的能力说明。它描述自己能做什么、有哪些端点、数据结构是什么样、支持哪些操作。你可以把它理解成一种更“语义化”的 API 规范。它不只是说“这里有个 GET 接口”，而是说“这里有一个仓库列表，可以按 star 数和语言排序，还支持创建、删除、加星和 fork”。
+这正是 [adaptive browser](https://github.com/jonnonz1/adaptive-browser) 背后的核心想法。服务不再向你交付一个完整的前端应用，而是发布一份 manifest，也就是一份结构化的能力说明。它描述自己能做什么、有哪些端点、数据结构是什么样、支持哪些操作。你可以把它理解成一种更“语义化”的 API 规范。它不只是说“这里有个 GET 接口”，而是说“这里有一个仓库列表，可以按 star 数和语言排序，还支持创建、删除、加星和 fork”。
 
 浏览器拿到这份 manifest，调用真实 API，获取真实数据，然后根据你的偏好生成 UI。你的字号、配色方案、偏好的布局方式（表格、卡片还是看板），以及无障碍需求，都可以在所有服务中统一生效。
 
