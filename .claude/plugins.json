@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "lastUpdated": 1775561176465,
+  "plugins": [
+    {
+      "filename": "commit",
+      "type": "skill",
+      "metadata": {
+        "sourcePath": "skills/commit",
+        "filename": "commit",
+        "name": "commit",
+        "description": "Generate git commit messages from staged changes following Conventional Commits. Use when user wants to commit, asks for help writing commit messages, or invokes /commit command.",
+        "category": "skills",
+        "type": "skill",
+        "size": 2940,
+        "contentHash": "4855f81fa2222034350e27a9114df42d7f8a896c2e2c5c0f8a8970878f032337"
+      }
+    },
+    {
+      "filename": "tech-docs-guide",
+      "type": "skill",
+      "metadata": {
+        "sourcePath": "skills/tech-docs-guide",
+        "filename": "tech-docs-guide",
+        "name": "tech-docs-guide",
+        "description": "Provides Chinese technical documentation writing guidelines. Use when creating new technical guides, editing existing docs to follow standards, or reviewing document format and structure.",
+        "category": "skills",
+        "type": "skill",
+        "size": 3600,
+        "contentHash": "9f4b3412be2bebebbe117b6f5931ec03a80823881638d397541f1dc8dbf4f675"
+      }
+    }
+  ]
+}
