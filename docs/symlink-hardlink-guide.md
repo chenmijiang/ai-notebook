@@ -25,9 +25,7 @@
 
 ```bash
 ln source_file link_name
-```
 
-```bash
 echo "Hello World" > original.txt
 ln original.txt hardlink.txt
 
@@ -60,9 +58,7 @@ cat hardlink.txt  # 输出：Modified
 
 ```bash
 ln -s source_file link_name
-```
 
-```bash
 echo "Hello World" > original.txt
 ln -s original.txt symlink.txt
 
@@ -162,7 +158,7 @@ inode（索引节点）是文件系统存储文件元数据的核心结构，每
 
 ```
 目录表：
-文件名         → inode 编号
+文件名          → inode 编号
 original.txt   → 123456
 hardlink.txt   → 123456   ← 硬链接：同一 inode
 symlink.txt    → 789012   ← 软链接：独立 inode
