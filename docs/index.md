@@ -1,5 +1,6 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
+- 2026-06-11 - [MCP 服务器搭建完全指南](./mcp-build-guide.md) (L: 2026-06-11)
 - 2026-05-20 - [JavaScript 滚动控制完全指南](./scroll-guide.md) (L: 2026-05-20)
 - 2026-04-23 - [软连接与硬连接完全指南](./symlink-hardlink-guide.md) (L: 2026-04-23)
 - 2026-04-10 - [如果浏览器替你构建 UI，会怎样？](./browser-built-ui-translation.md) (L: 2026-04-12)
