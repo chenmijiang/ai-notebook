@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "INPUT=$(cat); echo \"$INPUT\" | grep -qE '\"file_path\"[^,]*docs/[^\"]*\\.md' && { npm run create:home --silent >/dev/null 2>&1; npx --no -- prettier --write 'docs/**/*.md' >/dev/null 2>&1; }; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}

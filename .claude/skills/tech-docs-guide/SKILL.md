@@ -1,23 +1,11 @@
 ---
 name: tech-docs-guide
-description: Provides Chinese technical documentation writing guidelines. Use when creating new technical guides, editing existing docs to follow standards, or reviewing document format and structure.
+description: Chinese technical-documentation conventions (naming, structure, formatting, examples). Passive reference consulted by tech-doc-workflow when authoring or revising docs under docs/. Single source of truth for what a doc looks like.
+user-invocable: false
 ---
 
-## 什么时候使用
-
-- 创建新的技术指南文档
-- 编辑现有文档使其符合写作规范
-- 审校文档格式和结构
-
-## 执行流程
-
-- [ ] Step 1: 严格遵循基本要求、文档结构要求、内容结构以及示例要求
-- [ ] Step 2: 完成初稿后进行自我审校
-- [ ] Step 2.1: 通过 web fetch 最新的相关信息验证内容准确性和时效性
-- [ ] Step 2.2: 检查内容是否遵循写作规范
-- [ ] Step 2.3: 检查内容逻辑是否清晰，是否易于理解
-- [ ] Step 3: 根据审校建议修改内容，然后执行 `Step 2` 重新审校，直到审校问题修复
-- [ ] Step 4: 执行格式化脚本：`npm run format`
+> 本文件是本仓库技术文档的**写作规范底座**——命名、结构、格式、示例的唯一事实源。
+> 它不描述流程；流程由 `tech-doc-workflow` skill 负责，并在产出/修订文档时引用本规范。
 
 ## 基本要求
 
