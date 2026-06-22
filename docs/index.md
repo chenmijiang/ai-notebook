@@ -1,5 +1,6 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
+- 2026-06-21 - [npx 完全指南](./npx-guide.md) (L: 2026-06-22)
 - 2026-06-15 - [Zod 使用指南](./zod-guide.md) (L: 2026-06-15)
 - 2026-06-11 - [MCP 服务器搭建完全指南](./mcp-build-guide.md) (L: 2026-06-14)
 - 2026-05-20 - [JavaScript 滚动控制完全指南](./scroll-guide.md) (L: 2026-05-20)
