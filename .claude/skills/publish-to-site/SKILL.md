@@ -1,72 +1,48 @@
 ---
 name: publish-to-site
-description: Use when the user wants to publish the docs site or promote the latest main into the GitHub Pages `site` branch — e.g. "发布网站", "把 main 合并到 site", "提个发布 PR". Opens a PR; the user reviews and merges on GitHub.
+description: Create a publish PR from `main` to the GitHub Pages `site` branch; leave push and merge to the user.
 disable-model-invocation: true
 ---
 
-把 `main` 上已发布的文档内容晋升到 GitHub Pages 的 `site` 分支。`site` 是发布分支，靠**反复把 `main` 合并进来**来更新（历史里全是 merge commit，树与 `main` 同步）。
+# 发布文档站点
 
-本 skill 只负责**开 PR**（`base=site ← head=main`），并根据差异自动生成**英文**标题与正文。**不合并**——你去 GitHub 看变动后手动合并。
+创建 `base=site, head=main` 的 PR，把 `main` 晋升到发布分支 `site`。本 skill 不执行 push 或 merge；创建 PR 前须获得用户明确确认。
 
-> **side effect 边界**：本 skill 会创建 PR（对外动作）。不自动 push、不自动 merge。涉及 push/merge 一律交还给你。
+## 执行
 
-## 前置硬检查（任一不满足则停止并说明）
+1. 运行 `git fetch origin --quiet`。
+2. 运行 `git rev-list --count origin/main..main`。结果大于 0 时停止，报告未推送提交数并请用户先确认 push；PR 只能包含 `origin/main` 上的提交。
+3. 运行 `gh pr list --base site --head main --state open --json url --jq '.[0].url'`。有结果时输出该 URL 并停止，避免重复 PR。
+4. 运行 `git diff --name-status --find-renames origin/site origin/main -- docs/`。无结果时停止，报告 `site` 已包含全部可发布文档。
+5. 为每条差异生成英文条目，确保每个变更路径恰好出现一次：
+   - `A`：`Added`
+   - `D`：`Removed`
+   - `M`、`R` 及其他状态：`Updated`；重命名写成 `<old path> → <new path>`
+6. 将文件名转为标题：去掉目录、`.md` 和末尾的 `-guide`，把连字符换为空格，再将首字母大写。
+7. 生成英文 PR 内容：
+   - 仅有新增时，标题为 `docs: publish <N> new guide(s) to site`。
+   - 其他情况，标题为 `docs: publish <N> guide update(s) to site`。
+   - `N=1` 使用单数，其他数量使用复数。
+   - 正文使用下方模板，省略没有条目的分组。
+8. 展示标题和正文并请求确认。确认后使用 `gh pr create --base site --head main --title "<title>" --body-file <file-or-stdin>` 创建 PR。正文通过临时文件或带单引号的 heredoc 传入，避免 shell 展开 Markdown 中的反引号。
+9. 输出返回的 PR URL，提醒用户在 GitHub 审阅渲染结果并手动 merge。URL 已返回且未执行 push 或 merge，任务才算完成。
 
-- [ ] **1. 同步远端**：`git fetch origin --quiet`
-- [ ] **2. main 已推送**：`origin/main` 必须包含本地 `main` 的全部提交。
-      检查 `git rev-list --count origin/main..main`，若 > 0 → **停止**，提示用户「本地 main 有 N 个未推送提交，PR 基于 origin/main，请先 push（需你确认）」。**不要自动 push。**
-- [ ] **3. 有可发布内容**：`git rev-list --count origin/site..origin/main`，若 = 0 → **停止**，报告「site 已与 main 同步，无需发布」。
-- [ ] **4. 无重复 PR**：`gh pr list --base site --head main --state open`，若已存在 → 输出其 URL 并**停止**。
-
-## 生成标题与正文（英文）
-
-依据 `git diff --name-status origin/site origin/main -- docs/` 区分新增 / 修改：
-
-- `A` → Added（新指南）
-- `M` → Updated（已有指南）
-
-把文件名转成可读标题（去掉 `-guide.md`、连字符转空格、首字母大写）。
-
-**标题**（Conventional Commits 风格，简洁）：
-
-```
-docs: publish <N> guide update(s) to site
-```
-
-若全是新增可用 `docs: publish <N> new guide(s) to site`；混合时用通用的 `update(s)`。
-
-**正文模板**：
+## PR 正文
 
 ```markdown
 Sync the latest docs from `main` into the `site` publish branch.
 
 ## Added
-- <Topic A> (`docs/<file>.md`)
+- <Topic> (`docs/<file>.md`)
 
 ## Updated
-- <Topic B> (`docs/<file>.md`)
+- <Topic> (`docs/<file>.md`)
+
+## Removed
+- <Topic> (`docs/<file>.md`)
 
 ---
 _Auto-generated publish PR. Review the rendered changes on GitHub, then merge manually._
 ```
 
-无对应分组则省略该 `##` 段。
-
-## 开 PR
-
-```bash
-gh pr create --base site --head main \
-  --title "<生成的标题>" \
-  --body "<生成的正文>"
-```
-
-输出返回的 PR URL，并提醒：**去 GitHub 审阅渲染效果后手动合并；本 skill 不合并。**
-
-## 常见问题
-
-| 现象                         | 处理                                                 |
-| ---------------------------- | ---------------------------------------------------- |
-| `gh` 报未登录                | 让用户先 `gh auth login`（这是交互动作，由用户执行） |
-| 提示已存在 main→site 的 PR   | 直接复用，输出旧 PR URL，不重复创建                  |
-| `origin/site..origin/main`=0 | site 已同步，无需发布，停止                          |
-| 本地 main 领先 origin/main   | 先 push（需用户确认），否则 PR 不含未推送的提交      |
+`gh` 未登录时停止，并请用户运行 `gh auth login`。
