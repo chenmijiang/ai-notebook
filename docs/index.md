@@ -1,5 +1,6 @@
 A comprehensive [repository](https://github.com/chenmijiang/ai-notebook) of AI-generated technical guides. Each guide provides in-depth conceptual explanations, real-world use cases, and practical code examples to help developers master various technologies.
 
+- 2026-08-25 - [Umi Mock 如何从文件声明变成 HTTP 响应](./umi-mock-source-guide.md) (L: 2026-08-25)
 - 2026-08-20 - [Ponytail 使用指南](./ponytail-guide.md) (L: 2026-08-20)
 - 2026-06-21 - [npx 完全指南](./npx-guide.md) (L: 2026-06-22)
 - 2026-06-15 - [Zod 使用指南](./zod-guide.md) (L: 2026-06-15)
